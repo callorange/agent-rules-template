@@ -1,0 +1,51 @@
+name: Build & Release Agents Template
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate rules directory structure
+        run: |
+          echo "Validating rules/ core, architecture, packaging, and styles..."
+          test -d rules/core || (echo "Error: rules/core missing" && exit 1)
+          test -d rules/architecture || (echo "Error: rules/architecture missing" && exit 1)
+          test -d rules/packaging || (echo "Error: rules/packaging missing" && exit 1)
+          test -d rules/styles || (echo "Error: rules/styles missing" && exit 1)
+          echo "Structure validation passed."
+
+      - name: Verify dist bundle build
+        run: |
+          test -f dist/AGENTS.md || (echo "Error: dist/AGENTS.md missing" && exit 1)
+          test -d dist/rules || (echo "Error: dist/rules missing" && exit 1)
+          echo "Dist bundle verified successfully."
+
+      - name: Create release zip artifact
+        run: |
+          cd dist && zip -r ../agents-template-dist.zip ./* && cd ..
+          echo "Created agents-template-dist.zip"
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/AGENTS.md
+            agents-template-dist.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

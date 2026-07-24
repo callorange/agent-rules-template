@@ -1,5 +1,5 @@
 # Build output
-dist/
+# dist/ is tracked for direct template cloning
 
 # Dependencies
 node_modules/
