@@ -1,14 +1,12 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, AI 에이전트(LLM)가 템플릿을 조합하여 최종 결과물(`dist/AGENTS.md`)을 직접 생성하도록 설계된 공용 표준 프로젝트입니다.
+다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다.
 
 ---
 
 ## 🎯 프로젝트 목적
 
-AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 엄격한 실행 제어(Strict Execution Control), 기술 스택별 가이드라인을 모듈화하여 관리합니다.
-
-외부 스크립트나 외부 도구 프레임워크에 의존하지 않고 **AI 에이전트(LLM)가 지침을 기반으로 직접 규칙을 읽어 `dist/` 디렉토리에 맞춤형 `AGENTS.md`를 조합/생성**합니다.
+AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 엄격한 실행 제어(Strict Execution Control), 기술 스택별 가이드라인 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
 
 ---
 
@@ -19,9 +17,9 @@ AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용
 ### 핵심 5대 원칙
 1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공
 2. **엄격한 실행 제어 (Strict Execution Control & Procedural Integrity)**: 에이전트의 안정적 운영을 위한 사전 승인 및 무단 수정 방지 절차 준수
-3. **모듈화 및 확장성 (Modular Composition & Extensibility)**: Core, Workflow, Tech Stack별 독립 모듈화
-4. **버전 관리 및 추적 가능성 (Semantic Versioning & Traceability)**: 시맨틱 버저닝(v1.0.0)을 통한 명확한 개정 이력 관리
-5. **LLM 직접 생성 및 검증 (LLM-Driven Generation & Validation)**: 외부 스크립트 없이 AI 에이전트가 직접 모듈을 조합하여 `dist/`에 생성하고 검증
+3. **모듈화 및 확장성 (Modular Composition & Extensibility)**: Core, Architecture, Packaging, Styles별 독립 모듈화
+4. **버전 관리 및 추적 가능성 (Semantic Versioning & Traceability)**: 명확한 개정 이력 및 릴리즈 관리
+5. **자동 조립 및 검증 (Automated Assembly & Validation)**: 조립 스크립트(`scripts/build_dist.py`)를 통해 `dist/` 배포 번들을 100% 무결하게 조립 및 검증
 
 ---
 
@@ -54,8 +52,11 @@ agents-template/
 │       ├── cpp.md           # C++ 코딩 스타일 지침 (Google Style Guide)
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
-├── dist/                    # AI 에이전트(LLM)가 직접 조립해 생성하는 출력 디렉토리
-│   └── AGENTS.md            # 최종 조합 완료된 AGENTS.md
+├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
+│   └── build_dist.py        # dist/AGENTS.md 및 dist/rules/ 자동 조립 도구
+├── dist/                    # 🚀 배포용 번들 디렉터리 (Git 트래킹 및 CI 배포)
+│   ├── AGENTS.md            # 필수 핵심 규칙이 번들링된 통합 배포 파일
+│   └── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
 └── LICENSE.md               # MIT 라이선스
@@ -63,15 +64,19 @@ agents-template/
 
 ---
 
-## 🚀 사용법 (AI 에이전트 직접 생성 방식)
+## 🚀 사용법 (Usage)
 
-### 1. AI 에이전트(LLM)에게 맞춤형 생성 요청
-AI 에이전트에게 원하는 기술 스택과 조합 청사진(`blueprints/`)을 지정하여 `dist/` 폴더에 생성을 요청합니다:
+### 1. 로컬 번들 조립 스크립트 실행 (`scripts/build_dist.py`)
+`rules/` 디렉터리 내의 규칙 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/AGENTS.md` 및 `dist/rules/` 배포 아티팩트가 0.01초 만에 자동 생성됩니다:
 
-> "현재 `blueprints/single-file.md.blueprint` 청사진을 참고하여 `rules/core/` 내 모듈과 `rules/stacks/web-frontend.md` 규칙을 조합해 `dist/AGENTS.md` 파일을 작성해라."
+```bash
+python3 scripts/build_dist.py
+```
 
-### 2. 생성 결과 확인 및 프로젝트 적용
-AI 에이전트가 작성한 [dist/AGENTS.md](file:///dist/AGENTS.md) 파일 또는 모듈 구조를 대상 프로젝트의 루트 디렉토리로 적용하여 사용합니다.
+*(참고: AI 에이전트와 함께 작업 시, 에이전트가 rules 수정 직후 이 스크립트를 자동 실행하여 dist/를 유지합니다.)*
+
+### 2. GitHub Release 배포 아티팩트 활용 (타 프로젝트 적용)
+GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-template-dist.zip`**을 다운로드하여 대상 프로젝트 루트 디렉터리에 해제하면 즉시 최신 에이전트 실행 환경이 세팅됩니다.
 
 ---
 
