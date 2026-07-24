@@ -40,17 +40,29 @@ jobs:
           cd dist && zip -r ../agents-template-dist.zip ./* && cd ..
           echo "Created agents-template-dist.zip"
 
+      - name: Set Release Metadata
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: rel_meta
+        run: |
+          BUILD_DATE=$(date -u +'%Y-%m-%d %H:%M UTC')
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "release_name=Continuous Release ($BUILD_DATE - $SHORT_SHA)" >> $GITHUB_OUTPUT
+          echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
       - name: Create or Update GitHub Release on main push
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: "Latest Continuous Release"
+          name: ${{ steps.rel_meta.outputs.release_name }}
           body: |
             Automation release built directly from the `main` branch.
-            Contains the latest compiled `AGENTS.md` bundle and `dist/` rules.
+            
+            - **Updated Date**: ${{ steps.rel_meta.outputs.build_date }}
+            - **Commit SHA**: [${{ steps.rel_meta.outputs.short_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            - **Contains**: Latest compiled `agents-template-dist.zip`
           files: |
-            dist/AGENTS.md
             agents-template-dist.zip
           draft: false
           prerelease: false
