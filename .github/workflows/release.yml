@@ -20,6 +20,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Validate rules directory structure
         run: |
           echo "Validating rules/ core, architecture, packaging, and styles..."
@@ -28,6 +33,11 @@ jobs:
           test -d rules/packaging || (echo "Error: rules/packaging missing" && exit 1)
           test -d rules/styles || (echo "Error: rules/styles missing" && exit 1)
           echo "Structure validation passed."
+
+      - name: Execute build_dist.py assembly
+        run: |
+          python3 scripts/build_dist.py
+          echo "Fresh dist/ bundle compiled in CI."
 
       - name: Verify dist bundle build
         run: |

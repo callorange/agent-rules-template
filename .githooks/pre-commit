@@ -1,0 +1,11 @@
+#!/bin/sh
+# .githooks/pre-commit
+# 커밋 실행 직전 rules/ 원본을 바탕으로 dist/ 배포 번들을 자동 빌드하고 스테이징에 포함시킵니다.
+
+echo "🔄 [Git Hook] Auto-building dist/ bundle from rules/..."
+python3 scripts/build_dist.py
+
+if [ -n "$(git status --porcelain dist/)" ]; then
+    echo "📌 [Git Hook] Staging updated dist/ files for commit..."
+    git add dist/
+fi
