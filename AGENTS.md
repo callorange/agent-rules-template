@@ -37,6 +37,7 @@ agents-template/
 │   ├── architecture/        # 🏛️ 도메인 및 아키텍처 규칙 모듈
 │   │   ├── web-frontend.md  # 웹 프론트엔드 특화 지침
 │   │   ├── backend-api.md   # 백엔드 API 특화 지침
+│   │   ├── framework-django.md # Django 프레임워크 특화 아키텍처 지침
 │   │   ├── library-package.md # 범용 라이브러리/모듈 공통 지침
 │   │   └── monorepo.md      # 모노레포 아키텍처 특화 지침
 │   ├── packaging/           # 📦 패키징 및 배포 생태계 규칙 모듈
