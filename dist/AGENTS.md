@@ -1,6 +1,6 @@
 # AGENTS.md - Unified Agent Execution Rules & Governance
 
-본 문서는 `agents-template`에서 통합 조립된 **최상위 AI 에이전트 실행 지침 및 거버넌스(Governance) 문서**입니다.
+본 문서는 `agents-template`에서 `scripts/build_dist.py` 스크립트를 통해 자동으로 조립 생성된 **최상위 AI 에이전트 통합 실행 지침 및 거버넌스(Governance) 문서**입니다.
 프로젝트에 참여하는 모든 AI 에이전트는 본 문서의 헌법적 원칙과 핵심 행동 규약을 최우선으로 준수해야 합니다.
 
 ---
@@ -155,7 +155,7 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 
 ---
 
-# Hidden Knowledge Protocol (암묵적 지식 템플릿)
+# Hidden Knowledge Template (암묵적 지식 템플릿)
 
 코드베이스 검색만으로는 파악할 수 없는 아키텍처 결정의 "이유(Why)", 비직관적 도메인 로직, 해결되지 않은 기술 부채 등을 명시하여 AI가 치명적인 실수나 무단 수정을 하지 않도록 방어하는 암묵적 지식 템플릿입니다.
 
@@ -177,22 +177,22 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 프로젝트의 구체적인 기술 스택, 배포 환경 및 언어 스타일 가이드는 필요 시 아래 전용 모듈 문서를 참조(Read-on-Demand)하십시오.
 
 ### 🏛️ 도메인 및 아키텍처 규칙
-- [web-frontend.md](rules/architecture/web-frontend.md): 웹 프론트엔드 (React, Next.js, Vue, CSS) 아키텍처 및 디자인 표준
-- [backend-api.md](rules/architecture/backend-api.md): 백엔드 REST API, DB, 인증 및 보안 아키텍처 표준
-- [framework-django.md](rules/architecture/framework-django.md): Django / DRF / Ninja 특화 아키텍처 및 ORM 최적화 규칙
-- [library-package.md](rules/architecture/library-package.md): 범용 라이브러리 및 SDK 공통 설계 규칙
-- [monorepo.md](rules/architecture/monorepo.md): 모노레포 (Turborepo, Nx, pnpm) 독립 배포 및 워크스페이스 규칙
+- [backend-api.md](rules/architecture/backend-api.md): Backend & API Architecture Rules
+- [framework-django.md](rules/architecture/framework-django.md): Django Architecture & Development Rules
+- [library-package.md](rules/architecture/library-package.md): General Library & Module Rules
+- [monorepo.md](rules/architecture/monorepo.md): Monorepo Architecture Rules
+- [web-frontend.md](rules/architecture/web-frontend.md): Web Frontend Architecture Rules
 
 ### 📦 패키징 및 배포 생태계 규칙
-- [package-npm.md](rules/packaging/package-npm.md): Node.js / TypeScript NPM 패키징 및 Exports 규칙
-- [package-python.md](rules/packaging/package-python.md): Python / PyPI (uv 표준, Tilde 마이너 버전 안전성) 규칙
+- [package-npm.md](rules/packaging/package-npm.md): NPM Packaging Rules
+- [package-python.md](rules/packaging/package-python.md): Python Packaging Rules
 
 ### 🎨 언어별 코딩 스타일 가이드 (Google Style Guides)
-- [python.md](rules/styles/python.md): Python 코딩 스타일 지침 (Google Style Guide 기반)
-- [typescript.md](rules/styles/typescript.md): TypeScript 코딩 스타일 지침 (Google Style Guide 기반)
-- [javascript.md](rules/styles/javascript.md): JavaScript 코딩 스타일 지침 (Google Style Guide 기반)
-- [html-css.md](rules/styles/html-css.md): HTML/CSS 코딩 스타일 지침 (Google Style Guide 기반)
-- [go.md](rules/styles/go.md): Go 코딩 스타일 지침 (Effective Go 기반)
-- [cpp.md](rules/styles/cpp.md): C++ 코딩 스타일 지침 (Google C++ Style Guide 기반)
-- [csharp.md](rules/styles/csharp.md): C# 코딩 스타일 지침 (Google C# Style Guide 기반)
-- [dart.md](rules/styles/dart.md): Dart/Flutter 코딩 스타일 지침 (Effective Dart 기반)
+- [cpp.md](rules/styles/cpp.md): C++ Coding Style Guide
+- [csharp.md](rules/styles/csharp.md): C# Coding Style Guide
+- [dart.md](rules/styles/dart.md): Dart / Flutter Coding Style Guide
+- [go.md](rules/styles/go.md): Go Coding Style Guide
+- [html-css.md](rules/styles/html-css.md): HTML/CSS Style Guide
+- [javascript.md](rules/styles/javascript.md): JavaScript Coding Style Guide
+- [python.md](rules/styles/python.md): Python Coding Style Guide
+- [typescript.md](rules/styles/typescript.md): TypeScript Coding Style Guide
