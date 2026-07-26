@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_rules.py - rules/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
+validate_rules.py - rules/, skills/, subagents/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
 """
 
 import os
@@ -11,6 +11,8 @@ from pathlib import Path
 # 프로젝트 루트 디렉터리 설정
 ROOT_DIR = Path(__file__).resolve().parent.parent
 RULES_DIR = ROOT_DIR / "rules"
+SKILLS_DIR = ROOT_DIR / "skills"
+SUBAGENTS_DIR = ROOT_DIR / "subagents"
 DIST_DIR = ROOT_DIR / "dist"
 
 # 1. 필수 코어 모듈 목록
@@ -68,7 +70,7 @@ def check_markdown_links(file_path: Path) -> list:
     for idx, line in enumerate(content.splitlines(), 1):
         for match in link_pattern.finditer(line):
             target = match.group(2).strip()
-            # 외부 URL, 앵커 링크 및 file:/// 스키마 제외
+            # 외부 URL, 앵커 링크 및 file: 스키마 제외
             if target.startswith(("http://", "https://", "mailto:", "#", "file:")):
                 continue
             
@@ -96,8 +98,12 @@ def main():
         if not full_path.exists():
             all_errors.append(f"필수 코어 모듈 누락: '{req_file}' 파일이 존재하지 않습니다.")
 
-    # 2. rules/ 및 dist/ 내 모든 .md 파일 수집
+    # 2. rules/, skills/, subagents/ 및 dist/ 내 모든 .md 파일 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
+    if SKILLS_DIR.exists():
+        md_files.extend(SKILLS_DIR.glob("**/*.md"))
+    if SUBAGENTS_DIR.exists():
+        md_files.extend(SUBAGENTS_DIR.glob("**/*.md"))
     if DIST_DIR.exists():
         md_files.extend(DIST_DIR.glob("**/*.md"))
     

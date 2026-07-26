@@ -2,7 +2,7 @@
 """
 scripts/build_dist.py
 AI 에이전트 및 개발자를 위한 dist/ 배포 아티팩트 자동 조립 스크립트.
-rules/ 의 원본 규칙 모듈들을 읽어 고품질 dist/AGENTS.md 및 dist/rules/ 구조를 생성합니다.
+rules/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS.md, dist/rules/ 및 dist/.agents/ 구조를 생성합니다.
 """
 
 import os
@@ -12,8 +12,14 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RULES_DIR = PROJECT_ROOT / "rules"
+SKILLS_DIR = PROJECT_ROOT / "skills"
+SUBAGENTS_DIR = PROJECT_ROOT / "subagents"
+
 DIST_DIR = PROJECT_ROOT / "dist"
 DIST_RULES_DIR = DIST_DIR / "rules"
+DIST_AGENTS_DIR = DIST_DIR / ".agents"
+DIST_AGENTS_SKILLS_DIR = DIST_AGENTS_DIR / "skills"
+DIST_AGENTS_AGENTS_DIR = DIST_AGENTS_DIR / "agents"
 
 CORE_ORDER = [
     "base.md",
@@ -55,7 +61,7 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
 def build_dist():
     print("🚀 Starting dist/ bundle assembly...")
 
-    # 1. dist 디렉토리 초기화
+    # 1. dist 디렉토리 초기화 (Clean Build)
     if DIST_DIR.exists():
         shutil.rmtree(DIST_DIR)
     DIST_DIR.mkdir(parents=True, exist_ok=True)
@@ -118,6 +124,32 @@ def build_dist():
         if src_cat.exists():
             shutil.copytree(src_cat, dest_cat)
             print(f"  + Copied category module: {cat_name} -> dist/rules/{cat_name}")
+
+    # 7. skills/ 및 subagents/ 원본 모듈을 dist/.agents/ 디렉터리로 복사 및 패키징
+    if SKILLS_DIR.exists():
+        DIST_AGENTS_SKILLS_DIR.mkdir(parents=True, exist_ok=True)
+        # .gitkeep 제외한 디렉터리/파일 복사
+        for item in SKILLS_DIR.iterdir():
+            if item.name.startswith("."):
+                continue
+            dest_item = DIST_AGENTS_SKILLS_DIR / item.name
+            if item.is_dir():
+                shutil.copytree(item, dest_item)
+                print(f"  + Copied distributable skill: {item.name} -> dist/.agents/skills/{item.name}")
+            else:
+                shutil.copy2(item, dest_item)
+
+    if SUBAGENTS_DIR.exists():
+        DIST_AGENTS_AGENTS_DIR.mkdir(parents=True, exist_ok=True)
+        for item in SUBAGENTS_DIR.iterdir():
+            if item.name.startswith("."):
+                continue
+            dest_item = DIST_AGENTS_AGENTS_DIR / item.name
+            if item.is_dir():
+                shutil.copytree(item, dest_item)
+            else:
+                shutil.copy2(item, dest_item)
+            print(f"  + Copied distributable subagent: {item.name} -> dist/.agents/agents/{item.name}")
 
     print("🎉 dist/ bundle assembly completed successfully!")
 
