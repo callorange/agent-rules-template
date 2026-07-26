@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_rules.py - rules/, skills/, subagents/, .agents/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
+validate_rules.py - rules/, skills/, subagents/ 원본 규칙 모듈의 정적 무결성을 검증하는 도구.
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
@@ -14,8 +14,6 @@ ROOT_DIR = Path(__file__).resolve().parents[4]
 RULES_DIR = ROOT_DIR / "rules"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
-INTERNAL_AGENTS_DIR = ROOT_DIR / ".agents"
-DIST_DIR = ROOT_DIR / "dist"
 
 # 1. 필수 코어 모듈 목록 (build_dist.py CORE_ORDER와 100% 동일)
 REQUIRED_CORE_FILES = [
@@ -96,7 +94,7 @@ def check_markdown_links(file_path: Path) -> list:
 def main():
     all_errors = []
 
-    print("🔍 [rule-validator] 규칙 모듈 무결성 검증을 시작합니다...\n")
+    print("🔍 [rule-validator] 원본 규칙 모듈 무결성 검증을 시작합니다...\n")
 
     # 1. 필수 코어 모듈 존재 여부 검사
     print("1️⃣ 필수 코어 모듈 검사 중...")
@@ -105,22 +103,18 @@ def main():
         if not full_path.exists():
             all_errors.append(f"필수 코어 모듈 누락: '{req_file}' 파일이 존재하지 않습니다.")
 
-    # 2. rules/, skills/, subagents/, .agents/ 및 dist/ 내 모든 .md 파일 수집
+    # 2. rules/, skills/, subagents/ 원본 SSOT 마크다운 파일만 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
     if SKILLS_DIR.exists():
         md_files.extend(SKILLS_DIR.glob("**/*.md"))
     if SUBAGENTS_DIR.exists():
         md_files.extend(SUBAGENTS_DIR.glob("**/*.md"))
-    if INTERNAL_AGENTS_DIR.exists():
-        md_files.extend(INTERNAL_AGENTS_DIR.glob("**/*.md"))
-    if DIST_DIR.exists():
-        md_files.extend(DIST_DIR.glob("**/*.md"))
     
     root_agents = ROOT_DIR / "AGENTS.md"
     if root_agents.exists():
         md_files.append(root_agents)
 
-    print(f"2️⃣ 총 {len(md_files)}개 Markdown 파일 인코딩 및 금지 표현 검사 중...")
+    print(f"2️⃣ 총 {len(md_files)}개 원본 Markdown 파일 인코딩 및 금지 표현 검사 중...")
     for md_file in md_files:
         errs = check_encoding_and_content(md_file)
         all_errors.extend(errs)
@@ -137,7 +131,7 @@ def main():
             print(f"  - {err}")
         sys.exit(1)
     else:
-        print("✅ 모든 규칙 모듈 및 Markdown 파일 검증을 성공적으로 통과하였습니다!")
+        print("✅ 모든 원본 규칙 모듈 및 Markdown 파일 검증을 성공적으로 통과하였습니다!")
         sys.exit(0)
 
 if __name__ == "__main__":
