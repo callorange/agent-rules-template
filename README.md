@@ -64,8 +64,12 @@ agents-template/
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
+│   └── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
+│   └── critical-evaluator.md# 코드 및 설계 변경사항 비판적 검증 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
+│   ├── skills/              # 메타 스킬 (rule-validator: 룰셋 무결성 정적 검증)
+│   └── agents/              # 메타 서브에이전트 (critical-evaluator)
 ├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
 │   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
 ├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
@@ -76,6 +80,7 @@ agents-template/
 │       └── agents/          # dist/.agents/agents/
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
+├── CHANGELOG.md             # 프로젝트 개정 및 버전 이력 문서
 └── LICENSE.md               # MIT 라이선스
 ```
 

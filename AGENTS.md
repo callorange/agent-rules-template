@@ -68,8 +68,12 @@ agents-template/
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
+│   └── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
+│   └── critical-evaluator.md# 코드 및 설계 변경사항 비판적 검증 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
+│   ├── skills/              # 메타 스킬 (rule-validator: 룰셋 무결성 정적 검증)
+│   └── agents/              # 메타 서브에이전트 (critical-evaluator)
 ├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
 │   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
 ├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
@@ -80,6 +84,7 @@ agents-template/
 │       └── agents/          # dist/.agents/agents/
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
+├── CHANGELOG.md             # 프로젝트 개정 및 버전 이력 문서
 └── LICENSE.md               # MIT 라이선스
 ```
 
@@ -139,6 +144,14 @@ agents-template/
 
 - **오버엔지니어링 경계**: 불필요한 규칙 양산과 과도한 레이어 추가를 경계하며, 비효율적인 지시에는 대안을 제안(Push Back)합니다.
 - **판단 우선순위**: 규칙 간 충돌 시 `실제 로컬 코드/컨텍스트 > 프로젝트 설정 > AGENTS.md`의 우선순위를 따릅니다.
+
+---
+
+## 8. 지속적 문서 관리 및 CHANGELOG 동기화 (Documentation & CHANGELOG Maintenance)
+
+- **Doc-Code 동기화 원칙**: 주요 기능 추가, 아키텍처 개정, CLI/환경 설정 변경 시 프로젝트 내 기존 핵심 문서(README.md, AGENTS.md 등)를 수술적 편집(Surgical Edit)으로 동기화하여 문서 부채(Documentation Debt)를 방지합니다.
+- **CHANGELOG.md 개정 의무**: 의미 있는 기능 추가, 모듈 구조 변경, Breaking Changes 발생 시 [CHANGELOG.md](file:///CHANGELOG.md)에 시맨틱 버저닝(v1.0.0, Keep a Changelog 규격) 기준에 따라 개정 내역을 지속 기록합니다.
+- **신규 문서 사전 승인 (Ask Before Create)**: 프로젝트 내 존재하지 않는 신규 문서를 생성해야 할 경우 임의 생성하지 않고 사용자에게 사전 필요성을 설명하고 승인을 얻어 생성합니다.
 
 ---
 
