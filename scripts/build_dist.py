@@ -48,7 +48,6 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
         if line.startswith("# "):
             title = line[2:].strip()
             # 괄호 안 영문/한글 요약 정제
-            title = re.sub(r'\(.*?\)', '', title).strip()
             break
             
     for line in lines:
@@ -138,6 +137,7 @@ def build_dist():
                 print(f"  + Copied distributable skill: {item.name} -> dist/.agents/skills/{item.name}")
             else:
                 shutil.copy2(item, dest_item)
+                print(f"  + Copied distributable skill file: {item.name} -> dist/.agents/skills/{item.name}")
 
     if SUBAGENTS_DIR.exists():
         DIST_AGENTS_AGENTS_DIR.mkdir(parents=True, exist_ok=True)

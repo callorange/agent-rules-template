@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_rules.py - rules/, skills/, subagents/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
+validate_rules.py - rules/, skills/, subagents/, .agents/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
@@ -14,14 +14,16 @@ ROOT_DIR = Path(__file__).resolve().parents[4]
 RULES_DIR = ROOT_DIR / "rules"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
+INTERNAL_AGENTS_DIR = ROOT_DIR / ".agents"
 DIST_DIR = ROOT_DIR / "dist"
 
-# 1. 필수 코어 모듈 목록
+# 1. 필수 코어 모듈 목록 (build_dist.py CORE_ORDER와 100% 동일)
 REQUIRED_CORE_FILES = [
     "rules/core/base.md",
     "rules/core/workflow.md",
     "rules/core/integrity.md",
     "rules/core/standards.md",
+    "rules/core/hidden-knowledge.md",
 ]
 
 # 2. 금지된 출력 생략 표현 패턴
@@ -103,12 +105,14 @@ def main():
         if not full_path.exists():
             all_errors.append(f"필수 코어 모듈 누락: '{req_file}' 파일이 존재하지 않습니다.")
 
-    # 2. rules/, skills/, subagents/ 및 dist/ 내 모든 .md 파일 수집
+    # 2. rules/, skills/, subagents/, .agents/ 및 dist/ 내 모든 .md 파일 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
     if SKILLS_DIR.exists():
         md_files.extend(SKILLS_DIR.glob("**/*.md"))
     if SUBAGENTS_DIR.exists():
         md_files.extend(SUBAGENTS_DIR.glob("**/*.md"))
+    if INTERNAL_AGENTS_DIR.exists():
+        md_files.extend(INTERNAL_AGENTS_DIR.glob("**/*.md"))
     if DIST_DIR.exists():
         md_files.extend(DIST_DIR.glob("**/*.md"))
     

@@ -21,6 +21,10 @@
 ### V. LLM-Driven Generation & Validation (LLM 직접 생성 및 검증)
 외부 스크립트에 의존하지 않고 AI 에이전트(LLM)가 스킬 지침을 기반으로 직접 규칙을 조합하여 `dist/`에 생성하고 검증 체계를 유지해야 합니다.
 
+### VI. Isolation of Internal vs Distributable Artifacts (내부 및 배포 아티팩트의 엄격한 격리)
+1. **내부 전용 (`.agents/`)**: 이 레포지토리 자체의 개발·유지보수를 위한 메타 스킬과 내부 서브에이전트는 `.agents/` 디렉터리 내에서만 관리되며, 절대 `dist/` 배포 아티팩트에 포함되지 않는다.
+2. **외부 배포용 (`rules/`, `skills/`, `subagents/` ➔ `dist/`)**: 타 프로젝트로 배포될 모든 공용 규칙, 스킬, 서브에이전트는 루트의 `rules/`, `skills/`, `subagents/` 원본에서 관리되며, `scripts/build_dist.py` 스크립트를 통해서만 `dist/` 아티팩트로 조립 배포된다.
+
 ---
 
 ## 📂 프로젝트 구조 (Project Structure)
@@ -63,8 +67,17 @@ agents-template/
 │       ├── cpp.md           # C++ 코딩 스타일 지침 (Google Style Guide)
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
-├── dist/                    # AI 에이전트(LLM)가 직접 조립해 생성하는 출력 디렉토리
-│   └── AGENTS.md            # 최종 조합 완료된 AGENTS.md
+├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
+├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
+├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
+├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
+│   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
+├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
+│   ├── AGENTS.md            # 필수 핵심 규칙이 번들링된 통합 배포 파일
+│   ├── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
+│   └── .agents/             # 🎯 Target 프로젝트 루트용 자동 호환 배포 디렉터리
+│       ├── skills/          # dist/.agents/skills/
+│       └── agents/          # dist/.agents/agents/
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
 └── LICENSE.md               # MIT 라이선스

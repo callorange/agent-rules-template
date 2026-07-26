@@ -185,34 +185,34 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 프로젝트의 구체적인 기술 스택, 배포 환경 및 언어 스타일 가이드는 필요 시 아래 전용 모듈 문서를 참조(Read-on-Demand)하십시오.
 
 ### 🏛️ 도메인 및 아키텍처 규칙
-- [backend-api.md](rules/architecture/backend-api.md): Backend & API Architecture Rules
-- [database-orm.md](rules/architecture/database-orm.md): Database & ORM General Rules
-- [library-package.md](rules/architecture/library-package.md): General Library & Module Rules
-- [monorepo.md](rules/architecture/monorepo.md): Monorepo Architecture Rules
-- [web-frontend.md](rules/architecture/web-frontend.md): Web Frontend Architecture Rules
+- [backend-api.md](rules/architecture/backend-api.md): Backend & API Architecture Rules (백엔드 및 API 특화 규칙)
+- [database-orm.md](rules/architecture/database-orm.md): Database & ORM General Rules (범용 DB & ORM 설계 및 마이그레이션 규칙)
+- [library-package.md](rules/architecture/library-package.md): General Library & Module Rules (범용 라이브러리 및 패키지 아키텍처 규칙)
+- [monorepo.md](rules/architecture/monorepo.md): Monorepo Architecture Rules (모노레포 아키텍처 특화 규칙)
+- [web-frontend.md](rules/architecture/web-frontend.md): Web Frontend Architecture Rules (웹 프론트엔드 특화 규칙)
 
 ### 🛠️ 프레임워크 특화 규칙
-- [django.md](rules/frameworks/django.md): Django Architecture & Development Rules
-- [fastapi.md](rules/frameworks/fastapi.md): FastAPI Architecture & Development Rules
-- [litestar.md](rules/frameworks/litestar.md): Litestar Architecture & Development Rules
-- [next.md](rules/frameworks/next.md): Next.js Architecture & Development Rules
-- [nuxt.md](rules/frameworks/nuxt.md): Nuxt 3 Architecture & Development Rules
-- [react.md](rules/frameworks/react.md): React.js Architecture & Development Rules
-- [vue.md](rules/frameworks/vue.md): Vue.js 3 Architecture & Development Rules
+- [django.md](rules/frameworks/django.md): Django Architecture & Development Rules (Django 특화 개발 규칙)
+- [fastapi.md](rules/frameworks/fastapi.md): FastAPI Architecture & Development Rules (FastAPI 특화 개발 규칙)
+- [litestar.md](rules/frameworks/litestar.md): Litestar Architecture & Development Rules (Litestar 특화 개발 규칙)
+- [next.md](rules/frameworks/next.md): Next.js Architecture & Development Rules (Next.js 특화 개발 규칙)
+- [nuxt.md](rules/frameworks/nuxt.md): Nuxt 3 Architecture & Development Rules (Nuxt 3 특화 개발 규칙)
+- [react.md](rules/frameworks/react.md): React.js Architecture & Development Rules (React.js 특화 개발 규칙)
+- [vue.md](rules/frameworks/vue.md): Vue.js 3 Architecture & Development Rules (Vue 3 특화 개발 규칙)
 
 ### 📦 패키징 및 배포 생태계 규칙
-- [deployment-nginx.md](rules/packaging/deployment-nginx.md): Nginx Deployment & Proxy Rules
-- [deployment-python-server.md](rules/packaging/deployment-python-server.md): Python Application Server Rules
-- [docker.md](rules/packaging/docker.md): Docker Architecture & Packaging Rules
-- [package-npm.md](rules/packaging/package-npm.md): NPM Packaging Rules
-- [package-python.md](rules/packaging/package-python.md): Python Packaging Rules
+- [deployment-nginx.md](rules/packaging/deployment-nginx.md): Nginx Deployment & Proxy Rules (Nginx 리버스 프록시 및 서버 수칙)
+- [deployment-python-server.md](rules/packaging/deployment-python-server.md): Python Application Server Rules (Gunicorn + Uvicorn 배포 규칙)
+- [docker.md](rules/packaging/docker.md): Docker Architecture & Packaging Rules (Docker 컨테이너화 수칙)
+- [package-npm.md](rules/packaging/package-npm.md): NPM Packaging Rules (NPM & Node.js 생태계 패키징 규칙)
+- [package-python.md](rules/packaging/package-python.md): Python Packaging Rules (Python & PyPI 생태계 패키징 규칙)
 
 ### 🎨 언어별 코딩 스타일 가이드 (Google Style Guides)
-- [cpp.md](rules/styles/cpp.md): C++ Coding Style Guide
-- [csharp.md](rules/styles/csharp.md): C# Coding Style Guide
-- [dart.md](rules/styles/dart.md): Dart / Flutter Coding Style Guide
-- [go.md](rules/styles/go.md): Go Coding Style Guide
-- [html-css.md](rules/styles/html-css.md): HTML/CSS Style Guide
-- [javascript.md](rules/styles/javascript.md): JavaScript Coding Style Guide
-- [python.md](rules/styles/python.md): Python Coding Style Guide
-- [typescript.md](rules/styles/typescript.md): TypeScript Coding Style Guide
+- [cpp.md](rules/styles/cpp.md): C++ Coding Style Guide (C++ 스타일 및 컨벤션 지침)
+- [csharp.md](rules/styles/csharp.md): C# Coding Style Guide (C# 스타일 및 컨벤션 지침)
+- [dart.md](rules/styles/dart.md): Dart / Flutter Coding Style Guide (Dart 스타일 및 컨벤션 지침)
+- [go.md](rules/styles/go.md): Go Coding Style Guide (Go 스타일 및 컨벤션 지침)
+- [html-css.md](rules/styles/html-css.md): HTML/CSS Style Guide (HTML/CSS 스타일 및 컨벤션 지침)
+- [javascript.md](rules/styles/javascript.md): JavaScript Coding Style Guide (JavaScript 스타일 및 컨벤션 지침)
+- [python.md](rules/styles/python.md): Python Coding Style Guide (Python 스타일 및 컨벤션 지침)
+- [typescript.md](rules/styles/typescript.md): TypeScript Coding Style Guide (TypeScript 스타일 및 컨벤션 지침)
