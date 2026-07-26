@@ -9,7 +9,7 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
 - **도메인 단위 앱 분리 (Modular Apps)**: 
   단일 앱에 모든 모델과 뷰를 몰아넣지 말고, 비즈니스 도메인 단위(`users`, `orders`, `payments` 등)로 앱을 명확히 분리하십시오.
 - **Service & Selector 패턴 (Fat Model 방지)**:
-  - 비즈니스 로직이 복잡해질 경우 Model이나 View에 직접 작성하지 말고 `services.py`(CUD 비즈니스 로직) 및 `selectors.py`(조회 로직)로 분리하십시오.
+  - 비즈니스 로직이 복잡해질 경우 Model이나 View에 직접 작성하지 말고, 비즈니스 로직(CUD) 처리를 위한 Service 계층이나 조회 전용 Selector/Query 패턴 등 프로젝트 아키텍처에 맞추어 적절히 레이어로 분리하십시오.
   - **Model**: 데이터 구조, 데이터 검증 및 기본 속성 메서드만 유지하십시오.
   - **View / API**: 요청 수신, 입력 검증 호출, 서비스 레이어 호출 및 응답 반환 역할만 수행하십시오.
 
@@ -20,8 +20,8 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
 - **N+1 쿼리 방지 필수**:
   - 1:1 및 N:1 관계 조회 시에는 `select_related()`를 사용하십시오.
   - 1:N 및 M:N 관계 조회 시에는 `prefetch_related()`를 필수 적용하십시오.
-- **대량 데이터 처리**:
-  - 다수의 객체 생성/수정 시 반복문 내부 `save()` 호출을 금지하고 `bulk_create()` 및 `bulk_update()`를 사용하십시오.
+- **다량 데이터 처리 및 ORM 최적화**:
+  - 다수의 객체 생성/수정 시 반복문 내부 `save()` 호출과 `bulk_create()` / `bulk_update()` 사용 간의 **코드의 간결함, 성능상 이점, 그리고 모델 시그널(`post_save` 등) 동작 유무**를 종합적으로 고려하여 가장 적절한 방식을 선택하십시오.
 - **트랜잭션 세분화**:
   - 복수의 DB CUD 작업이 수반되는 비즈니스 로직에는 `@transaction.atomic`을 명시하여 데이터 일관성을 보장하십시오.
 - **`only()` 및 `defer()` 활용**: 대용량 텍스트나 불필요한 컬럼 조회를 피하기 위해 필요한 필드만 선택 조회하십시오.
@@ -34,7 +34,8 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
   - 클라이언트 입력값 검증은 반드시 Serializer (DRF) 또는 Pydantic Schema (Django Ninja)를 거치도록 하십시오.
 - **통일된 API 응답 및 에러 규격**:
   - 커스텀 예외 핸들러(`custom_exception_handler`)를 등록하여 예외 발생 시 통일된 JSON 에러 구조(`{ "success": false, "error": { "code": "...", "message": "..." } }`)를 반환하십시오.
-- **Pagination 필수**: 목록 조회 API는 서버 과부하 방지를 위해 반드시 페이징(`PageNumberPagination` 또는 `CursorPagination`)을 적용하십시오.
+- **Pagination 적용 규약**:
+  - 목록 조회 API는 서버 과부하 방지를 위해 페이징 처리를 적용하십시오. 프로젝트마다 페이징 방식이 다를 수 있으므로, 프로젝트의 기존 페이징 방식을 확인하거나 어떤 형태(PageNumber, LimitOffset, Cursor 등)를 적용할지 확인 후 구현하십시오.
 
 ---
 

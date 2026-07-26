@@ -25,6 +25,7 @@ CORE_ORDER = [
 
 CATEGORY_METADATA = {
     "architecture": ("🏛️ 도메인 및 아키텍처 규칙", "Architecture & Domain Rules"),
+    "frameworks": ("🛠️ 프레임워크 특화 규칙", "Framework Specific Rules"),
     "packaging": ("📦 패키징 및 배포 생태계 규칙", "Packaging & Ecosystem Rules"),
     "styles": ("🎨 언어별 코딩 스타일 가이드 (Google Style Guides)", "Language Style Guides")
 }

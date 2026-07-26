@@ -45,6 +45,7 @@
 
 - 모든 자격 증명(API Keys, Passwords, Tokens)은 **[절대]** 코드나 스크립트, 문서 내에 하드코딩해서는 안 되며, 환경 변수 주입 방식(`.env`)으로 처리해야 합니다.
 - `.env` 파일 및 민감한 자격 증명 정보가 Git 버전 관리에 포함되지 않도록 `.gitignore` 설정을 철저히 확인하십시오.
+- **`.env.example` 동기화 필수**: 새로운 환경 변수를 추가하거나 수정한 경우, 자격 증명 실효값은 제외하고 변수명과 설명만 포함한 `.env.example` (또는 `.env.sample`) 파일을 반드시 함께 업데이트하십시오.
 
 ---
 
@@ -140,7 +141,14 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 
 ---
 
-## 📝 2. Why 중심 주석 (Contextual Comments)
+## 🧪 2. 의미 있는 테스트 및 Mocking 방지 (Meaningful Testing)
+
+- **가짜 테스트 금지**: Assertion(검증문)이 없거나 무조건 `true`를 반환하여 빌드만 통과시키는 형식적인 테스트 코드를 절대 작성하지 마십시오.
+- **과도한 Mocking 지양**: 실제 비즈니스 로직 및 런타임 오류까지 감춰버리는 무분별한 Mocking을 피하십시오. 외부 네트워크/입출력만 Mocking하고, 내부 로직 및 데이터 변환은 실제 객체와 상태를 검증하십시오.
+
+---
+
+## 📝 3. Why 중심 주석 (Contextual Comments)
 
 - 주석은 코드가 '무엇(What)'을 하는지 번역하지 마십시오. 코드는 스스로를 설명해야 합니다.
 - 주석은 **[반드시]** '왜(Why)' 이런 비직관적인 로직을 선택했는지, 어떤 엣지 케이스를 방어하기 위함인지를 설명할 때만 작성하십시오.
@@ -178,12 +186,24 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 
 ### 🏛️ 도메인 및 아키텍처 규칙
 - [backend-api.md](rules/architecture/backend-api.md): Backend & API Architecture Rules
-- [framework-django.md](rules/architecture/framework-django.md): Django Architecture & Development Rules
+- [database-orm.md](rules/architecture/database-orm.md): Database & ORM General Rules
 - [library-package.md](rules/architecture/library-package.md): General Library & Module Rules
 - [monorepo.md](rules/architecture/monorepo.md): Monorepo Architecture Rules
 - [web-frontend.md](rules/architecture/web-frontend.md): Web Frontend Architecture Rules
 
+### 🛠️ 프레임워크 특화 규칙
+- [django.md](rules/frameworks/django.md): Django Architecture & Development Rules
+- [fastapi.md](rules/frameworks/fastapi.md): FastAPI Architecture & Development Rules
+- [litestar.md](rules/frameworks/litestar.md): Litestar Architecture & Development Rules
+- [next.md](rules/frameworks/next.md): Next.js Architecture & Development Rules
+- [nuxt.md](rules/frameworks/nuxt.md): Nuxt 3 Architecture & Development Rules
+- [react.md](rules/frameworks/react.md): React.js Architecture & Development Rules
+- [vue.md](rules/frameworks/vue.md): Vue.js 3 Architecture & Development Rules
+
 ### 📦 패키징 및 배포 생태계 규칙
+- [deployment-nginx.md](rules/packaging/deployment-nginx.md): Nginx Deployment & Proxy Rules
+- [deployment-python-server.md](rules/packaging/deployment-python-server.md): Python Application Server Rules
+- [docker.md](rules/packaging/docker.md): Docker Architecture & Packaging Rules
 - [package-npm.md](rules/packaging/package-npm.md): NPM Packaging Rules
 - [package-python.md](rules/packaging/package-python.md): Python Packaging Rules
 
