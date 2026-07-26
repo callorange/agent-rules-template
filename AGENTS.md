@@ -135,4 +135,11 @@ agents-template/
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-24 | **Last Amended**: 2026-07-24
+## 7. 단순성 추구 및 우선순위 (Simplicity & Hierarchy of Truth)
+
+- **오버엔지니어링 경계**: 불필요한 규칙 양산과 과도한 레이어 추가를 경계하며, 비효율적인 지시에는 대안을 제안(Push Back)합니다.
+- **판단 우선순위**: 규칙 간 충돌 시 `실제 로컬 코드/컨텍스트 > 프로젝트 설정 > AGENTS.md`의 우선순위를 따릅니다.
+
+---
+
+**Version**: 1.0.0 | **Ratified**: 2026-07-24 | **Last Amended**: 2026-07-26
