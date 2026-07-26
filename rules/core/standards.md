@@ -25,8 +25,23 @@
 
 ---
 
-## 📌 3. 커밋 메시지 규약 (Commit Conventions)
+## 📌 4. 커밋 메시지 규약 (Commit Conventions)
 
 - 커밋 메시지는 Conventional Commits 규약(`feat:`, `fix:`, `docs:`, `refactor:` 등)을 준수하여 작성하십시오.
 - 프로젝트 내 특정 언어 규칙(예: 한글 작성 등)이 있다면 이를 최우선으로 따르십시오.
   - 예시: `docs: update core standards and formatting rules`
+
+---
+
+## 📋 5. CHANGELOG 작성 및 관리 규약 (Keep a Changelog)
+
+- **적용 조건 및 작성 시점**: 프로젝트 루트에 `CHANGELOG.md`가 존재하거나 버전 릴리즈/태그 작업 지시가 있을 때 적용하십시오. 단발성 기능 구현 시에는 `## [Unreleased]` 섹션에 추가하고, 릴리즈 시점에 버전과 날짜(예: `## [1.0.0] - 2026-07-26`)로 변환하십시오.
+- **Keep a Changelog & SemVer 준수**: 버전 변경 이력은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/) 및 시맨틱 버저닝 규격을 엄격히 준수하십시오.
+- **표준 카테고리 매핑**: 변경 사항은 커밋 타입에 대응하는 표준 카테고리 아래에 작성하십시오:
+  - `Added`: 새로운 기능 추가 (`feat:`)
+  - `Changed`: 기존 기능의 변경 또는 개선 (`refactor:`, `style:`, `perf:`)
+  - `Deprecated`: 향후 삭제될 예정인 기능
+  - `Removed`: 삭제된 기능
+  - `Fixed`: 버그 수정 (`fix:`)
+  - `Security`: 보안 취약점 개선
+- **Why 중심의 유저 친화적 서술**: 단순 Git 커밋 메시지 목록을 복사하지 말고, 사용자 및 개발자 관점에서 변경 이유(Why)와 유용한 가치를 명확한 마크다운 불릿 항목으로 작성하십시오.
