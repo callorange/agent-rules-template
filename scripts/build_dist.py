@@ -3,6 +3,10 @@
 scripts/build_dist.py
 AI 에이전트 및 개발자를 위한 dist/ 배포 아티팩트 자동 조립 스크립트.
 rules/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS.md, dist/rules/ 및 dist/.agents/ 구조를 생성합니다.
+
+⚠️ [헌법 가드: 내부 vs 배포 아티팩트 격리]
+이 레포지토리 자체의 개발·유지보수 전용 메타 스킬/서브에이전트인 `/.agents/` 디렉터리는 절대 dist/ 에 direct 복사되지 않습니다.
+배포 아티팩트는 공용 원본인 `/skills/` 및 `/subagents/` 에서만 읽어 타 프로젝트 호환 구조(`dist/.agents/`)로 패키징됩니다.
 """
 
 import os
@@ -20,14 +24,6 @@ DIST_RULES_DIR = DIST_DIR / "rules"
 DIST_AGENTS_DIR = DIST_DIR / ".agents"
 DIST_AGENTS_SKILLS_DIR = DIST_AGENTS_DIR / "skills"
 DIST_AGENTS_AGENTS_DIR = DIST_AGENTS_DIR / "agents"
-
-CORE_ORDER = [
-    "base.md",
-    "workflow.md",
-    "integrity.md",
-    "standards.md",
-    "hidden-knowledge.md"
-]
 
 CATEGORY_METADATA = {
     "architecture": ("🏛️ 도메인 및 아키텍처 규칙", "Architecture & Domain Rules"),
@@ -47,7 +43,6 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
     for line in lines:
         if line.startswith("# "):
             title = line[2:].strip()
-            # 괄호 안 영문/한글 요약 정제
             break
             
     for line in lines:
@@ -77,17 +72,17 @@ def build_dist():
         ""
     ]
 
-    # 3. rules/core/* 파일 순서대로 병합
+    # 3. rules/core/* 마크다운 파일 동적 수집 및 병합 (01-, 02- 숫자 접두사 순서 보장)
     core_dir = RULES_DIR / "core"
-    for filename in CORE_ORDER:
-        core_file = core_dir / filename
-        if core_file.exists():
-            print(f"  + Merging core module: {filename}")
+    if core_dir.exists():
+        ordered_core_files = sorted(core_dir.glob("*.md"))
+        for core_file in ordered_core_files:
+            print(f"  + Merging core module: {core_file.name}")
             file_text = core_file.read_text(encoding="utf-8").strip()
             agents_md_content.append(file_text)
             agents_md_content.append("\n---\n")
-        else:
-            print(f"  ⚠️ Warning: Core file {filename} not found!")
+    else:
+        print("  ⚠️ Warning: rules/core directory not found!")
 
     # 4. On-Demand 기술 스택 링킹 섹션 동적 생성
     agents_md_content.append("## 📚 기술 스택별 특화 및 온디맨드 규칙 모듈 (Read-on-Demand)")
@@ -124,20 +119,20 @@ def build_dist():
             shutil.copytree(src_cat, dest_cat)
             print(f"  + Copied category module: {cat_name} -> dist/rules/{cat_name}")
 
-    # 7. skills/ 및 subagents/ 원본 모듈을 dist/.agents/ 디렉터리로 복사 및 패키징
+    # 7. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/)로 패키징
+    # (주의: 이 프로젝트 자체의 내부 전용 메타 디렉터리 PROJECT_ROOT/.agents 는 절대 가져오지 않음)
     if SKILLS_DIR.exists():
         DIST_AGENTS_SKILLS_DIR.mkdir(parents=True, exist_ok=True)
-        # .gitkeep 제외한 디렉터리/파일 복사
         for item in SKILLS_DIR.iterdir():
             if item.name.startswith("."):
                 continue
             dest_item = DIST_AGENTS_SKILLS_DIR / item.name
             if item.is_dir():
                 shutil.copytree(item, dest_item)
-                print(f"  + Copied distributable skill: {item.name} -> dist/.agents/skills/{item.name}")
+                print(f"  + Packaged public skill: {item.name} -> dist/.agents/skills/{item.name}")
             else:
                 shutil.copy2(item, dest_item)
-                print(f"  + Copied distributable skill file: {item.name} -> dist/.agents/skills/{item.name}")
+                print(f"  + Packaged public skill file: {item.name} -> dist/.agents/skills/{item.name}")
 
     if SUBAGENTS_DIR.exists():
         DIST_AGENTS_AGENTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -149,7 +144,7 @@ def build_dist():
                 shutil.copytree(item, dest_item)
             else:
                 shutil.copy2(item, dest_item)
-            print(f"  + Copied distributable subagent: {item.name} -> dist/.agents/agents/{item.name}")
+            print(f"  + Packaged public subagent: {item.name} -> dist/.agents/agents/{item.name}")
 
     print("🎉 dist/ bundle assembly completed successfully!")
 

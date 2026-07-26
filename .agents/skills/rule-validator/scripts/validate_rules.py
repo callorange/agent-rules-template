@@ -15,14 +15,8 @@ RULES_DIR = ROOT_DIR / "rules"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
 
-# 1. 필수 코어 모듈 목록 (build_dist.py CORE_ORDER와 100% 동일)
-REQUIRED_CORE_FILES = [
-    "rules/core/base.md",
-    "rules/core/workflow.md",
-    "rules/core/integrity.md",
-    "rules/core/standards.md",
-    "rules/core/hidden-knowledge.md",
-]
+# 1. 필수 코어 최상위 모듈 및 디렉터리 검사 기준
+REQUIRED_BASE_FILE = "rules/core/01-base.md"
 
 # 2. 금지된 출력 생략 표현 패턴
 FORBIDDEN_PATTERNS = [
@@ -96,14 +90,20 @@ def main():
 
     print("🔍 [rule-validator] 원본 규칙 모듈 무결성 검증을 시작합니다...\n")
 
-    # 1. 필수 코어 모듈 존재 여부 검사
-    print("1️⃣ 필수 코어 모듈 검사 중...")
-    for req_file in REQUIRED_CORE_FILES:
-        full_path = ROOT_DIR / req_file
-        if not full_path.exists():
-            all_errors.append(f"필수 코어 모듈 누락: '{req_file}' 파일이 존재하지 않습니다.")
+    # 1. 필수 최상위 헌법 모듈 존재 여부 및 rules/core 디렉터리 동적 수집 검사
+    print("1️⃣ 필수 코어 모듈 동적 탐색 및 검사 중...")
+    base_path = ROOT_DIR / REQUIRED_BASE_FILE
+    if not base_path.exists():
+        all_errors.append(f"필수 최상위 헌법 모듈 누락: '{REQUIRED_BASE_FILE}' 파일이 존재하지 않습니다.")
 
-    # 2. rules/, skills/, subagents/ 원본 SSOT 마크다운 파일만 수집
+    core_dir = RULES_DIR / "core"
+    if not core_dir.exists():
+        all_errors.append("코어 디렉터리 누락: 'rules/core' 디렉터리가 존재하지 않습니다.")
+    else:
+        core_files = sorted(list(core_dir.glob("*.md")))
+        print(f"   (동적 탐색된 코어 모듈 {len(core_files)}개: {[f.name for f in core_files]})")
+
+    # 2. rules/, skills/, subagents/ 원본 SSOT 마크다운 파일만 동적 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
     if SKILLS_DIR.exists():
         md_files.extend(SKILLS_DIR.glob("**/*.md"))
