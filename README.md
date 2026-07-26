@@ -63,11 +63,17 @@ agents-template/
 │       ├── cpp.md           # C++ 코딩 스타일 지침 (Google Style Guide)
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
+├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
+├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
+├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
 ├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
-│   └── build_dist.py        # dist/AGENTS.md 및 dist/rules/ 자동 조립 도구
-├── dist/                    # 🚀 배포용 번들 디렉터리 (Git 트래킹 및 CI 배포)
+│   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
+├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
 │   ├── AGENTS.md            # 필수 핵심 규칙이 번들링된 통합 배포 파일
-│   └── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
+│   ├── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
+│   └── .agents/             # 🎯 Target 프로젝트 루트용 자동 호환 배포 디렉터리
+│       ├── skills/          # dist/.agents/skills/
+│       └── agents/          # dist/.agents/agents/
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
 └── LICENSE.md               # MIT 라이선스
@@ -78,7 +84,7 @@ agents-template/
 ## 🚀 사용법 (Usage)
 
 ### 1. 로컬 번들 조립 스크립트 실행 (`scripts/build_dist.py`)
-`rules/` 디렉터리 내의 규칙 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/AGENTS.md` 및 `dist/rules/` 배포 아티팩트가 0.01초 만에 자동 생성됩니다:
+규칙(`rules/`), 스킬(`skills/`), 서브에이전트(`subagents/`) 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/` 배포 아티팩트가 0.01초 만에 자동 생성됩니다:
 
 ```bash
 python3 scripts/build_dist.py
