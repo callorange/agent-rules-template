@@ -5,12 +5,23 @@
 
 ---
 
+## [1.0.1] - 2026-07-26
+
+### 🧹 Changed & Refactored
+- **문서 동기화 (Doc-Code Disconnect 해소)**: [AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 및 [README.md](file:///d:/Projects/Private/agent-rules-template/README.md) 상의 `rules/core/` 구조 표기를 실제 파일명(`01-base.md` ~ `05-docs-maintenance.md`)과 100% 동기화
+- **헌법 V항 명확화**: [AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 헌법 V항 구문을 실제 빌드 스크립트(`scripts/build_dist.py`) 및 무결성 검증 체계 호출 동작으로 명확히 현실화 및 정정
+
+### 🗑️ Removed
+- **형식적 테스트 폴더 삭제**: 유닛 테스트 코드가 없던 껍데기 디렉터리 `tests/` 및 캐시 완전 제거
+
+---
+
 ## [1.0.0] - 2026-07-26
 
 ### 🚀 Added
-- **프로젝트 헌법 및 AGENTS.md 표준 체계 정립**: 핵심 5대 원칙(범용성, 엄격한 실행 제어, 모듈화, 버저닝, LLM 조립) 수립
+- **프로젝트 헌법 및 AGENTS.md 표준 체계 정립**: 핵심 원칙 수립
 - **규칙 원본 모듈 (`rules/`)**:
-  - `core/`: base, workflow, integrity, standards, hidden-knowledge, docs-maintenance
+  - `core/`: 01-base, 02-workflow, 03-integrity, 04-standards, 05-docs-maintenance
   - `architecture/`: web-frontend, backend-api, database-orm, library-package, monorepo
   - `frameworks/`: django, react, next, vue, nuxt, fastapi, litestar
   - `packaging/`: package-npm, package-python, docker, deployment-nginx, deployment-python-server

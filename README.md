@@ -29,11 +29,11 @@ AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용
 agents-template/
 ├── rules/                   # 📌 SSOT: 규칙 원본 모듈 (단 1회만 정의되는 원본)
 │   ├── core/                # 🎯 공용 핵심 규칙 모듈
-│   │   ├── base.md          # 진실의 계층, 기계적 하네스, 보안, 정직성
-│   │   ├── workflow.md      # 5단계 행동 프로토콜, 자가치유, 승인 절차
-│   │   ├── integrity.md     # 출력 무결성 원칙, 금지 표현
-│   │   ├── standards.md     # 코딩, 의미 있는 테스트 및 커밋 메시지 표준
-│   │   └── hidden-knowledge.md # 암묵적 지식 템플릿
+│   │   ├── 01-base.md       # 진실의 계층, 기계적 하네스, 보안, 정직성
+│   │   ├── 02-workflow.md   # 5단계 행동 프로토콜, 자가치유, 승인 절차
+│   │   ├── 03-integrity.md  # 출력 무결성 원칙, 금지 표현
+│   │   ├── 04-standards.md  # 코딩, 의미 있는 테스트 및 커밋 메시지 표준
+│   │   └── 05-docs-maintenance.md # 지속적 문서 관리 및 CHANGELOG 동기화
 │   ├── architecture/        # 🏛️ 도메인 및 아키텍처 규칙 모듈
 │   │   ├── web-frontend.md  # 웹 프론트엔드 특화 지침
 │   │   ├── backend-api.md   # 백엔드 API 특화 지침

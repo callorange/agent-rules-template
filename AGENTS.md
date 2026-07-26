@@ -18,8 +18,8 @@
 ### IV. Semantic Versioning & Traceability (버전 관리 및 추적 가능성)
 공용 `AGENTS.md` 모듈 및 완성본 파일은 시맨틱 버저닝(MAJOR.MINOR.PATCH) 규격을 따르며, 헌법 및 모듈 개정 시 개정 이유와 변경 이력을 명확히 추적할 수 있도록 명시해야 합니다.
 
-### V. LLM-Driven Generation & Validation (LLM 직접 생성 및 검증)
-외부 스크립트에 의존하지 않고 AI 에이전트(LLM)가 스킬 지침을 기반으로 직접 규칙을 조합하여 `dist/`에 생성하고 검증 체계를 유지해야 합니다.
+### V. LLM-Driven Generation & Validation (LLM 기반 생태계 조립 및 검증)
+AI 에이전트는 규칙 모듈 개정 시 자동 조립 스크립트(`scripts/build_dist.py`) 및 무결성 검증 도구를 호출하여 `dist/` 배포 아티팩트를 100% 최신화하고 검증 체계를 유지해야 합니다.
 
 ### VI. Isolation of Internal vs Distributable Artifacts (내부 및 배포 아티팩트의 엄격한 격리)
 1. **내부 전용 (`.agents/`)**: 이 레포지토리 자체의 개발·유지보수를 위한 메타 스킬과 내부 서브에이전트는 `.agents/` 디렉터리 내에서만 관리되며, 절대 `dist/` 배포 아티팩트에 포함되지 않는다.
@@ -33,11 +33,11 @@
 agents-template/
 ├── rules/                   # 📌 SSOT: 규칙 원본 모듈 (단 1회만 정의되는 원본)
 │   ├── core/                # 🎯 공용 핵심 규칙 모듈
-│   │   ├── base.md          # 진실의 계층, 기계적 하네스, 보안, 정직성
-│   │   ├── workflow.md      # 5단계 행동 프로토콜, 자가치유, 승인 절차
-│   │   ├── integrity.md     # 출력 무결성 원칙, 금지 표현
-│   │   ├── standards.md     # 코딩, 의미 있는 테스트 및 커밋 메시지 표준
-│   │   └── hidden-knowledge.md # 암묵적 지식 템플릿
+│   │   ├── 01-base.md       # 진실의 계층, 기계적 하네스, 보안, 정직성
+│   │   ├── 02-workflow.md   # 5단계 행동 프로토콜, 자가치유, 승인 절차
+│   │   ├── 03-integrity.md  # 출력 무결성 원칙, 금지 표현
+│   │   ├── 04-standards.md  # 코딩, 의미 있는 테스트 및 커밋 메시지 표준
+│   │   └── 05-docs-maintenance.md # 지속적 문서 관리 및 CHANGELOG 동기화
 │   ├── architecture/        # 🏛️ 도메인 및 아키텍처 규칙 모듈
 │   │   ├── web-frontend.md  # 웹 프론트엔드 특화 지침
 │   │   ├── backend-api.md   # 백엔드 API 특화 지침
