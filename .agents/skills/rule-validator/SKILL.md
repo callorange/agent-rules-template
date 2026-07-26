@@ -13,9 +13,9 @@ description: rules/ 디렉터리 내의 규칙 모듈 및 dist/ 배포 번들의
 
 규칙 검증 스크립트는 실행 환경에 따라 아래 우선순위에 맞춰 런타임 명령어를 선택하여 구동합니다:
 
-1. **`uv` 환경**: `uv run python scripts/validate_rules.py`
-2. **Linux / macOS**: `python3 scripts/validate_rules.py`
-3. **Windows / 일반 Python**: `python scripts/validate_rules.py` 또는 `py scripts/validate_rules.py`
+1. **`uv` 환경**: `uv run python .agents/skills/rule-validator/scripts/validate_rules.py`
+2. **Linux / macOS**: `python3 .agents/skills/rule-validator/scripts/validate_rules.py`
+3. **Windows / 일반 Python**: `python .agents/skills/rule-validator/scripts/validate_rules.py` 또는 `py .agents/skills/rule-validator/scripts/validate_rules.py`
 
 > ⚠️ **Python 런타임 미설치 환경 시**:
 > 만약 런타임(Python 3 / uv)이 전혀 구성되어 있지 않은 환경인 경우, 에이전트는 프롬프트 상에서 무리하게 정규식을 계산하지 말고 사용자에게 `"Python 3 런타임이 필요합니다. 정적 검사를 스킵합니다."`라는 경고를 보고하고 정적 검사를 스킵합니다.

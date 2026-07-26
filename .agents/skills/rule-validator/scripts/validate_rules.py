@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 validate_rules.py - rules/, skills/, subagents/ 및 dist/ 내 규칙 모듈의 정적 무결성을 검증하는 도구.
+(rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
 import os
@@ -8,8 +9,8 @@ import re
 import sys
 from pathlib import Path
 
-# 프로젝트 루트 디렉터리 설정
-ROOT_DIR = Path(__file__).resolve().parent.parent
+# 프로젝트 루트 디렉터리 설정 (.agents/skills/rule-validator/scripts/ -> 프로젝트 루트)
+ROOT_DIR = Path(__file__).resolve().parents[4]
 RULES_DIR = ROOT_DIR / "rules"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
@@ -65,9 +66,13 @@ def check_markdown_links(file_path: Path) -> list:
     except Exception:
         return errors  # 인코딩 검사에서 이미 포착됨
 
+    # 코드 블록 및 인라인 백틱 내부 예시 링크 제외
+    content_clean = re.sub(r"```[\s\S]*?```", "", content)
+    content_clean = re.sub(r"`[^`\n]+`", "", content_clean)
+
     # [text](relative_path) 패턴 매칭 (http/https/mailto/file 등 외의 로컬 상대 경로 대상)
     link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
-    for idx, line in enumerate(content.splitlines(), 1):
+    for idx, line in enumerate(content_clean.splitlines(), 1):
         for match in link_pattern.finditer(line):
             target = match.group(2).strip()
             # 외부 URL, 앵커 링크 및 file: 스키마 제외
