@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_rules.py - rules/, skills/, subagents/ 원본 규칙 모듈의 정적 무결성을 검증하는 도구.
+validate_rules.py - rules/, skills/, subagents/ 원본 규칙 모듈 및 dist/ 배포 아티팩트의 정적 무결성을 검증하는 도구.
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
@@ -14,6 +14,7 @@ ROOT_DIR = Path(__file__).resolve().parents[4]
 RULES_DIR = ROOT_DIR / "rules"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
+DIST_DIR = ROOT_DIR / "dist"
 
 # 금지된 출력 생략 표현 패턴
 FORBIDDEN_PATTERNS = [
@@ -22,6 +23,31 @@ FORBIDDEN_PATTERNS = [
     (re.compile(r"\[나머지\s*부분\s*생략\]"), "[나머지 부분 생략]"),
     (re.compile(r"\(이전\s*코드는\s*위와\s*같음\)"), "(이전 코드는 위와 같음)"),
 ]
+
+def check_yaml_frontmatter(file_path: Path) -> list:
+    """스킬 및 서브에이전트 파일의 YAML Frontmatter (name, description) 존재 여부를 검사합니다."""
+    errors = []
+    # SKILL.md 또는 subagents/*.md 대상
+    if file_path.name == "SKILL.md" or "subagents" in file_path.parts or "agents" in file_path.parts:
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            if not content.startswith("---"):
+                errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter 헤더('---')가 누락되었습니다.")
+                return errors
+            
+            parts = content.split("---", 2)
+            if len(parts) < 3:
+                errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter 구획이 올바르게 닫히지 않았습니다.")
+                return errors
+
+            frontmatter = parts[1]
+            if "name:" not in frontmatter:
+                errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter에 'name:' 필드가 누락되었습니다.")
+            if "description:" not in frontmatter:
+                errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter에 'description:' 필드가 누락되었습니다.")
+        except Exception as e:
+            errors.append(f"[{file_path.relative_to(ROOT_DIR)}] Frontmatter 검사 에러: {e}")
+    return errors
 
 def check_encoding_and_content(file_path: Path) -> list:
     """파일의 UTF-8 인코딩 및 금지 표현을 검사합니다."""
@@ -82,10 +108,29 @@ def check_markdown_links(file_path: Path) -> list:
                 )
     return errors
 
+def check_dist_freshness() -> list:
+    """dist/ 아티팩트가 원본 소스 파일들보다 최신인지 정적으로 동기화 상태를 검사합니다."""
+    warnings = []
+    if not DIST_DIR.exists() or not (DIST_DIR / "AGENTS.md").exists():
+        warnings.append("[경고] dist/ 디렉터리 또는 dist/AGENTS.md 아티팩트가 존재하지 않습니다. 'python scripts/build_dist.py'를 구동하십시오.")
+        return warnings
+
+    dist_mtime = (DIST_DIR / "AGENTS.md").stat().st_mtime
+    
+    # 원본 파일들의 최신 수정 시각 수집
+    source_files = list(RULES_DIR.glob("**/*.md")) + list(SKILLS_DIR.glob("**/*.md")) + list(SUBAGENTS_DIR.glob("**/*.md"))
+    newer_sources = [f for f in source_files if f.stat().st_mtime > dist_mtime]
+    
+    if newer_sources:
+        rel_names = [str(f.relative_to(ROOT_DIR)) for f in newer_sources[:3]]
+        warnings.append(f"[경고] dist/ 배포 아티팩트가 오래되었습니다! (수정된 원본: {', '.join(rel_names)} 등 {len(newer_sources)}개). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
+        
+    return warnings
+
 def main():
     all_errors = []
 
-    print("🔍 [rule-validator] 원본 규칙 모듈 무결성 검증을 시작합니다...\n")
+    print("🔍 [rule-validator] 원본 및 dist/ 배포 아티팩트 무결성 검증을 시작합니다...\n")
 
     # 1. 필수 코어 최상위 모듈 및 디렉터리 동적 탐색 검사
     print("1️⃣ 필수 코어 모듈 동적 탐색 및 검사 중...")
@@ -94,7 +139,6 @@ def main():
         all_errors.append("코어 디렉터리 누락: 'rules/core' 디렉터리가 존재하지 않습니다.")
     else:
         core_files = sorted(list(core_dir.glob("*.md")))
-        # 'base' 가 들어간 최상위 헌법 파일 자동 식별
         base_files = [f for f in core_files if "base" in f.name]
         if not base_files:
             all_errors.append("필수 최상위 헌법 모듈 누락: 'rules/core/' 내에 base 모듈이 존재하지 않습니다.")
@@ -112,24 +156,41 @@ def main():
     if root_agents.exists():
         md_files.append(root_agents)
 
-    print(f"2️⃣ 총 {len(md_files)}개 원본 Markdown 파일 인코딩 및 금지 표현 검사 중...")
+    # 3. dist/ 배포 아티팩트 디렉터리 내 마크다운 파일 동적 수집
+    if DIST_DIR.exists():
+        dist_md_files = list(DIST_DIR.glob("**/*.md"))
+        md_files.extend(dist_md_files)
+        print(f"2️⃣ 총 {len(md_files)}개 원본 및 dist/ 배포 Markdown 파일 검사 대상 수집 완료 (dist/ {len(dist_md_files)}개 포함)")
+    else:
+        print(f"2️⃣ 총 {len(md_files)}개 원본 Markdown 파일 검사 대상 수집 완료")
+
+    # 3. YAML Frontmatter, 인코딩, 금지 표현 및 상대 링크 검사
+    print(f"3️⃣ YAML Frontmatter, UTF-8 인코딩 및 금지 표현 검사 중...")
     for md_file in md_files:
+        errs = check_yaml_frontmatter(md_file)
+        all_errors.extend(errs)
         errs = check_encoding_and_content(md_file)
         all_errors.extend(errs)
 
-    print(f"3️⃣ Markdown 내부 로컬 상대 링크 유효성 검사 중...")
+    print(f"4️⃣ Markdown 내부 로컬 상대 링크 유효성 검사 중...")
     for md_file in md_files:
         errs = check_markdown_links(md_file)
         all_errors.extend(errs)
 
+    # 5. dist/ 최신 동기화 경고 검사
+    print(f"5️⃣ dist/ 배포 아티팩트 최신 동기화 상태 검사 중...")
+    dist_warnings = check_dist_freshness()
+    for warn in dist_warnings:
+        print(f"   {warn}")
+
     print("\n" + "=" * 50)
     if all_errors:
-        print(f"❌ 검증 실패: 총 {len(all_errors)}개의 오류가 발견되었습니다.")
+        print(f"❌ 검증 실패: 총 {len(all_errors)}개의 에러가 발견되었습니다.")
         for err in all_errors:
             print(f"  - {err}")
         sys.exit(1)
     else:
-        print("✅ 모든 원본 규칙 모듈 및 Markdown 파일 검증을 성공적으로 통과하였습니다!")
+        print("✅ 모든 원본 규칙 모듈, dist/ 배포 아티팩트 및 Markdown 파일 검증을 성공적으로 통과하였습니다!")
         sys.exit(0)
 
 if __name__ == "__main__":

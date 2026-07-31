@@ -78,6 +78,8 @@ def build_dist():
         for core_file in ordered_core_files:
             print(f"  + Merging core module: {core_file.name}")
             file_text = core_file.read_text(encoding="utf-8").strip()
+            # rules/core/ 에 작성된 상위 카테고리 마크다운 상대 경로 정제 (../architecture/ -> rules/architecture/)
+            file_text = file_text.replace("../architecture/", "rules/architecture/")
             agents_md_content.append(file_text)
             agents_md_content.append("\n---\n")
     else:
