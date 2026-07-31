@@ -175,7 +175,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# dist/ is tracked for direct template cloning
 downloads/
 eggs/
 .eggs/

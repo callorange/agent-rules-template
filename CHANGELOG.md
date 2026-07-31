@@ -27,6 +27,7 @@
 - **`dist/AGENTS.md` 번들링 데드링크 자동 정제 파이프라인 보강 (`scripts/build_dist.py`)**: `01-base.md` 등 구형 로컬 상대 경로 링크를 정규표현식으로 정제하여 데드링크 완전 차단
 - **파이썬 패키징 도구 유연성 보강 (`rules/packaging/package-python.md`)**: 기존 프로젝트의 `poetry`, `pip/venv`, `conda` 도구 호환성 및 존중 수칙 보강
 - **외부 추천 에이전트 스킬 카탈로그 수립 (`rules/architecture/recommended-external-skills.md`)**: `taste-skill` (5개 세부 스킬) 및 `django-ai-plugins` (4개 세부 스킬)의 압축 테이블 카탈로그 모듈 신설 및 `dist/` 배포 편입
+- **공용 배포 스킬 파이프라인 및 원본 동기화 (`skills/`, `scripts/build_dist.py`)**: `skills/` 원본 폴더 내 `.gitkeep` 삭제 및 `dist/skills/` 배포 원본 경로 동시 패키징 반영
 
 ---
 

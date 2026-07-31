@@ -118,19 +118,19 @@ def build_dist():
             shutil.copytree(src_cat, dest_cat)
             print(f"  + Copied category module: {cat_name} -> dist/rules/{cat_name}")
 
-    # 7. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/)로 패키징
+    # 7. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/skills/, dist/.agents/agents/)로 패키징
     # (주의: 이 프로젝트 자체의 내부 전용 메타 디렉터리 PROJECT_ROOT/.agents 는 절대 가져오지 않음)
     if SKILLS_DIR.exists():
         DIST_AGENTS_SKILLS_DIR.mkdir(parents=True, exist_ok=True)
         for item in SKILLS_DIR.iterdir():
             if item.name.startswith("."):
                 continue
-            dest_item = DIST_AGENTS_SKILLS_DIR / item.name
+            dest_item_agents = DIST_AGENTS_SKILLS_DIR / item.name
             if item.is_dir():
-                shutil.copytree(item, dest_item)
+                shutil.copytree(item, dest_item_agents)
                 print(f"  + Packaged public skill: {item.name} -> dist/.agents/skills/{item.name}")
             else:
-                shutil.copy2(item, dest_item)
+                shutil.copy2(item, dest_item_agents)
                 print(f"  + Packaged public skill file: {item.name} -> dist/.agents/skills/{item.name}")
 
     if SUBAGENTS_DIR.exists():
