@@ -52,7 +52,7 @@
 ## 💡 5. 정직과 투명성 (Honesty & Transparency)
 
 - 요구사항이 모호하거나 프로젝트 컨텍스트가 부족하여 확신할 수 없는 경우, 임의로 추측하여 코드를 생성하지 말고 **[반드시]** 사용자에게 부족한 정보를 요청하십시오.
-- **단순성 추구 및 적극적 대안 제안 (Push Back)**: 구현 시 여러 해석이나 실행 경로가 존재할 경우 독단적으로 판단하지 말고 대안을 제시하십시오. 불필요한 오버엔지니어링(Over-engineering)을 피하고 더 단순하고 안전한 해결책이 존재한다면 사용자에게 적극 제안(Push Back)하십시오.
+- **단순성 추구 및 적극적 대안 제안 (Push Back)**: 구현 시 여러 해석이나 실행 경로가 존재할 경우 독단적으로 판단하지 말고 대안을 제시하십시오. 불필요한 오버엔지니어링(Over-engineering)을 피하고 더 단순하고 안전한 해결책이 존재한다면 사용자에게 적극 제안(Push Back)하십시오. 외부 패키지 신규 추가 시에는 [library-package.md](../architecture/library-package.md)의 의사결정 매트릭스 및 건전성 체크리스트를 준수하십시오.
 
 ---
 
@@ -92,7 +92,7 @@
 - 수정을 마친 후 임의로 성공을 선언하지 마십시오.
 - [01-base.md](01-base.md)의 **Harness-First Execution** 지침에 따라 터미널을 통해 프로젝트의 빌드, 린트, 테스트 명령어를 실행하여 변경 사항을 기계적으로 증명하십시오.
 - **무인 자율 검증 패턴 (Autonomous Testing Patterns)**:
-  - 인터랙티브 터미널/CLI 검증이 필요한 경우 `tmux` 세션을 백그라운드에서 구동하여 출력을 캡처 및 분석하십시오.
+  - 장시간 소요되거나 비동기 CLI 검증이 필요한 경우 시스템/에이전트 제공 비동기 명령어 실행 도구(`manage_task` 등)를 활용하여 백그라운드 구동 후 로그 출력을 캡처 및 분석하십시오.
   - 특정 회귀 버그(Regression)의 원인을 탐색할 경우 `git bisect`와 테스트 스크립트를 조합하여 원인 커밋을 자율적으로 추적하십시오.
 
 ---
@@ -170,7 +170,7 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 - 커밋 메시지는 Conventional Commits 규약(`feat:`, `fix:`, `docs:`, `refactor:` 등)을 준수하여 작성하십시오.
 - 프로젝트 내 특정 언어 규칙(예: 한글 작성 등)이 있다면 이를 최우선으로 따르십시오.
   - 예시: `docs: update core standards and formatting rules`
-- **자동 기여 문구 (Attribution) 제어**: AI 도구(Claude Code 등)가 커밋/PR 생성 시 자동으로 삽입하는 `Co-Authored-By` 트레일러나 푸터 링크를 제어하려는 경우, 개발자 글로벌 설정(`~/.claude/settings.json` 내 `"attribution": { "commit": "", "pr": "", "sessionUrl": false }`)을 통해 구성하도록 권장합니다.
+- **자동 기여 문구 (Attribution) 제어**: AI 도구가 커밋/PR 생성 시 자동으로 삽입하는 `Co-Authored-By` 트레일러나 푸터 링크 노이즈를 제거하려는 경우, 사용하는 에이전트 CLI 또는 개발자 환경 설정(Attribution / Session URL 비활성화 옵션)을 통해 사전 구성하도록 권장합니다.
 
 ---
 
