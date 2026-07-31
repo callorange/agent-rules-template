@@ -17,6 +17,10 @@
 - **자율 검증 및 OS 호환성 정제 (`rules/core/02-workflow.md`)**: `tmux` 구문을 OS 종속성 없는 비동기 명령어 실행 도구(`manage_task` 등) 활용 규칙으로 정제하고 `git worktree` 격리 지침 추가
 - **AI Attribution 제어 지침 범용화 (`rules/core/04-standards.md`)**: 특정 CLI 경로를 삭제하고 개발자 환경 설정 기반 커밋/PR 서명 노이즈 제거 지침으로 범용 추상화
 - **웹 프론트엔드 자동화 검증 지침 추가 (`rules/architecture/web-frontend.md`)**: 브라우저 오토메이션 시 시각 좌표 대신 Accessibility Tree (Ref) 구조 타겟팅 지침 반영
+- **Anti-Slop 프론트엔드 지침의 관심사 분리 (`rules/architecture/web-frontend.md`, `rules/styles/html-css.md`, `rules/frameworks/react.md`, `rules/frameworks/next.md`)**:
+  - 기술 중립적 동적 뷰포트(`100dvh`), CSS Grid, 맥락별 라인길이 예외 지침(백오피스/대시보드 예외) 및 SVG 패스 직접 그리기 금지 반영
+  - 단일 Accent Color 및 Color Lock 스타일 규칙 반영
+  - 연속 이벤트 `useState` 남용 지양(React) 및 애니메이션 컴포넌트 말단 `'use client'` 격리 지침(Next.js) 반영
 
 ---
 
