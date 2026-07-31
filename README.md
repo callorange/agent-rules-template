@@ -108,9 +108,10 @@ GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-temp
 
 본 룰셋 템플릿과 함께 조합하여 사용할 수 있는 검증된 3rd-party 외부 에이전트 스킬 목록입니다. 상세 하위 스킬 옵션과 제안 가이드는 [recommended-external-skills.md](rules/architecture/recommended-external-skills.md) 카탈로그 모듈에 정리되어 있습니다:
 
+- **[python-ecosystem-kb](skills/python-ecosystem-kb/)**: 파이썬 및 Django 생태계 라이브러리(Awesome Python, Awesome Django, WikiDocs 14021) 온디맨드 실시간 큐레이션 및 패키지 추천 내장 스킬
 - **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: Anti-Slop 디자인 규격, CSS Grid 및 모던 프론트엔드 디자인 스킬
 - **[django-ai-plugins](https://github.com/vintasoftware/django-ai-plugins)**: Django ORM, DRF, Celery 비동기, 안전한 DB 마이그레이션 및 코드 리뷰어 지침 스킬
-- **언어/프레임워크 생태계 레퍼런스**: 파이썬 및 Django 개발 시 [Awesome Python](https://github.com/vinta/awesome-python), [Awesome Django](https://github.com/wsvincent/awesome-django), [위키독스 지식 베이스](https://wikidocs.net/book/14021)가 각 룰셋 모듈([package-python.md](rules/packaging/package-python.md), [django.md](rules/frameworks/django.md))의 검증 카탈로그로 연계되어 있습니다.
+- **언어/프레임워크 생태계 레퍼런스**: 파이썬 및 Django 개발 시 [Awesome Python](https://github.com/vinta/awesome-python), [Awesome Django](https://github.com/wsvincent/awesome-django), [위키독스 지식 베이스](https://wikidocs.net/book/14021)가 각 룰셋 모듈([package-python.md](rules/packaging/package-python.md), [django.md](rules/frameworks/django.md)) 및 전용 온디맨드 스킬로 연계되어 있습니다.
 
 ---
 
