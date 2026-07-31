@@ -22,6 +22,7 @@
   - 단일 Accent Color 및 Color Lock 스타일 규칙 반영
   - 연속 이벤트 `useState` 남용 지양(React) 및 애니메이션 컴포넌트 말단 `'use client'` 격리 지침(Next.js) 반영
 - **원자적 커밋 및 논리적 분할 수칙 수립 (`rules/core/04-standards.md`, `AGENTS.md`)**: 단일 트랜잭션(원본 수정, 문서화, `dist/` 빌드)은 정합성을 위해 1개 원자적 커밋으로 묶고, 목적이 무관한 별개 이슈 시에만 논리적으로 커밋을 분할하는 규격 반영
+- **Python & Django 생태계 레퍼런스 통합 (`rules/frameworks/django.md`, `rules/packaging/package-python.md`)**: `vinta/awesome-python`, `wsvincent/awesome-django`, `wikidocs.net/book/14021` 표준 생태계 레퍼런스 연계 및 실무 지침 보강
 
 ---
 

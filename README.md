@@ -112,6 +112,7 @@ GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-temp
   # Anti-Slop 모던 프론트엔드 디자인 스킬 설치
   npx skills add https://github.com/Leonxlnx/taste-skill --skill "taste-skill"
   ```
+- **언어/프레임워크 생태계 레퍼런스**: 파이썬 및 Django 개발 시 [Awesome Python](https://github.com/vinta/awesome-python), [Awesome Django](https://github.com/wsvincent/awesome-django), [위키독스 지식 베이스](https://wikidocs.net/book/14021)가 각 룰셋 모듈([package-python.md](rules/packaging/package-python.md), [django.md](rules/frameworks/django.md))의 검증 카탈로그로 연계되어 있습니다.
 
 ---
 

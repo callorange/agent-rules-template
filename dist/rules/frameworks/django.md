@@ -55,3 +55,10 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
   - 이메일 발송, 외부 API 연동, 대용량 파일 처리 등 요청-응답 주기를 지연시키는 작업은 Celery / Redis 등의 백그라운드 태스크로 분리하십시오.
 - **마이그레이션 이력 관리**:
   - 마이그레이션 파일(`makemigrations`)은 항상 테스트 후 Git 버전 관리에 포함시키고, 배포 시 `migrate`를 안전하게 수행하십시오.
+
+---
+
+## 📚 6. 외부 생태계 & 레퍼런스 (Ecosystem & References)
+
+- **[awesome-django](https://github.com/wsvincent/awesome-django)**: 검증된 Django 서드파티 패키지(Auth, REST, Celery, Monitoring 등) 탐색을 위한 표준 큐레이션 레퍼런스.
+- **[위키독스 Django 지식 베이스](https://wikidocs.net/book/14021)**: Django 실무 아키텍처 및 튜토리얼 구현 시 참조하는 표준 지식 베이스 레퍼런스.

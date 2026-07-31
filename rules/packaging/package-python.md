@@ -39,3 +39,10 @@ Python 생태계(PyPI, uv, pyproject.toml)의 라이브러리 및 패키지 개�
 ## 🧪 4. 패키지 검증 (twine & build)
 
 - **배포 검증**: PyPI 업로드 전 `build` 툴로 파이프라인 산출물(wheel, sdist)을 생성하고 `twine check`를 통해 메타데이터 및 README 렌더링 정상 여부를 확인하십시오.
+
+---
+
+## 📚 5. 외부 생태계 & 레퍼런스 (Ecosystem & References)
+
+- **[awesome-python](https://github.com/vinta/awesome-python)**: 검증된 파이썬 서드파티 라이브러리 및 툴링 생태계 큐레이션 레퍼런스.
+- **[위키독스 파이썬/패키징 지식 베이스](https://wikidocs.net/book/14021)**: 파이썬 가상환경, 툴체인 및 패키지 개발 지식 베이스 레퍼런스.
