@@ -22,6 +22,10 @@
   - 단일 Accent Color 및 Color Lock 스타일 규칙 반영
   - 연속 이벤트 `useState` 남용 지양(React) 및 애니메이션 컴포넌트 말단 `'use client'` 격리 지침(Next.js) 반영
 - **원자적 커밋 및 논리적 분할 수칙 수립 (`rules/core/04-standards.md`, `AGENTS.md`)**: 단일 트랜잭션(원본 수정, 문서화, `dist/` 빌드)은 정합성을 위해 1개 원자적 커밋으로 묶고, 목적이 무관한 별개 이슈 시에만 논리적으로 커밋을 분할하는 규격 반영
+- **Python 코딩 및 패키징 수칙 정밀 강화 (`rules/styles/python.md`, `rules/packaging/package-python.md`)**:
+  - McCabe 순환 복잡도 제한 (Ruff `C901`, `max-complexity = 10`) 규범 수술적 수록
+  - 의존성 CVE 보안 취약점 감사 (`uv audit` / `pip-audit`) 및 Hypothesis 속성 기반 테스트(Property-based Testing) 수칙 반영
+- **통합 파이썬 생태계 지식 베이스 스킬 추가 (`skills/python-ecosystem-kb/`)**: Awesome Python, Awesome Django, WikiDocs 14021 직링크 URL 연계 및 온디맨드 큐레이션 가이드 수록
 - **Python & Django 생태계 레퍼런스 통합 (`rules/frameworks/django.md`, `rules/packaging/package-python.md`)**: `vinta/awesome-python`, `wsvincent/awesome-django`, `wikidocs.net/book/14021` 표준 생태계 레퍼런스 연계 및 실무 지침 보강
 - **단계적 모호성 완전 해소 루프 수칙 수립 (`rules/core/02-workflow.md`, `AGENTS.md`)**: 요구사항 불명확 시 지레짐작 코딩을 금지하고 100% 명확화 후 구현에 진입하되, 합리적 기본값 제시 및 일괄 질문으로 대화 피로도를 차단하는 수칙 보강
 - **`dist/AGENTS.md` 번들링 데드링크 자동 정제 파이프라인 보강 (`scripts/build_dist.py`)**: `01-base.md` 등 구형 로컬 상대 경로 링크를 정규표현식으로 정제하여 데드링크 완전 차단

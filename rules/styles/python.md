@@ -7,6 +7,7 @@ Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기
 ## 🐍 1. 언어 활용 규칙 (Language Rules)
 
 - **형식 검사 및 린팅 (Linting)**: `ruff` 또는 `pylint`를 활용해 문법 및 스타일 오류를 조기에 탐지하십시오.
+- **순환 복잡도 통제 (McCabe Complexity Limit)**: 함수 1개의 순환 복잡도를 10 이하로 통제(Ruff `C901`, `max-complexity = 10`)하여 과도하게 길고 복잡한 중첩 분기문 작성을 엄격히 제어하십시오.
 - **모듈 임포트 규칙 (Imports)**:
   - 패키지 및 모듈에는 `import x` 형식을 기본으로 사용합니다.
   - 서브모듈을 가져올 경우에만 `from x import y` 형식을 허용합니다.
