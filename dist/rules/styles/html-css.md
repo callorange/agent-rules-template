@@ -34,6 +34,8 @@ Google HTML/CSS Style Guide 및 modern web 베스트 프랙티스 기반의 스�
 - **0과 단위 (Units)**: `0` 값에는 단위를 붙이지 마십시오. (예: `margin: 0;`)
 - **소수점 0 (Leading Zeros)**: `1` 미만 소수점 표기 시 선행 `0`을 생략하지 마십시오. (예: `font-size: 0.8em;`)
 - **`!important` 사용 금지**: css 특이도(Specificity) 구조를 깨뜨리는 `!important` 구문 사용을 지양하십시오.
+- **단일 Accent 색상 및 Color Lock 규칙**: 프로젝트당 핵심 강조 색상(Accent Color)은 1개로 제한(채도 80% 미만 권장)하고, 한 페이지 내부에서 Warm/Cool 회색조(Slate vs Stone 등)를 섞어 쓰지 않도록 톤앤매너를 일관되게 유지하십시오.
+- **AI 진부함 방지 (Anti-Default Aesthetics)**: 무의미하고 상투적인 AI 보라색/네온 그라데이션 남발을 지양하고, 브랜드와 목적에 맞는 조화로운 컬러 팔레트를 사용하십시오.
 - **속성 선언 순서**: 규칙 블록 내 속성은 알파벳순(Alphabetical order)으로 정렬하십시오.
 - **세미콜론 및 띄어쓰기**:
   - 모든 속성 선언 끝에는 세미콜론(`;`)을 작성하십시오.
