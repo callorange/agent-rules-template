@@ -10,7 +10,6 @@ rules/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS
 """
 
 import os
-import re
 import shutil
 from pathlib import Path
 

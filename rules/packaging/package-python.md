@@ -6,7 +6,7 @@ Python 생태계(PyPI, uv, pyproject.toml)의 라이브러리 및 패키지 개�
 
 ## ⚡ 1. 현대적 패키징 및 환경 관리 표준 (uv 중심)
 
-- **uv 표준 도구 채택**: 가상환경 구축, 패키지 설치, 의존성 동기화 및 Lockfile 관리는 `uv`를 기본(Default) 표준 도구로 채택합니다. (`uv init`, `uv add`, `uv sync`)
+- **uv 모던 도구 추천 및 프로젝트 도구 존중**: 가상환경 구축, 패키지 설치, 의존성 동기화 및 Lockfile 관리는 `uv`를 기본 추천 도구로 활용하되, 기존 프로젝트에 `poetry`, `pip/venv`, `conda` 등 지정된 패키지 도구가 존재하는 경우 해당 도구를 존중하여 구동하십시오. (`uv init`, `uv add`, `uv sync`)
 - **PEP 621 pyproject.toml 명세**: Legacy `setup.py` 대신 PEP 621 규격을 준수하는 `pyproject.toml`을 단일 메타데이터 매니페스트로 사용하십시오.
 - **Lockfile 기반 배포 재현성 보장**: 애플리케이션 및 서비스 배포 시 `uv.lock` 파일의 100% 버전 동결을 보장하기 위해 배포 환경에서는 `uv sync --locked` 명령으로만 환경을 동기화합니다.
 - **의존성 그룹 분류 표준 (Dependency Grouping)**:

@@ -15,7 +15,7 @@ Python 웹 애플리케이션(FastAPI, Litestar, Django, Flask 등)을 프로덕
 
 - **워커 수 산출 공식**:
   - 기본 워커 수(`workers`)는 CPU 코어 수에 맞추어 산출하십시오:
-    $$\text{workers} = (2 \times \text{CPU Cores}) + 1$$
+    - 공식: `(2 * CPU 코어 수) + 1`
   - I/O 지연이 많은 서비스의 경우 아키텍처에 맞게 조정하되, 메모리 초과(OOM)가 발생하지 않도록 상한선을 관리하십시오.
 - **Worker Timeout & Keepalive**:
   - HTTP Keep-alive 시간(`keepalive 5`) 및 작업 수용 타임아웃(`timeout 60` ~ `120`)을 명시하여 교착 상태(Deadlock) 워커를 자동으로 수거하게 하십시오.
