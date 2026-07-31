@@ -13,6 +13,7 @@
 - **추천 외부 에이전트 스킬 가이드 ([README.md](README.md))**: 검증된 3rd-party 외부 스킬(`Leonxlnx/taste-skill` 등) 및 `npx skills add` 온디맨드 원클릭 설치 스크립트 안내 수록
 
 ### 🧹 Changed & Refactored
+- **비판적 검수 서브에이전트 명칭 단권화 (`subagents/auditor.md`, `.agents/agents/auditor.md`)**: 구형 `critical-evaluator` 명칭을 직관적이고 표준적인 감사관 서브에이전트(`auditor`)로 전면 개정 및 단권화
 - **[AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 구조 개정**: 행동 통제 수칙을 상단으로 전진 배치(Action-First Layout)하고 버전 `v1.1.0` 최신화
 - **자율 검증 및 OS 호환성 정제 (`rules/core/02-workflow.md`)**: `tmux` 구문을 OS 종속성 없는 비동기 명령어 실행 도구(`manage_task` 등) 활용 규칙으로 정제하고 `git worktree` 격리 지침 추가
 - **AI Attribution 제어 지침 범용화 (`rules/core/04-standards.md`)**: 특정 CLI 경로를 삭제하고 개발자 환경 설정 기반 커밋/PR 서명 노이즈 제거 지침으로 범용 추상화

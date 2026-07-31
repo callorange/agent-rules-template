@@ -68,10 +68,10 @@ agents-template/
 │   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
 │   └── handoff/             # 세션 맥락 인계 및 HANDOFF.md 자동 생성 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
-│   └── critical-evaluator.md# 코드 및 설계 변경사항 비판적 검증 서브에이전트
+│   └── auditor.md           # 코드 및 설계 변경사항 비판적 검수 및 감사 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
 │   ├── skills/              # 메타 스킬 (rule-validator: 룰셋 무결성 정적 검증)
-│   └── agents/              # 메타 서브에이전트 (critical-evaluator)
+│   └── agents/              # 메타 서브에이전트 (auditor)
 ├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
 │   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
 ├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
