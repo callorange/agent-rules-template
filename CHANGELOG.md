@@ -6,6 +6,10 @@
 ## [1.1.0] - 2026-08-01
 
 ### 🚀 Added
+- **AI / LLM 애플리케이션 & RAG 아키텍처 규칙 모듈 (`rules/architecture/ai-llm-rag.md`)**:
+  - 스키마 기반 타입 안전 구조화 출력 (Schema-driven Structured Outputs) 및 자가 치유 재시도 지침 수록
+  - RAG 구조 보존 의미적 청킹(Semantic Chunking) 및 하이브리드 검색(BM25 + Dense Vector) 표준 정립
+  - Model Context Protocol (MCP) 표준 인터페이스 및 프롬프트 주입(Prompt Injection) 방어 보안 수칙 수록
 - **세션 맥락 인계 스킬 (`skills/handoff/`)**: 세션 리셋 및 컨텍스트 압축 시 작업 내역(`HANDOFF.md`)을 자동 정리/복구하는 공용 스킬 추가
 - **외부 패키지 도입 vs 자체 구현 의사결정 룰 (`rules/architecture/library-package.md`)**:
   - 소스 복잡도/규모(100줄 이내 유틸 자체 구현) 및 프레임워크 내장 기능 기준의 의사결정 매트릭스(Decision Matrix) 신설

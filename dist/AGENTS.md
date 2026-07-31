@@ -227,6 +227,7 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 프로젝트의 구체적인 기술 스택, 배포 환경 및 언어 스타일 가이드는 필요 시 아래 전용 모듈 문서를 참조(Read-on-Demand)하십시오.
 
 ### 🏛️ 도메인 및 아키텍처 규칙
+- [ai-llm-rag.md](rules/architecture/ai-llm-rag.md): AI / LLM Application & RAG Architecture Rules (AI & RAG 시스템 아키텍처 지침)
 - [backend-api.md](rules/architecture/backend-api.md): Backend & API Architecture Rules (백엔드 및 API 특화 규칙)
 - [database-orm.md](rules/architecture/database-orm.md): Database & ORM General Rules (범용 DB & ORM 설계 및 마이그레이션 규칙)
 - [library-package.md](rules/architecture/library-package.md): General Library & Module Rules (범용 라이브러리 및 패키지 아키텍처 규칙)
