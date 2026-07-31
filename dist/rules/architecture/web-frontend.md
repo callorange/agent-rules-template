@@ -31,3 +31,9 @@
 - **접근성 (Accessibility)**: 이미지에는 `alt` 속성, 버튼에는 `aria-label`을 명시하고 키보드 포커스 링(Focus state)을 유지하십시오.
 - **자동화 브라우저 검증 및 접근성 트리 (Accessibility Tree & Automation)**: 브라우저 통합 도구(Playwright 등)로 웹 UI를 탐색하고 요소 클릭 등 자동 검증을 수행할 때 오작동이 많은 단순 시각적 좌표(Coordinates) 대신 Accessibility Tree (Ref) 구조를 우선 지정하여 타겟팅하십시오.
 - **SEO 기본 적용**: 페이지별 Title 태그, Meta Description, OpenGraph 태그 및 단일 `<h1>` 구조를 준수하십시오.
+
+---
+
+## 📚 4. 외부 에이전트 스킬 카탈로그 (Recommended Agent Skills)
+
+- **[taste-skill 카탈로그](recommended-external-skills.md)**: Anti-slop 프론트엔드 모던 타이포그래피, Notion/Linear 스타일 `minimalist-ui`, 시안 기반 `image-to-code` 비주얼 파이프라인 등 외부 추천 스킬 상세 지침 및 설치 가이드는 [recommended-external-skills.md](recommended-external-skills.md) 모듈을 참조하십시오.

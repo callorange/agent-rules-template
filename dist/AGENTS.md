@@ -228,6 +228,7 @@ AI 에이전트는 코드 및 문서를 작성할 때 무단 요약이나 생략
 - [database-orm.md](rules/architecture/database-orm.md): Database & ORM General Rules (범용 DB & ORM 설계 및 마이그레이션 규칙)
 - [library-package.md](rules/architecture/library-package.md): General Library & Module Rules (범용 라이브러리 및 패키지 아키텍처 규칙)
 - [monorepo.md](rules/architecture/monorepo.md): Monorepo Architecture Rules (모노레포 아키텍처 특화 규칙)
+- [recommended-external-skills.md](rules/architecture/recommended-external-skills.md): Recommended External Agent Skills (추천 외부 에이전트 스킬 카탈로그)
 - [web-frontend.md](rules/architecture/web-frontend.md): Web Frontend Architecture Rules (웹 프론트엔드 특화 규칙)
 
 ### 🛠️ 프레임워크 특화 규칙

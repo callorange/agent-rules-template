@@ -39,7 +39,8 @@ agents-template/
 │   │   ├── backend-api.md   # 백엔드 API 특화 지침
 │   │   ├── database-orm.md  # 범용 DB 마이그레이션 & ORM 안전 지침
 │   │   ├── library-package.md # 범용 라이브러리/모듈 공통 지침
-│   │   └── monorepo.md      # 모노레포 아키텍처 특화 지침
+│   │   ├── monorepo.md      # 모노레포 아키텍처 특화 지침
+│   │   └── recommended-external-skills.md # 🚀 외부 추천 에이전트 스킬 카탈로그
 │   ├── frameworks/          # 🛠️ 프레임워크 특화 규칙 모듈
 │   │   ├── django.md        # Django 프레임워크 특화 지침
 │   │   ├── react.md         # React.js SPA 특화 지침
@@ -105,13 +106,10 @@ GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-temp
 
 ## 🚀 추천 외부 에이전트 스킬 (Curated External Agent Skills)
 
-본 룰셋 템플릿과 함께 조합하여 사용할 수 있는 검증된 3rd-party 외부 에이전트 스킬 목록입니다. 표준 에이전트 스킬 CLI(`npx skills add`)를 사용하여 필요한 프로젝트에 온디맨드로 자유롭게 설치할 수 있습니다:
+본 룰셋 템플릿과 함께 조합하여 사용할 수 있는 검증된 3rd-party 외부 에이전트 스킬 목록입니다. 상세 하위 스킬 옵션과 제안 가이드는 [recommended-external-skills.md](rules/architecture/recommended-external-skills.md) 카탈로그 모듈에 정리되어 있습니다:
 
-- **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: AI 에이전트의 투박한 프론트엔드 코드(AI Slop) 생성을 방지하고, 고급스러운 모던 타이포그래피, 레이아웃 및 micro-interaction 디자인 생성을 유도하는 최우수 스킬
-  ```bash
-  # Anti-Slop 모던 프론트엔드 디자인 스킬 설치
-  npx skills add https://github.com/Leonxlnx/taste-skill --skill "taste-skill"
-  ```
+- **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: Anti-Slop 디자인 규격, CSS Grid 및 모던 프론트엔드 디자인 스킬
+- **[django-ai-plugins](https://github.com/vintasoftware/django-ai-plugins)**: Django ORM, DRF, Celery 비동기, 안전한 DB 마이그레이션 및 코드 리뷰어 지침 스킬
 - **언어/프레임워크 생태계 레퍼런스**: 파이썬 및 Django 개발 시 [Awesome Python](https://github.com/vinta/awesome-python), [Awesome Django](https://github.com/wsvincent/awesome-django), [위키독스 지식 베이스](https://wikidocs.net/book/14021)가 각 룰셋 모듈([package-python.md](rules/packaging/package-python.md), [django.md](rules/frameworks/django.md))의 검증 카탈로그로 연계되어 있습니다.
 
 ---
