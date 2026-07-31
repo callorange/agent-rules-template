@@ -28,6 +28,7 @@
 - **파이썬 패키징 도구 유연성 보강 (`rules/packaging/package-python.md`)**: 기존 프로젝트의 `poetry`, `pip/venv`, `conda` 도구 호환성 및 존중 수칙 보강
 - **외부 추천 에이전트 스킬 카탈로그 수립 (`rules/architecture/recommended-external-skills.md`)**: `taste-skill` (5개 세부 스킬) 및 `django-ai-plugins` (4개 세부 스킬)의 압축 테이블 카탈로그 모듈 신설 및 `dist/` 배포 편입
 - **공용 배포 스킬 파이프라인 및 원본 동기화 (`skills/`, `scripts/build_dist.py`)**: `skills/` 원본 폴더 내 `.gitkeep` 삭제 및 `dist/skills/` 배포 원본 경로 동시 패키징 반영
+- **모르는 지식 및 도구 탐색 실패 시 솔직한 시인 수칙 명시 (`rules/core/01-base.md`, `AGENTS.md`)**: 정보 불확실이나 도구 접근 실패(403 등) 시 지레짐작/거짓 답변(Hallucination)을 금지하고 솔직히 알 수 없음을 인정하는 헌법 수칙 보강
 
 ---
 
