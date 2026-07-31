@@ -3,6 +3,20 @@
 본 문서는 `agents-template` 프로젝트의 규칙, 스킬, 서브에이전트 모듈 및 빌드 아티팩트의 주요 변경 사항과 개정 이력을 기록하는 문서입니다.
 본 프로젝트는 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/) 및 [Semantic Versioning](https://semver.org/lang/ko/) 표준 규격을 준수합니다.
 
+## [1.1.0] - 2026-08-01
+
+### 🚀 Added
+- **세션 맥락 인계 스킬 (`skills/handoff/`)**: 세션 리셋 및 컨텍스트 압축 시 작업 내역(`HANDOFF.md`)을 자동 정리/복구하는 공용 스킬 추가
+- **외부 패키지 도입 vs 자체 구현 의사결정 룰 (`rules/architecture/library-package.md`)**:
+  - 소스 복잡도/규모(100줄 이내 유틸 자체 구현) 및 프레임워크 내장 기능 기준의 의사결정 매트릭스(Decision Matrix) 신설
+  - 유지보수 활성화, 커뮤니티 평판, 상용 라이선스, 전이적 의존성 4대 패키지 건전성 평가(Package Health Check) 명시
+
+### 🧹 Changed & Refactored
+- **[AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 구조 개정**: 행동 통제 수칙을 상단으로 전진 배치(Action-First Layout)하고 버전 `v1.1.0` 최신화
+- **자율 검증 및 OS 호환성 정제 (`rules/core/02-workflow.md`)**: `tmux` 구문을 OS 종속성 없는 비동기 명령어 실행 도구(`manage_task` 등) 활용 규칙으로 정제하고 `git worktree` 격리 지침 추가
+- **AI Attribution 제어 지침 범용화 (`rules/core/04-standards.md`)**: 특정 CLI 경로를 삭제하고 개발자 환경 설정 기반 커밋/PR 서명 노이즈 제거 지침으로 범용 추상화
+- **웹 프론트엔드 자동화 검증 지침 추가 (`rules/architecture/web-frontend.md`)**: 브라우저 오토메이션 시 시각 좌표 대신 Accessibility Tree (Ref) 구조 타겟팅 지침 반영
+
 ---
 
 ## [1.0.1] - 2026-07-26

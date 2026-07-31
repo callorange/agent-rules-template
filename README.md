@@ -64,7 +64,8 @@ agents-template/
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
-│   └── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
+│   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
+│   └── handoff/             # 세션 맥락 인계 및 HANDOFF.md 자동 생성 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
 │   └── critical-evaluator.md# 코드 및 설계 변경사항 비판적 검증 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
