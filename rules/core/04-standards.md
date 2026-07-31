@@ -30,6 +30,7 @@
 - 커밋 메시지는 Conventional Commits 규약(`feat:`, `fix:`, `docs:`, `refactor:` 등)을 준수하여 작성하십시오.
 - 프로젝트 내 특정 언어 규칙(예: 한글 작성 등)이 있다면 이를 최우선으로 따르십시오.
   - 예시: `docs: update core standards and formatting rules`
+- **자동 기여 문구 (Attribution) 제어**: AI 도구(Claude Code 등)가 커밋/PR 생성 시 자동으로 삽입하는 `Co-Authored-By` 트레일러나 푸터 링크를 제어하려는 경우, 개발자 글로벌 설정(`~/.claude/settings.json` 내 `"attribution": { "commit": "", "pr": "", "sessionUrl": false }`)을 통해 구성하도록 권장합니다.
 
 ---
 
