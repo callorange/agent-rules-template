@@ -103,6 +103,18 @@ GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-temp
 
 ---
 
+## 🚀 추천 외부 에이전트 스킬 (Curated External Agent Skills)
+
+본 룰셋 템플릿과 함께 조합하여 사용할 수 있는 검증된 3rd-party 외부 에이전트 스킬 목록입니다. 표준 에이전트 스킬 CLI(`npx skills add`)를 사용하여 필요한 프로젝트에 온디맨드로 자유롭게 설치할 수 있습니다:
+
+- **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: AI 에이전트의 투박한 프론트엔드 코드(AI Slop) 생성을 방지하고, 고급스러운 모던 타이포그래피, 레이아웃 및 micro-interaction 디자인 생성을 유도하는 최우수 스킬
+  ```bash
+  # Anti-Slop 모던 프론트엔드 디자인 스킬 설치
+  npx skills add https://github.com/Leonxlnx/taste-skill --skill "taste-skill"
+  ```
+
+---
+
 ## 📄 라이선스
 
 본 프로젝트는 [MIT License](file:///LICENSE.md)에 따라 자유롭게 이용 및 수정, 재배포할 수 있습니다.

@@ -10,6 +10,7 @@
 - **외부 패키지 도입 vs 자체 구현 의사결정 룰 (`rules/architecture/library-package.md`)**:
   - 소스 복잡도/규모(100줄 이내 유틸 자체 구현) 및 프레임워크 내장 기능 기준의 의사결정 매트릭스(Decision Matrix) 신설
   - 유지보수 활성화, 커뮤니티 평판, 상용 라이선스, 전이적 의존성 4대 패키지 건전성 평가(Package Health Check) 명시
+- **추천 외부 에이전트 스킬 가이드 ([README.md](README.md))**: 검증된 3rd-party 외부 스킬(`Leonxlnx/taste-skill` 등) 및 `npx skills add` 온디맨드 원클릭 설치 스크립트 안내 수록
 
 ### 🧹 Changed & Refactored
 - **[AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 구조 개정**: 행동 통제 수칙을 상단으로 전진 배치(Action-First Layout)하고 버전 `v1.1.0` 최신화
