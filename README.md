@@ -6,7 +6,7 @@
 
 ## 🎯 프로젝트 목적
 
-AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 엄격한 실행 제어(Strict Execution Control), 기술 스택별 가이드라인 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
+AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 엄격한 실행 제어(Strict Execution Control), 읽기/수정 권한 분리, 3단계 디버깅 프로토콜, 기술 스택별 가이드라인 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
 
 ---
 
@@ -15,11 +15,11 @@ AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용
 본 프로젝트는 최상위 규범인 메인 지침 문서에 정의된 헌법 원칙에 따라 운영됩니다. 헌법의 상세 내용은 [AGENTS.md](file:///AGENTS.md)에서 확인할 수 있습니다.
 
 ### 핵심 5대 원칙
-1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공
-2. **엄격한 실행 제어 (Strict Execution Control & Procedural Integrity)**: 에이전트의 안정적 운영을 위한 사전 승인 및 무단 수정 방지 절차 준수
-3. **모듈화 및 확장성 (Modular Composition & Extensibility)**: Core, Architecture, Packaging, Styles별 독립 모듈화
+1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공 (OS/셸 및 도구 추상화)
+2. **엄격한 실행 제어 (Strict Execution Control & Procedural Integrity)**: 에이전트의 안정적 운영을 위해 승인 없는 작업(Read-only/격리 테스트)과 사전 승인 필요 작업(Side-effecting)을 구분하고 절차 준수
+3. **모듈화 및 확장성 (Modular Composition & Extensibility)**: Core, Architecture, Frameworks, Packaging, Styles별 독립 모듈화
 4. **버전 관리 및 추적 가능성 (Semantic Versioning & Traceability)**: 명확한 개정 이력 및 릴리즈 관리
-5. **자동 조립 및 검증 (Automated Assembly & Validation)**: 조립 스크립트(`scripts/build_dist.py`)를 통해 `dist/` 배포 번들을 100% 무결하게 조립 및 검증
+5. **자동 조립 및 검증 (Automated Assembly & Validation)**: 조립 스크립트(`scripts/build_dist.py`) 및 무결성 정적 검증 스크립트(`validate_rules.py`)를 통해 `dist/` 배포 번들을 100% 무결하게 유지
 
 ---
 
@@ -29,10 +29,10 @@ AI 에이전트(Google Antigravity, Cursor, Claude Code, Windsurf 등)를 활용
 agents-template/
 ├── rules/                   # 📌 SSOT: 규칙 원본 모듈 (단 1회만 정의되는 원본)
 │   ├── core/                # 🎯 공용 핵심 규칙 모듈
-│   │   ├── 01-base.md       # 진실의 계층, 기계적 하네스, 보안, 정직성
-│   │   ├── 02-workflow.md   # 5단계 행동 프로토콜, 자가치유, 승인 절차
-│   │   ├── 03-integrity.md  # 출력 무결성 원칙, 금지 표현
-│   │   ├── 04-standards.md  # 코딩, 의미 있는 테스트 및 커밋 메시지 표준
+│   │   ├── 01-base.md       # 진실의 계층, 기계적 하네스, 보안, 정직성, 충돌 수칙
+│   │   ├── 02-workflow.md   # 행동 프로토콜, 권한 분리(Read-only vs Side-effecting), 자가치유
+│   │   ├── 03-integrity.md  # 출력 무결성 원칙, 금지 표현, Surgical Edit, 포매터 알림
+│   │   ├── 04-standards.md  # 3단계 디버깅 프로토콜, 코딩, 의미 있는 테스트, 커밋/CHANGELOG 표준
 │   │   └── 05-docs-maintenance.md # 지속적 문서 관리 및 CHANGELOG 동기화
 │   ├── architecture/        # 🏛️ 도메인 및 아키텍처 규칙 모듈
 │   │   ├── web-frontend.md  # 웹 프론트엔드 특화 지침
@@ -40,6 +40,7 @@ agents-template/
 │   │   ├── database-orm.md  # 범용 DB 마이그레이션 & ORM 안전 지침
 │   │   ├── library-package.md # 범용 라이브러리/모듈 공통 지침
 │   │   ├── monorepo.md      # 모노레포 아키텍처 특화 지침
+│   │   ├── ai-llm-rag.md    # AI / LLM 애플리케이션 & RAG 아키텍처 규칙
 │   │   └── recommended-external-skills.md # 🚀 외부 추천 에이전트 스킬 카탈로그
 │   ├── frameworks/          # 🛠️ 프레임워크 특화 규칙 모듈
 │   │   ├── django.md        # Django 프레임워크 특화 지침
@@ -66,7 +67,8 @@ agents-template/
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
 │   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
-│   └── handoff/             # 세션 맥락 인계 및 HANDOFF.md 자동 생성 스킬
+│   ├── handoff/             # 세션 맥락 인계 및 HANDOFF.md 자동 생성 스킬
+│   └── python-ecosystem-kb/ # 파이썬 및 Django 생태계 지식 베이스 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
 │   └── auditor.md           # 코드 및 설계 변경사항 비판적 검수 및 감사 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
@@ -97,9 +99,16 @@ agents-template/
 python3 scripts/build_dist.py
 ```
 
-*(참고: AI 에이전트와 함께 작업 시, 에이전트가 rules 수정 직후 이 스크립트를 자동 실행하여 dist/를 유지합니다.)*
+### 2. 규칙 무결성 정적 검증 스크립트 실행 (`rule-validator`)
+모듈 수정 또는 조립 후 금지 표현, UTF-8 인코딩, 상대 링크 유효성 및 `dist/` 최신 동기화 상태를 검증합니다:
 
-### 2. GitHub Release 배포 아티팩트 활용 (타 프로젝트 적용)
+```bash
+python3 .agents/skills/rule-validator/scripts/validate_rules.py
+```
+
+*(참고: AI 에이전트와 함께 작업 시, 에이전트가 rules 수정 직후 이 스크립트들을 자동 실행하여 dist/와 무결성을 유지합니다.)*
+
+### 3. GitHub Release 배포 아티팩트 활용 (타 프로젝트 적용)
 GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-template-dist.zip`**을 다운로드하여 대상 프로젝트 루트 디렉터리에 해제하면 즉시 최신 에이전트 실행 환경이 세팅됩니다.
 
 ---
