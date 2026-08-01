@@ -17,6 +17,11 @@
 - **추천 외부 에이전트 스킬 가이드 ([README.md](README.md))**: 검증된 3rd-party 외부 스킬(`Leonxlnx/taste-skill` 등) 및 `npx skills add` 온디맨드 원클릭 설치 스크립트 안내 수록
 
 ### 🧹 Changed & Refactored
+- **글로벌 에이전트 규격 v2.3 이식 및 코어 규칙 강화 (`rules/core/`, `dist/AGENTS.md`)**:
+  - `01-base.md`: 지침 우선순위 4단계(상위 플랫폼 > 법적/보안 > 프로젝트 > 사용자 지시) 및 지침 충돌 시 작업 일시 중지(Fail-safe) 수칙 보강
+  - `02-workflow.md`: 승인 없이 가능한 작업(Read-only)과 사전 승인 필수 작업(Side-effecting) 권한 분리 명시
+  - `03-integrity.md`: 무단 생략 표기 금지 및 Surgical Update 유지하되 Linter/Formatter 등 기계적 변환 도구 사전 알림 후 수행 조항 반영
+  - `04-standards.md`: 원인 가설 ➔ 검증 ➔ 해결책 설명의 3단계 디버깅 프로토콜(Structured Troubleshooting) 신설
 - **비판적 검수 서브에이전트 명칭 단권화 (`subagents/auditor.md`, `.agents/agents/auditor.md`)**: 구형 `critical-evaluator` 명칭을 직관적이고 표준적인 감사관 서브에이전트(`auditor`)로 전면 개정 및 단권화
 - **[AGENTS.md](file:///d:/Projects/Private/agent-rules-template/AGENTS.md) 구조 개정**: 행동 통제 수칙을 상단으로 전진 배치(Action-First Layout)하고 버전 `v1.1.0` 최신화
 - **자율 검증 및 OS 호환성 정제 (`rules/core/02-workflow.md`)**: `tmux` 구문을 OS 종속성 없는 비동기 명령어 실행 도구(`manage_task` 등) 활용 규칙으로 정제하고 `git worktree` 격리 지침 추가
