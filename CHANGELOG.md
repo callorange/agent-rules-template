@@ -3,6 +3,21 @@
 본 문서는 `agents-template` 프로젝트의 규칙, 스킬, 서브에이전트 모듈 및 빌드 아티팩트의 주요 변경 사항과 개정 이력을 기록하는 문서입니다.
 본 프로젝트는 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/) 및 [Semantic Versioning](https://semver.org/lang/ko/) 표준 규격을 준수합니다.
 
+## [1.2.0] - 2026-08-03
+
+### 🚀 Added
+- **컨텍스트·신뢰 경계 및 위험도 기반 실행 루프 (`rules/core/01-base.md`, `rules/core/02-workflow.md`)**:
+  - 단계적 컨텍스트 수집, 비신뢰 외부 데이터 격리, 가역적 최소 실행, 증거 기반 검증 및 중단 경계 규칙 추가
+- **AI/RAG 평가 및 도구 계약 수칙 (`rules/architecture/ai-llm-rag.md`)**:
+  - 평가셋 우선 설계, 출처 보존, 도구 권한·부작용·멱등성·실패 정책 명시, 실행 관측성 규칙 추가
+
+### 🧹 Changed & Refactored
+- **강제 대기 규칙의 위험도 기반 전환 (`rules/core/`)**: 100% 명확화 및 파일 수 기준을 제거하고, 보안·데이터·비용·호환성 영향에 따라 질문·승인·검증을 결정하도록 정비
+- **선택형 전문 모듈의 적용 조건 명확화 (`rules/packaging/`)**: Python 애플리케이션 서버, Nginx, Docker 규칙이 해당 기술을 직접 운영할 때만 적용되고 플랫폼 관리형 환경에서는 공식 가이드를 우선하도록 정비
+- **외부 역량·생태계 카탈로그의 최신성 및 선택성 강화 (`rules/architecture/recommended-external-skills.md`, `skills/python-ecosystem-kb/`)**: Django를 포함한 유용한 후보군은 유지하되, 설치 전 최신성·라이선스·권한 검토와 온디맨드 검색 원칙을 명시
+- **장기 작업 인계 및 독립 감사 기준 정비 (`skills/handoff/`, `subagents/auditor.md`)**: 상태 문서 생성 조건, 검증 증거·잔여 위험 기록, 감사 호출 트리거와 근거 기준을 명확화
+- **신규 프로젝트 스타일 기본값 명시 (`rules/styles/`)**: 기존 프로젝트의 설정을 우선하면서, 신규 프로젝트에서는 언어별 스타일 문서를 기본 프로필로 적용하고 formatter·linter로 확정하도록 정비
+
 ## [1.1.0] - 2026-08-01
 
 ### 🚀 Added

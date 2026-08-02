@@ -1,12 +1,12 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다.
+다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **1.2.0**입니다.
 
 ---
 
 ## 🎯 프로젝트 목적
 
-AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 엄격한 실행 제어(Strict Execution Control), 읽기/수정 권한 분리, 3단계 디버깅 프로토콜, 기술 스택별 가이드라인 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
+AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 위험도 기반 실행 제어, 읽기/수정 권한 분리, 증거 기반 검증, 기술 스택별 실행 프로필 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
 
 ---
 
@@ -29,9 +29,9 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 agents-template/
 ├── rules/                   # 📌 SSOT: 규칙 원본 모듈 (단 1회만 정의되는 원본)
 │   ├── core/                # 🎯 공용 핵심 규칙 모듈
-│   │   ├── 01-base.md       # 진실의 계층, 기계적 하네스, 보안, 정직성, 충돌 수칙
-│   │   ├── 02-workflow.md   # 행동 프로토콜, 권한 분리(Read-only vs Side-effecting), 자가치유
-│   │   ├── 03-integrity.md  # 출력 무결성 원칙, 금지 표현, Surgical Edit, 포매터 알림
+│   │   ├── 01-base.md       # 진실의 계층, 컨텍스트·신뢰 경계, 기계적 하네스, 보안
+│   │   ├── 02-workflow.md   # 위험도 기반 실행 루프, 권한 분리, 검증·자가치유 경계
+│   │   ├── 03-integrity.md  # 요청 범위 보호, 금지 표현, Surgical Edit, 기계적 변환
 │   │   ├── 04-standards.md  # 3단계 디버깅 프로토콜, 코딩, 의미 있는 테스트, 커밋/CHANGELOG 표준
 │   │   └── 05-docs-maintenance.md # 지속적 문서 관리 및 CHANGELOG 동기화
 │   ├── architecture/        # 🏛️ 도메인 및 아키텍처 규칙 모듈
@@ -41,7 +41,7 @@ agents-template/
 │   │   ├── library-package.md # 범용 라이브러리/모듈 공통 지침
 │   │   ├── monorepo.md      # 모노레포 아키텍처 특화 지침
 │   │   ├── ai-llm-rag.md    # AI / LLM 애플리케이션 & RAG 아키텍처 규칙
-│   │   └── recommended-external-skills.md # 🚀 외부 추천 에이전트 스킬 카탈로그
+│   │   └── recommended-external-skills.md # 🚀 선택형 외부 에이전트 역량 카탈로그
 │   ├── frameworks/          # 🛠️ 프레임워크 특화 규칙 모듈
 │   │   ├── django.md        # Django 프레임워크 특화 지침
 │   │   ├── react.md         # React.js SPA 특화 지침
@@ -53,9 +53,9 @@ agents-template/
 │   ├── packaging/           # 📦 패키징 및 배포 생태계 규칙 모듈
 │   │   ├── package-npm.md   # Node.js / TypeScript NPM 패키징 지침
 │   │   ├── package-python.md# Python / PyPI 패키징 지침
-│   │   ├── docker.md        # Docker Multi-stage & 컨테이너 최적화 지침
-│   │   ├── deployment-nginx.md # Nginx Reverse Proxy & 보안 지침
-│   │   └── deployment-python-server.md # Gunicorn + Uvicorn 배포 프로세스 지침
+│   │   ├── docker.md        # Docker 이미지를 직접 운영할 때의 컨테이너 지침
+│   │   ├── deployment-nginx.md # Nginx를 운영할 때의 Reverse Proxy·보안 지침
+│   │   └── deployment-python-server.md # Python 애플리케이션 서버를 직접 운영할 때의 지침
 │   └── styles/              # 🎨 언어별 코딩 스타일 가이드 모듈
 │       ├── python.md        # Python 코딩 스타일 지침 (Google Style Guide)
 │       ├── typescript.md    # TypeScript 코딩 스타일 지침 (Google Style Guide)
@@ -67,8 +67,8 @@ agents-template/
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
 │   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
-│   ├── handoff/             # 세션 맥락 인계 및 HANDOFF.md 자동 생성 스킬
-│   └── python-ecosystem-kb/ # 파이썬 및 Django 생태계 지식 베이스 스킬
+│   ├── handoff/             # 장기 작업·세션 전환용 구조화 맥락 인계 스킬
+│   └── python-ecosystem-kb/ # 검증된 Python·Django 후보군 우선 탐색 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
 │   └── auditor.md           # 코드 및 설계 변경사항 비판적 검수 및 감사 서브에이전트
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 스킬 및 서브에이전트 (배포 안 됨)
@@ -87,6 +87,15 @@ agents-template/
 ├── CHANGELOG.md             # 프로젝트 개정 및 버전 이력 문서
 └── LICENSE.md               # MIT 라이선스
 ```
+
+---
+
+## 🧩 모듈 적용 방식
+
+- **Core**: 모든 대상 프로젝트에 적용하는 안전, 권한, 컨텍스트 수집, 검증의 공통 운영 헌장입니다. 작업은 관련 정보만 단계적으로 수집하고, 위험도에 맞는 최소 검증을 수행합니다.
+- **Architecture / Frameworks / Styles**: 프로젝트 기술 스택 또는 언어가 일치할 때 읽는 온디맨드 모듈입니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 스타일 모듈을 기본 프로필로 사용합니다.
+- **Packaging**: Docker, Nginx, Python 애플리케이션 서버처럼 해당 기술을 직접 운영할 때만 적용합니다. PaaS, 서버리스, 관리형 ingress 등은 플랫폼의 공식 운영 가이드를 우선합니다.
+- **Skills / Subagents**: 특정 전문성, 장기 인계, 독립 감사가 필요한 경우에만 선택적으로 사용합니다. 설치나 서브에이전트 호출은 기본 동작이 아닙니다.
 
 ---
 
@@ -113,9 +122,9 @@ GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-temp
 
 ---
 
-## 🚀 추천 외부 에이전트 스킬 (Curated External Agent Skills)
+## 🚀 선택형 외부 에이전트 역량 (Optional Agent Capabilities)
 
-본 룰셋 템플릿과 함께 조합하여 사용할 수 있는 검증된 3rd-party 외부 에이전트 스킬 목록입니다. 상세 하위 스킬 옵션과 제안 가이드는 [recommended-external-skills.md](rules/architecture/recommended-external-skills.md) 카탈로그 모듈에 정리되어 있습니다:
+본 룰셋 템플릿과 함께 검토할 수 있는 3rd-party 외부 에이전트 스킬 후보군입니다. 자동 설치 또는 필수 의존성이 아니며, 현재 기본 도구·규칙으로 충분한지 먼저 판단하십시오. 설치 전에는 원본 README에서 최신 옵션을 확인하고 유지보수 상태, 라이선스, 권한 및 전이 의존성을 검토합니다. 상세 하위 스킬 옵션과 적용 조건은 [recommended-external-skills.md](rules/architecture/recommended-external-skills.md)에서 확인할 수 있습니다:
 
 - **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: Anti-Slop 디자인 규격, CSS Grid 및 모던 프론트엔드 디자인 스킬
 - **[django-ai-plugins](https://github.com/vintasoftware/django-ai-plugins)**: Django ORM, DRF, Celery 비동기, 안전한 DB 마이그레이션 및 코드 리뷰어 지침 스킬

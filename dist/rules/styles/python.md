@@ -1,6 +1,6 @@
 # Python Coding Style Guide (Python 스타일 및 컨벤션 지침)
 
-Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기반의 스타일 규격입니다.
+Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기반의 스타일 규격입니다. 기존 프로젝트에서는 설정 파일과 관례를 우선하며, 신규 프로젝트에서는 이 문서를 기본 프로필로 사용하고 formatter·linter 설정으로 기계적으로 확정하십시오.
 
 ---
 

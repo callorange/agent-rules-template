@@ -148,4 +148,4 @@ agents-template/
 
 ---
 
-**Version**: 1.1.0 | **Ratified**: 2026-07-24 | **Last Amended**: 2026-08-01
+**Version**: 1.2.0 | **Ratified**: 2026-07-24 | **Last Amended**: 2026-08-03
