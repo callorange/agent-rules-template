@@ -16,7 +16,7 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 
 ### 핵심 원칙
 1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공 (OS/셸 및 도구 추상화)
-2. **기획 중심 실행 (Planning-First Execution)**: 복잡하거나 고위험인 작업에서는 목적·성공 기준·제약을 먼저 정렬하고, 가역적 로컬 작업은 자율적으로 실행
+2. **기획 중심·위험 비례 실행 (Planning-First, Risk-Proportional Execution)**: 복잡하거나 고위험인 작업에서는 목적·성공 기준·제약을 먼저 정렬하고, 가역적 로컬 작업에는 필요한 정보 확인과 최소 검증만 적용
 3. **위험 기반 안전 경계 (Risk-Based Safety Boundaries)**: 외부·파괴적 변경만 사전 승인 대상으로 두고, 비신뢰 데이터를 지시와 분리
 4. **정량적 검증 (Mechanical Validation)**: Linter, Type Checker, Test Runner, 빌드 스크립트로 결과를 검증하고 잔여 위험을 투명하게 보고
 5. **자동 조립 및 추적 가능성 (Automated Assembly & Traceability)**: 조립·정적 검증으로 배포 번들을 최신화하고, 의미 있는 개정은 CHANGELOG에 기록
@@ -29,7 +29,7 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 agents-template/
 ├── rules/                   # 📌 SSOT: 규칙 원본 모듈 (단 1회만 정의되는 원본)
 │   ├── core/                # 🎯 공용 핵심 규칙 모듈
-│   │   ├── 01-base.md       # 진실의 계층, 컨텍스트·신뢰 경계, 기계적 하네스, 보안
+│   │   ├── 01-base.md       # 진실의 계층, 컨텍스트·신뢰 경계, 증거 기반 검증, 보안
 │   │   ├── 02-workflow.md   # 위험도 기반 실행 루프, 권한 분리, 검증·자가치유 경계
 │   │   ├── 03-integrity.md  # 요청 범위 보호, 금지 표현, Surgical Edit, 기계적 변환
 │   │   ├── 04-standards.md  # 3단계 디버깅 프로토콜, 코딩, 의미 있는 테스트, 커밋/CHANGELOG 표준

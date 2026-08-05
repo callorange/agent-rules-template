@@ -3,6 +3,11 @@
 본 문서는 `agents-template` 프로젝트의 규칙, 스킬, 서브에이전트 모듈 및 빌드 아티팩트의 주요 변경 사항과 개정 이력을 기록하는 문서입니다.
 본 프로젝트는 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/) 및 [Semantic Versioning](https://semver.org/lang/ko/) 표준 규격을 준수합니다.
 
+## [Unreleased]
+
+### Changed
+- **위험 비례 하네스 원칙 명시**: 하네스는 목적·제약·안전 경계·검증 가능한 품질을 명확히 하는 데 사용하며, 특정 실행 순서나 반복 검토는 위험 감소 또는 기계적 검증 근거가 있을 때만 적용하도록 정제했습니다.
+
 ## [2.0.0] - 2026-08-05
 
 ### Changed
