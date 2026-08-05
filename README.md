@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **1.2.0**입니다.
+다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.0.0**입니다.
 
 ---
 
@@ -14,12 +14,12 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 
 본 프로젝트는 최상위 규범인 메인 지침 문서에 정의된 헌법 원칙에 따라 운영됩니다. 헌법의 상세 내용은 [AGENTS.md](file:///AGENTS.md)에서 확인할 수 있습니다.
 
-### 핵심 5대 원칙
+### 핵심 원칙
 1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공 (OS/셸 및 도구 추상화)
-2. **엄격한 실행 제어 (Strict Execution Control & Procedural Integrity)**: 에이전트의 안정적 운영을 위해 승인 없는 작업(Read-only/격리 테스트)과 사전 승인 필요 작업(Side-effecting)을 구분하고 절차 준수
-3. **모듈화 및 확장성 (Modular Composition & Extensibility)**: Core, Architecture, Frameworks, Packaging, Styles별 독립 모듈화
-4. **버전 관리 및 추적 가능성 (Semantic Versioning & Traceability)**: 명확한 개정 이력 및 릴리즈 관리
-5. **자동 조립 및 검증 (Automated Assembly & Validation)**: 조립 스크립트(`scripts/build_dist.py`) 및 무결성 정적 검증 스크립트(`validate_rules.py`)를 통해 `dist/` 배포 번들을 100% 무결하게 유지
+2. **기획 중심 실행 (Planning-First Execution)**: 복잡하거나 고위험인 작업에서는 목적·성공 기준·제약을 먼저 정렬하고, 가역적 로컬 작업은 자율적으로 실행
+3. **위험 기반 안전 경계 (Risk-Based Safety Boundaries)**: 외부·파괴적 변경만 사전 승인 대상으로 두고, 비신뢰 데이터를 지시와 분리
+4. **정량적 검증 (Mechanical Validation)**: Linter, Type Checker, Test Runner, 빌드 스크립트로 결과를 검증하고 잔여 위험을 투명하게 보고
+5. **자동 조립 및 추적 가능성 (Automated Assembly & Traceability)**: 조립·정적 검증으로 배포 번들을 최신화하고, 의미 있는 개정은 CHANGELOG에 기록
 
 ---
 
@@ -96,6 +96,12 @@ agents-template/
 - **Architecture / Frameworks / Styles**: 프로젝트 기술 스택 또는 언어가 일치할 때 읽는 온디맨드 모듈입니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 스타일 모듈을 기본 프로필로 사용합니다.
 - **Packaging**: Docker, Nginx, Python 애플리케이션 서버처럼 해당 기술을 직접 운영할 때만 적용합니다. PaaS, 서버리스, 관리형 ingress 등은 플랫폼의 공식 운영 가이드를 우선합니다.
 - **Skills / Subagents**: 특정 전문성, 장기 인계, 독립 감사가 필요한 경우에만 선택적으로 사용합니다. 설치나 서브에이전트 호출은 기본 동작이 아닙니다.
+
+---
+
+## 📊 하네스 경량화 효과 측정
+
+실행 하네스 변경은 대표 작업을 기준으로 전후를 비교해 판단합니다. 기본 지침 토큰량, 추가 질문 횟수, 완료 시간, 검증 실패, 재작업률을 기록하고, 안전·정확성을 낮추지 않는 범위에서만 추가 축소 또는 통폐합을 결정합니다.
 
 ---
 
