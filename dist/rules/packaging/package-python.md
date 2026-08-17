@@ -33,7 +33,7 @@ Python 생태계(PyPI, uv, pyproject.toml)의 라이브러리 및 패키지 개�
 - **`__all__`을 통한 공개 제어**: 패키지 `__init__.py` 파일에 `__all__` 리스트를 명시하여 외부에 공개할 Public 클래스/함수를 명확히 캡슐화하십시오.
 - **PEP 561 Type Marker (`py.typed`)**: 타입 정보를 제공하는 배포 라이브러리/SDK는 mypy, pyright 등이 타입 힌팅을 인식할 수 있도록 패키지 루트에 `py.typed` 마커 파일을 포함하십시오. 외부에 배포하지 않는 애플리케이션에는 적용하지 않습니다.
 - **Docstring 및 Type Annotations**: 모든 Public API 함수 및 메서드에 Python Type Hinting과 Google/Numpy 스타일의 Docstring을 필수 작성하십시오.
-- **Docstring 언어**: 명시된 프로젝트 언어를 우선합니다. 프로젝트 언어가 지정되지 않은 경우 사용자가 명시한 언어 또는 사용자의 주 언어를 사용하며, 사용자 언어가 불명확하면 기존 프로젝트 관례를 따릅니다. 기존 Docstring을 수정할 때는 기존 언어를 유지하고, 번역 요청이 있는 경우에만 언어를 변경합니다.
+- **Docstring 언어**: Core의 사용자 소통 및 문서화 언어 규칙을 따릅니다.
 
 ---
 
