@@ -1,11 +1,12 @@
 # CHANGELOG
 
 본 문서는 `agents-template` 프로젝트의 규칙, 스킬, 서브에이전트 모듈 및 빌드 아티팩트의 주요 변경 사항과 개정 이력을 기록하는 문서입니다.
-본 프로젝트는 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/) 및 [Semantic Versioning](https://semver.org/lang/ko/) 표준 규격을 준수합니다.
+본 프로젝트는 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) 및 [Semantic Versioning](https://semver.org/lang/ko/) 표준 규격을 준수합니다.
 
 ## [Unreleased]
 
 ### Changed
+- **Keep a Changelog 1.1.0 표준 명시 (`rules/core/04-standards.md`, `CHANGELOG.md`)**: 에이전트의 사전 지식을 효과적으로 활용할 수 있도록 CHANGELOG 관리 시 [Keep a Changelog 1.1.0](https://keepachangelog.com/ko/1.1.0/) 및 SemVer 규격을 준수하고 `[Unreleased]`에 누적하는 표준 앵커를 명시했습니다.
 - **위험 비례 하네스 원칙 명시**: 하네스는 목적·제약·안전 경계·검증 가능한 품질을 명확히 하는 데 사용하며, 특정 실행 순서나 반복 검토는 위험 감소 또는 기계적 검증 근거가 있을 때만 적용하도록 정제했습니다.
 - **문서화 및 커밋 메시지 언어 정책 추가 (`rules/core/04-standards.md`, `rules/styles/python.md`, `rules/packaging/package-python.md`)**: Conventional Commits의 구조적 키워드는 영어로 유지하되 설명과 본문은 프로젝트 언어 및 사용자 언어 우선순위를 따르도록 했으며, Docstring과 주석은 기존 프로젝트 관례를 불필요하게 변경하지 않도록 명시했습니다.
 - **프로젝트별 거버넌스 문서 관리 규칙 추가 (`rules/core/05-docs-maintenance.md`)**: 특정 폴더를 강제하지 않고 루트 `AGENTS.md`, 루트 `README.md`, `docs/` 및 연결된 문서를 우선 탐색하며, 사용자가 지정한 다른 경로를 현재 작업 또는 소비 프로젝트의 공식 규약으로 적용할 수 있도록 문서 추가·수정·폐기와 정보 부족·충돌 처리 절차를 명시했습니다.
