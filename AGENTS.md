@@ -81,4 +81,11 @@ agents-template/
 
 ---
 
+## 🧭 6. 온디맨드 규칙 활성화 계약
+
+- 작업 대상에 따른 필수 모듈 선택, 누적 적용 및 충돌 우선순위는 [Core 온디맨드 규칙 활성화 계약](rules/core/01-base.md#-2-온디맨드-규칙-활성화-계약)을 따릅니다.
+- 소비 프로젝트는 [README의 활성화 템플릿과 설정 체크리스트](README.md)를 바탕으로 경로·기술 스택·public 범위·문서화 언어·자동 검사 범위를 자체 `AGENTS.md`와 설정에서 확정합니다.
+
+---
+
 **Version**: 2.0.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness

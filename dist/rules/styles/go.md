@@ -46,3 +46,11 @@ Effective Go 및 Google Go Style Guide 기반의 관용적(Idiomatic) Go 코딩 
 
 - **동시성 철학**: *"메모리를 공유하여 통신하지 말고, 통신을 통해 메모리를 공유하라 (Do not communicate by sharing memory; instead, share memory by communicating)."*
 - **Goroutine & Channel**: 경량 스레드 고루틴(`go fn()`)과 채널(`chan`)을 활용해 안전하게 데이터를 주고받으십시오.
+
+---
+
+## 💬 6. 주석 및 문서화 (Documentation)
+
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- exported package, type, function, method, variable 및 constant의 documentation comment는 해당 식별자 이름으로 시작하는 완전한 문장으로 작성합니다.
+- `gofmt`, `go vet` 및 소비 프로젝트가 채택한 linter가 검사하는 comment 형식은 해당 설정에 연결합니다.

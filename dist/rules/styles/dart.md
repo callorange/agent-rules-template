@@ -26,3 +26,11 @@ Effective Dart 및 Google Dart Style Guide 기반의 관용적 Dart/Flutter 코�
 - **컬렉션 리터럴 & 카스케이딩 연산자**:
   - `[]`, `{}` 리터럴 사용
   - 객체 체이닝 시 카스케이딩 연산자(`..`) 활용
+
+---
+
+## 💬 4. 주석 및 문서화 (Documentation)
+
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- public library, type 및 member의 documentation comment에는 Dart의 `///` 형식을 사용하고, API 식별자는 필요할 때 대괄호 링크 형식(`[Foo]`)으로 참조합니다.
+- `dart doc`과 analyzer가 확인하는 형식 및 public 범위는 소비 프로젝트 설정에 연결합니다.

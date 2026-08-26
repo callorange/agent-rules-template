@@ -44,3 +44,11 @@ Google C++ Style Guide 및 C++20 베스트 프랙티스 기반의 스타일 규�
 
 - **들여쓰기 및 한 줄 길이**: 들여쓰기 2공백, 한 줄 최대 80자 제한.
 - **예외 처리 (Exceptions)**: C++ 구문 내 예외(Exceptions) 발생 기능을 지양하고 에러 코드 또는 `std::optional` / `absl::Status` 기반 처리를 권장합니다.
+
+---
+
+## 💬 5. 주석 및 문서화 (Documentation)
+
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- public header의 계약 문서는 프로젝트가 채택한 Doxygen 호환 documentation comment 형식(`///` 또는 `/** ... */`)을 일관되게 사용합니다.
+- `@param`, `@return`, `@throws` 등의 command는 실제로 설명할 계약과 프로젝트 도구 설정이 있을 때만 작성합니다.

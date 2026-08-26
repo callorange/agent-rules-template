@@ -34,3 +34,11 @@ Google C# Style Guide 기반의 관용적 .NET 코딩 규격입니다. 기존 �
 - **문자열 보간**: `$"Hello, {name}"` 형태의 문자열 보간법을 활용하십시오.
 - **접근 수식어 명시**: 생략하지 말고 `public`, `private` 등 접근 수식어를 명시적으로 작성하십시오.
 - **컬렉션 인터페이스 반환**: 입력 매개변수에는 가능한 가치 제약이 큰 컬렉션 타입(`IEnumerable<T>`, `IReadOnlyList<T>`)을 사용하십시오.
+
+---
+
+## 💬 4. 주석 및 문서화 (Documentation)
+
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- public 계약에는 프로젝트가 채택한 C# XML documentation comment의 `///` 형식을 사용합니다.
+- `<summary>`, `<param>`, `<returns>`, `<exception>` 요소는 실제로 설명할 계약이 있을 때만 작성하며, compiler warning과 analyzer 적용 범위는 소비 프로젝트 설정으로 확정합니다.

@@ -46,3 +46,11 @@ Google JavaScript Style Guide 및 ES6+ 베스트 프랙티스 기반의 스타�
 - **클래스 / 타입**: `UpperCamelCase`
 - **함수 / 메서드 / 변수 / 파라미터**: `lowerCamelCase`
 - **전역 상수**: `CONSTANT_CASE` (모두 대문자 + 밑줄)
+
+---
+
+## 💬 6. 주석 및 문서화 (Documentation)
+
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- public 계약의 documentation comment에는 프로젝트가 채택한 JSDoc의 `/** ... */` 형식을 사용하고, 매개변수·반환값·예외 tag는 실제로 설명할 계약이 있을 때만 작성합니다.
+- TypeScript declaration이나 별도 schema가 계약을 제공하는 프로젝트에서는 동일 정보를 장문으로 반복하지 않습니다.

@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Changed
+- **온디맨드 규칙 활성화 및 코드 문서화 책임 재구성**: 언어·framework·architecture·packaging 규칙의 누적 적용 계약과 소비 프로젝트용 활성화 매트릭스·설정 체크리스트를 추가하고, 문서화 필요성·Why 주석·처리 문맥 전환 기준은 Core SSOT로, 수명주기는 docs-maintenance로, 표현 형식과 framework 예외는 해당 하위 모듈로 분리했습니다.
 - **Keep a Changelog 1.1.0 표준 명시 (`rules/core/04-standards.md`, `CHANGELOG.md`)**: 에이전트의 사전 지식을 효과적으로 활용할 수 있도록 CHANGELOG 관리 시 [Keep a Changelog 1.1.0](https://keepachangelog.com/ko/1.1.0/) 및 SemVer 규격을 준수하고 `[Unreleased]`에 누적하는 표준 앵커를 명시했습니다.
 - **위험 비례 하네스 원칙 명시**: 하네스는 목적·제약·안전 경계·검증 가능한 품질을 명확히 하는 데 사용하며, 특정 실행 순서나 반복 검토는 위험 감소 또는 기계적 검증 근거가 있을 때만 적용하도록 정제했습니다.
 - **문서화 및 커밋 메시지 언어 정책 추가 (`rules/core/04-standards.md`, `rules/styles/python.md`, `rules/packaging/package-python.md`)**: Conventional Commits의 구조적 키워드는 영어로 유지하되 설명과 본문은 프로젝트 언어 및 사용자 언어 우선순위를 따르도록 했으며, Docstring과 주석은 기존 프로젝트 관례를 불필요하게 변경하지 않도록 명시했습니다.

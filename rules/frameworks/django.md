@@ -62,3 +62,10 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
 
 - **`python-ecosystem-kb` 스킬**: Django 서드파티 패키지(Auth, REST, Celery 등) 및 파이썬 생태계 큐레이션 탐색 필요 시 `python-ecosystem-kb` 스킬을 활성화하여 온디맨드로 실시간 조회하십시오.
 - **[django-ai-plugins 카탈로그](../architecture/recommended-external-skills.md)**: Django ORM, DRF, Celery 비동기, DB 마이그레이션 안전 수칙 및 코드 리뷰어 외부 스킬 상세 지침 및 설치 가이드는 [recommended-external-skills.md](../architecture/recommended-external-skills.md) 모듈을 참조하십시오.
+
+---
+
+## 💬 7. Framework Override 문서화 범위
+
+- Django CBV의 `get()`, `post()` 및 lifecycle hook처럼 framework convention만 따르는 override는 이름과 상위 계약만으로 책임이 명확하면 기계적으로 docstring을 반복하지 않습니다.
+- override가 상위 계약과 다른 권한, transaction, side effect, 오류 조건 또는 domain policy를 추가하면 Core 기준에 따라 그 차이를 문서화합니다. 구체적인 docstring 형식은 Python style 규칙을 따릅니다.

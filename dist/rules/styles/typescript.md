@@ -49,5 +49,6 @@ Google TypeScript Style Guide 및 현대 TypeScript 코딩 베스트 프랙티�
 
 ## 💬 5. 주석 및 문서화 (Documentation)
 
-- **JSDoc 작성**: 문서화 주석에는 `/** JSDoc */` 형태를 사용하십시오.
-- **중복 타입 지정 금지**: TypeScript 타입 시스템이 이미 존재하는 상황에서 JSDoc의 `@param {string}`과 같이 redundent 타입 표기를 하지 마십시오.
+- 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따릅니다.
+- **TSDoc/JSDoc 형식**: public 계약을 문서화할 때 프로젝트가 채택한 TSDoc 또는 JSDoc의 `/** ... */` 형태를 사용합니다.
+- **중복 타입 지정 금지**: TypeScript 타입 시스템이 이미 표현한 타입을 `@param {string}`처럼 documentation comment에 반복하지 않습니다. 프로젝트 도구가 요구하는 tag와 형식은 해당 설정을 따릅니다.

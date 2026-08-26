@@ -80,6 +80,9 @@ def build_dist():
             file_text = core_file.read_text(encoding="utf-8").strip()
             # rules/core/ 에 작성된 상위 카테고리 마크다운 상대 경로 정제 (../architecture/ -> rules/architecture/)
             file_text = file_text.replace("../architecture/", "rules/architecture/")
+            # 통합 AGENTS.md 안에서는 Core 형제 문서의 section 링크를 동일 문서 anchor로 변환
+            for sibling_core_file in ordered_core_files:
+                file_text = file_text.replace(f"({sibling_core_file.name}#", "(#")
             agents_md_content.append(file_text)
             agents_md_content.append("\n---\n")
     else:
@@ -88,7 +91,7 @@ def build_dist():
     # 4. On-Demand 기술 스택 링킹 섹션 동적 생성
     agents_md_content.append("## 📚 기술 스택별 특화 및 온디맨드 규칙 모듈 (Read-on-Demand)")
     agents_md_content.append("")
-    agents_md_content.append("프로젝트의 구체적인 기술 스택, 배포 환경 및 언어 스타일 가이드는 필요 시 아래 전용 모듈 문서를 참조(Read-on-Demand)하십시오.")
+    agents_md_content.append("위 Core 활성화 계약에 따라 현재 작업과 일치하는 언어, framework, architecture 및 packaging 모듈을 아래 목록에서 선택해 누적 적용하십시오.")
     agents_md_content.append("")
 
     for cat_name, (cat_title_kr, _) in CATEGORY_METADATA.items():

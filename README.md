@@ -93,10 +93,40 @@ agents-template/
 ## 🧩 모듈 적용 방식
 
 - **Core**: 모든 대상 프로젝트에 적용하는 안전, 권한, 컨텍스트 수집, 검증의 공통 운영 헌장입니다. 작업은 관련 정보만 단계적으로 수집하고, 위험도에 맞는 최소 검증을 수행합니다.
-- **Architecture / Frameworks / Styles**: 프로젝트 기술 스택 또는 언어가 일치할 때 읽는 온디맨드 모듈입니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 스타일 모듈을 기본 프로필로 사용합니다.
+- **Styles**: 수정·검토 대상 파일의 언어와 일치하는 모듈을 작업 전에 읽고 Core에 누적 적용합니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 style 모듈을 기본 프로필로 사용합니다.
+- **Frameworks / Architecture**: 사용하는 framework 규칙은 언어 style에 누적하고, architecture 규칙은 실제 작업의 책임과 기술이 일치할 때만 추가합니다. 관련 모듈이 여러 개면 하나만 고르지 않습니다.
 - **언어 정책**: 커밋 메시지의 구조적 키워드(`feat`, `fix`, `docs`, `refactor` 등)는 영어 표준 형식을 사용하고, 설명과 본문은 명시된 프로젝트 언어를 우선합니다. 프로젝트 언어가 없으면 사용자의 주 언어를 따르며, Docstring과 주석은 기존 프로젝트의 언어 관례를 유지합니다.
 - **Packaging**: Docker, Nginx, Python 애플리케이션 서버처럼 해당 기술을 직접 운영할 때만 적용합니다. PaaS, 서버리스, 관리형 ingress 등은 플랫폼의 공식 운영 가이드를 우선합니다.
 - **Skills / Subagents**: 특정 전문성, 장기 인계, 독립 감사가 필요한 경우에만 선택적으로 사용합니다. 설치나 서브에이전트 호출은 기본 동작이 아닙니다.
+
+---
+
+## 🗺️ 소비 프로젝트용 규칙 활성화 템플릿
+
+소비 프로젝트는 실제 경로와 기술 스택을 아래 표의 `<...>` 자리에 채워 자체 `AGENTS.md`에 기록합니다. 표의 경로 예시는 설명용이며 특정 디렉터리 구조를 강제하지 않습니다.
+
+| 작업 대상 또는 경로 | 누적 적용할 규칙 | 프로젝트에서 확정할 조건 |
+| :--- | :--- | :--- |
+| Python 파일 (`<python-paths>`) | Core + `styles/python.md` + 해당 framework | framework 사용 여부와 public 범위 |
+| Django 코드 (`<django-paths>`) | 위 규칙 + `frameworks/django.md` + 필요 시 `architecture/backend-api.md`, `architecture/database-orm.md` | API·ORM·migration을 실제로 다루는지 |
+| TypeScript 파일 (`<typescript-paths>`) | Core + `styles/typescript.md` + 해당 시 React, Next 또는 Vue 규칙 | 파일별 framework 및 렌더링 환경 |
+| DB schema·migration (`<migration-paths>`) | 해당 언어 style + framework + `architecture/database-orm.md` | 사용하는 DB와 migration 도구 |
+| Packaging 설정 (`<package-paths>`) | 해당 언어 style + `packaging/package-<ecosystem>.md` | 배포 패키지를 실제로 생성하는지 |
+| 배포 설정 (`<deployment-paths>`) | 해당 언어 style + 실제 기술의 `packaging/deployment-*.md` 또는 `packaging/docker.md` | 직접 운영하는 배포 기술과 관리형 플랫폼 경계 |
+
+### 소비 프로젝트 설정 체크리스트
+
+- [ ] 사용 언어별 필수 style 규칙과 framework별 활성화 조건
+- [ ] architecture 및 packaging 규칙을 추가하는 경로·작업·기술 조건
+- [ ] 문서화 언어와 public API·public 코드 요소의 범위
+- [ ] framework override, lifecycle hook, callback의 문서화 예외
+- [ ] 언어별 docstring 또는 documentation comment 형식과 기존 프로젝트 우선 관례
+- [ ] formatter, linter, type checker 연결 및 CI에서 강제할 문서화 규칙
+- [ ] test, migration, generated file의 적용 또는 제외 범위
+- [ ] 자동 검사 항목과 의미 검토가 필요한 code review 항목
+- [ ] 처리 목적·domain 단계·불변조건 전환에서 문맥 주석이 필요한 기준
+- [ ] 긴 처리 흐름에서 구획 주석과 함수·객체 분리를 선택하는 기준
+- [ ] 규칙 변경 후 실행할 build, test 및 정적 검증 명령
 
 ---
 

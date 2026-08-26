@@ -34,15 +34,20 @@ Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기
 - **문자열 포맷팅 (Strings)**:
   - 동적 문자열 구성 시 `f-string`을 우선적으로 사용합니다.
   - 따옴표 표기법은 팀 및 프로젝트 내에서 일관성을 유지하십시오.
-- **Docstring 명세**:
-  - 모든 Public 모듈, 클래스, 함수에는 Google 스타일의 `"""triple double quotes"""` Docstring을 작성합니다.
-  - 구조: 한 줄 요약 -> 상세 설명 -> `Args:`, `Returns:`, `Raises:` 구획 명시.
+- **Docstring 형식**:
+  - 문서화 대상과 설명 내용은 Core의 코드 문서화 및 주석 기준을 따르고, Python에서는 Google-style docstring과 `"""triple double quotes"""`를 사용합니다.
+  - 첫 줄에 간결한 요약을 작성하고, 필요한 경우 빈 줄 뒤에 상세 설명을 이어서 작성합니다.
+  - `Args:`, `Returns:`, `Raises:`, `Yields:` 구획은 실제로 설명할 내용이 있을 때만 작성하며 빈 구획을 만들지 않습니다.
+  - 타입 힌트와 식별자 이름을 그대로 반복하는 설명을 작성하지 않습니다.
+  - Python에서 public 이름의 기본 범위는 선행 밑줄이 없는 모듈·클래스·함수·메서드이지만, 실제 범위는 package export, framework 규칙 및 소비 프로젝트 설정으로 확정합니다.
 - **Docstring 및 주석 언어**:
   - Core의 사용자 소통 및 문서화 언어 규칙을 따릅니다.
   - `Args`, `Returns`, `Raises`와 같은 표준 섹션명 및 기술 고유명사는 영어를 사용할 수 있습니다.
-- **주석 (Comments)**:
-  - 코드의 동작 방식보다는 **"왜(Why)"** 작성되었는지 이유를 명시하십시오.
-  - 해결이 필요한 작업에는 `TODO(username): 설명` 형식을 준수하십시오.
+- **검사 및 예외**:
+  - 문서화 필요성, Why 주석, 처리 문맥 전환 및 구조 개선 우선순위는 Core 기준을 따릅니다.
+  - framework override의 문서화 예외는 해당 framework 규칙 또는 소비 프로젝트 설정에서 결정하며, 기존 프로젝트의 설정과 일관된 관례를 범용 기본값보다 우선합니다.
+  - Ruff를 사용하는 프로젝트에서는 pydocstyle `D` 규칙과 `lint.pydocstyle.convention` 설정을 검토하되, 활성화할 규칙은 소비 프로젝트가 정합니다.
+  - 해결이 필요한 작업에는 프로젝트가 채택한 TODO 형식을 사용합니다. 별도 관례가 없으면 `TODO(username): 설명` 형식을 사용할 수 있습니다.
 
 ---
 

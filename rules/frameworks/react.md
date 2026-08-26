@@ -46,3 +46,10 @@ React.js (Single Page Application, Vite) 기반 프로젝트에 적용되는 아
   - 컴포넌트 트리의 런타임 에러가 전체 앱을 멈추지 않도록 주요 도메인 경계마다 Error Boundary를 배치하고 Fallback UI를 제공하십시오.
 - **Strict Props & Event Typing**:
   - 컴포넌트 Props는 Interface/Type으로 명확히 정의하고 `any` 타입을 엄격히 금지하십시오.
+
+---
+
+## 💬 5. Framework Convention 문서화 범위
+
+- React component, hook 및 framework callback은 이름·Props/type·framework contract만으로 책임이 명확하면 설명을 기계적으로 반복하지 않습니다.
+- 비표준 lifecycle 제약, 의도적인 dependency 처리, 외부 호환성 또는 중요한 side effect가 있으면 Core 기준에 따라 차이를 문서화하고, 표현 형식은 JavaScript 또는 TypeScript style 규칙을 따릅니다.

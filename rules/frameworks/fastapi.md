@@ -40,4 +40,4 @@ FastAPI (Python 비동기 백엔드 프레임워크) 기반 프로젝트에 적�
 - **`HTTPException` 표준화**:
   - 예외 발생 시 구체적인 `status_code`와 통일된 JSON 에러 메시지 구조(`detail={"code": "...", "message": "..."}`)를 반환하십시오.
 - **OpenAPI / Swagger 정보 내실화**:
-  - 라우터 함수의 Docstring 및 `summary`, `description`, `responses` 매개변수를 충실히 작성하여 자동 생성되는 Swagger UI 문서를 최상으로 유지하십시오.
+  - 외부 소비자가 의존하는 endpoint 계약은 Core 기준에 따라 문서화하고, 자동 생성 OpenAPI에 필요한 `summary`, `description`, `responses`를 실제 계약과 동기화하십시오. Docstring과 metadata의 중복 범위는 소비 프로젝트 설정으로 정합니다.
