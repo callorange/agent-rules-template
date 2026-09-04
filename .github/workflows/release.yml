@@ -39,6 +39,10 @@ jobs:
           python3 scripts/build_dist.py
           echo "Fresh dist/ bundle compiled in CI."
 
+      - name: Validate rules and dist bundle
+        run: |
+          python3 .agents/skills/rule-validator/scripts/validate_rules.py
+
       - name: Verify dist bundle build
         run: |
           test -f dist/AGENTS.md || (echo "Error: dist/AGENTS.md missing" && exit 1)
