@@ -1,0 +1,42 @@
+name: Runtime Compatibility
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'agent_rules_template/**/*.py'
+      - 'tests/test_runtime_compatibility.py'
+      - 'pyproject.toml'
+      - '.github/workflows/runtime-compatibility.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'agent_rules_template/**/*.py'
+      - 'tests/test_runtime_compatibility.py'
+      - 'pyproject.toml'
+      - '.github/workflows/runtime-compatibility.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Run runtime compatibility test
+        run: |
+          python3 -m unittest tests.test_runtime_compatibility -v

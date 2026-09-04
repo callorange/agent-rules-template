@@ -1,32 +1,40 @@
-name: Validate Agents Template Distribution
+name: Validate Distribution
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'rules/**'
+      - 'guides/**'
+      - 'skills/**'
+      - 'subagents/**'
+      - '.agents/skills/rule-validator/**'
+      - 'scripts/**'
+      - 'agent_rules_template/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/validate-distribution.yml'
   pull_request:
     branches:
       - main
+    paths:
+      - 'rules/**'
+      - 'guides/**'
+      - 'skills/**'
+      - 'subagents/**'
+      - '.agents/skills/rule-validator/**'
+      - 'scripts/**'
+      - 'agent_rules_template/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/validate-distribution.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  runtime-compatibility:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Run runtime compatibility test
-        run: |
-          python3 -m unittest tests.test_runtime_compatibility -v
-
   validate-distribution:
     runs-on: ubuntu-latest
     steps:
