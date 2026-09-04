@@ -192,6 +192,83 @@ class RegressionTests(unittest.TestCase):
                     sync(self.project, self.bundle, force, replace)
                 self.assertEqual(target.read_text(), "owned")
 
+    def test_identical_legacy_files_are_adopted_without_force(self):
+        target = self.project / "rules/a.md"
+        target.parent.mkdir(parents=True)
+        target.write_bytes((self.bundle / "rules/a.md").read_bytes())
+
+        sync(self.project, self.bundle)
+
+        local = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(
+            local["managed_files"]["rules/a.md"],
+            json.loads((self.bundle / "metadata.json").read_text())["managed_files"][
+                "rules/a.md"
+            ],
+        )
+
+    def test_multiple_identical_legacy_files_are_adopted(self):
+        (self.bundle / "rules/b.md").write_bytes(b"second\n")
+        self.update_bundle("1.0")
+        for raw in json.loads((self.bundle / "metadata.json").read_text())["managed_files"]:
+            target = self.project / raw
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((self.bundle / raw).read_bytes())
+
+        sync(self.project, self.bundle)
+
+        local = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(
+            set(local["managed_files"]),
+            set(json.loads((self.bundle / "metadata.json").read_text())["managed_files"]),
+        )
+
+    def test_adopted_file_detects_changes_and_force_restores_it(self):
+        target = self.project / "rules/a.md"
+        target.parent.mkdir(parents=True)
+        target.write_bytes((self.bundle / "rules/a.md").read_bytes())
+        sync(self.project, self.bundle)
+        target.write_text("local change")
+
+        with self.assertRaisesRegex(ValueError, "Local modifications"):
+            sync(self.project, self.bundle)
+        sync(self.project, self.bundle, force=True)
+
+        self.assertEqual(target.read_bytes(), b"original\n")
+
+    def test_adoption_and_conflict_mixture_makes_no_changes(self):
+        (self.bundle / "rules/b.md").write_bytes(b"second\n")
+        self.update_bundle("1.0")
+        adopted = self.project / "rules/a.md"
+        adopted.parent.mkdir(parents=True)
+        adopted.write_bytes((self.bundle / "rules/a.md").read_bytes())
+        conflict = self.project / "rules/b.md"
+        conflict.write_text("project-owned")
+        before = self.snapshot()
+
+        with self.assertRaisesRegex(ValueError, "rules/b.md"):
+            sync(self.project, self.bundle)
+
+        self.assertEqual(before, self.snapshot())
+        self.assertFalse((self.project / LOCAL_METADATA).exists())
+
+    def test_all_project_owned_conflicts_are_sorted_and_reported(self):
+        for name in ("b.md", "c.md"):
+            (self.bundle / "rules" / name).write_text(name)
+        self.update_bundle("1.0")
+        for raw in ("rules/c.md", "rules/a.md", "rules/b.md"):
+            target = self.project / raw
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("project-owned")
+
+        with self.assertRaises(ValueError) as context:
+            sync(self.project, self.bundle, force=True, replace=True)
+
+        self.assertEqual(
+            str(context.exception),
+            "Project-owned 파일과 충돌합니다:\n- rules/a.md\n- rules/b.md\n- rules/c.md",
+        )
+
     def test_symlink_targets_are_rejected(self):
         outside = self.base / "outside"
         outside.write_bytes(b"outside")

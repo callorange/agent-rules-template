@@ -247,15 +247,22 @@ def preflight(
             "Local modifications detected; no files changed:\n- " + "\n- ".join(changes)
         )
     old, new = set(local.get("managed_files", {})), set(metadata["managed_files"])
-    for raw in new:
+    ownership_conflicts: list[str] = []
+    for raw in sorted(new):
         target = local_target(project, raw)
         if raw not in old and target.exists():
-            raise ValueError(f"Project-owned 파일과 충돌합니다: {raw}")
+            if file_record(target) != metadata["managed_files"][raw]:
+                ownership_conflicts.append(raw)
         parent = target.parent
         while parent != project:
             if parent.exists() and not parent.is_dir():
                 raise ValueError(f"부모 경로가 directory가 아닙니다: {raw}")
             parent = parent.parent
+    if ownership_conflicts:
+        raise ValueError(
+            "Project-owned 파일과 충돌합니다:\n- "
+            + "\n- ".join(ownership_conflicts)
+        )
     for raw in old - new:
         target = local_target(project, raw)
         if target.exists() and target.is_dir():

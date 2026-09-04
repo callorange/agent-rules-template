@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.0.0**입니다.
+다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.1.0**입니다.
 
 ---
 
@@ -187,7 +187,7 @@ agent-rules --replace
 agent-rules --replace --force
 ```
 
-Migration은 기계적 작업일 뿐 기존 Project Rules와 Template 규칙의 의미 중복을 제거하지 않습니다. 필요하면 LLM에게 Project Rules를 검토해 프로젝트 고유 규칙만 남기도록 요청하십시오.
+Migration은 기계적 작업일 뿐 기존 Project Rules와 Template 규칙의 의미 중복을 제거하지 않습니다. Local metadata 도입 전 복사한 파일은 bundle의 canonical file record와 완전히 같을 때만 자동 adoption하며, 하나라도 다르면 Project-owned conflict로 중단합니다. 필요하면 LLM에게 Project Rules를 검토해 프로젝트 고유 규칙만 남기도록 요청하십시오.
 
 Local metadata가 손상되거나 기존 managed 설치에서 누락되면 sync는 중단합니다. `--force`도 baseline 손상이나 Project-owned 파일 충돌을 무시하지 않습니다. `--replace`는 손상된 AGENTS marker를 재생성하지만 다른 managed 파일 변경까지 무시하지 않습니다.
 

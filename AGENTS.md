@@ -89,4 +89,4 @@ agents-template/
 
 ---
 
-**Version**: 2.0.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.1.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness

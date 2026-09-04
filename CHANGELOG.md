@@ -5,10 +5,13 @@
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-09-04
+
 ### Added
 - **Distribution Contract 및 안전한 소비 프로젝트 동기화**: `agent_rules_template/bundle/metadata.json`의 파일 단위 ownership·canonical hash를 기반으로 Managed Block, local modification preflight, `--force`, `--replace`, 제거된 managed file 처리를 제공하는 단일 sync CLI와 자동 테스트를 추가했습니다.
 
 ### Changed
+- **기존 Template copy migration 보완**: Local metadata가 없는 소비 프로젝트의 파일이 bundle과 동일하면 자동 adoption하고, 다른 파일은 모든 옵션에서 Project-owned conflict로 보호합니다.
 - **배포 lifecycle 단순화**: CI는 `build_dist.py` → bundle metadata 검증 → rule-validator → sync test를 실행하며, 이전 Release ZIP 생성을 제거했습니다.
 - **sync 감사 결함 수정**: Local baseline fail-closed 검증, 전체 쓰기 대상 경계 검사, NFC logical path lookup·충돌 거부, staging 및 예외 복구, 손상 marker의 명시적 교체, Python 3.10+ 호환성과 반복 가능한 wheel 검증을 보완했습니다.
 - **온디맨드 규칙 활성화 및 코드 문서화 책임 재구성**: 언어·framework·architecture·packaging 규칙의 누적 적용 계약과 소비 프로젝트용 활성화 매트릭스·설정 체크리스트를 추가하고, 문서화 필요성·Why 주석·처리 문맥 전환 기준은 Core SSOT로, 수명주기는 docs-maintenance로, 표현 형식과 framework 예외는 해당 하위 모듈로 분리했습니다.
