@@ -65,6 +65,9 @@ agents-template/
 │       ├── cpp.md           # C++ 코딩 스타일 지침 (Google Style Guide)
 │       ├── csharp.md        # C# 코딩 스타일 지침 (Google Style Guide)
 │       └── dart.md          # Dart/Flutter 코딩 스타일 지침 (Effective Dart)
+├── guides/                  # 📚 비규범적 설계 참고 자료 (선택적으로 읽음)
+│   ├── README.md            # guides/의 적용 경계와 사용 방법
+│   └── prompt-context-engineering.md # 프롬프트·컨텍스트·Task Contract 설계 가이드
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
 │   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
 │   ├── handoff/             # 장기 작업·세션 전환용 구조화 맥락 인계 스킬
@@ -79,6 +82,7 @@ agents-template/
 ├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
 │   ├── AGENTS.md            # 필수 핵심 규칙이 번들링된 통합 배포 파일
 │   ├── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
+│   ├── guides/              # 선택형 비규범적 설계 참고 자료
 │   └── .agents/             # 🎯 Target 프로젝트 루트용 자동 호환 배포 디렉터리
 │       ├── skills/          # dist/.agents/skills/
 │       └── agents/          # dist/.agents/agents/
@@ -98,6 +102,7 @@ agents-template/
 - **언어 정책**: 커밋 메시지의 구조적 키워드(`feat`, `fix`, `docs`, `refactor` 등)는 영어 표준 형식을 사용하고, 설명과 본문은 명시된 프로젝트 언어를 우선합니다. 프로젝트 언어가 없으면 사용자의 주 언어를 따르며, Docstring과 주석은 기존 프로젝트의 언어 관례를 유지합니다.
 - **Packaging**: Docker, Nginx, Python 애플리케이션 서버처럼 해당 기술을 직접 운영할 때만 적용합니다. PaaS, 서버리스, 관리형 ingress 등은 플랫폼의 공식 운영 가이드를 우선합니다.
 - **Skills / Subagents**: 특정 전문성, 장기 인계, 독립 감사가 필요한 경우에만 선택적으로 사용합니다. 설치나 서브에이전트 호출은 기본 동작이 아닙니다.
+- **Guides**: 규칙·프롬프트·Task Contract·agent harness를 설계하거나 검토할 때만 선택적으로 읽는 비규범적 참고 자료입니다. 일반 코드 작업에 자동 적용하지 않으며, 소비 프로젝트의 자체 설계 가이드 또는 정책이 있으면 그것을 우선합니다.
 
 ---
 
@@ -139,7 +144,7 @@ agents-template/
 ## 🚀 사용법 (Usage)
 
 ### 1. 로컬 번들 조립 스크립트 실행 (`scripts/build_dist.py`)
-규칙(`rules/`), 스킬(`skills/`), 서브에이전트(`subagents/`) 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/` 배포 아티팩트가 0.01초 만에 자동 생성됩니다:
+규칙(`rules/`), 가이드(`guides/`), 스킬(`skills/`), 서브에이전트(`subagents/`) 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/` 배포 아티팩트가 자동 생성됩니다:
 
 ```bash
 python3 scripts/build_dist.py

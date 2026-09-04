@@ -2,7 +2,7 @@
 """
 scripts/build_dist.py
 AI 에이전트 및 개발자를 위한 dist/ 배포 아티팩트 자동 조립 스크립트.
-rules/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS.md, dist/rules/ 및 dist/.agents/ 구조를 생성합니다.
+rules/, guides/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS.md, dist/rules/, dist/guides/ 및 dist/.agents/ 구조를 생성합니다.
 
 ⚠️ [헌법 가드: 내부 vs 배포 아티팩트 격리]
 이 레포지토리 자체의 개발·유지보수 전용 메타 스킬/서브에이전트인 `/.agents/` 디렉터리는 절대 dist/ 에 direct 복사되지 않습니다.
@@ -15,6 +15,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RULES_DIR = PROJECT_ROOT / "rules"
+GUIDES_DIR = PROJECT_ROOT / "guides"
 SKILLS_DIR = PROJECT_ROOT / "skills"
 SUBAGENTS_DIR = PROJECT_ROOT / "subagents"
 
@@ -55,6 +56,7 @@ def build_dist(output_dir: Path | None = None):
     """dist 번들을 생성하고, 필요하면 지정한 출력 디렉터리에 생성합니다."""
     dist_dir = output_dir if output_dir is not None else DIST_DIR
     dist_rules_dir = dist_dir / "rules"
+    dist_guides_dir = dist_dir / "guides"
     dist_agents_skills_dir = dist_dir / ".agents" / "skills"
     dist_agents_agents_dir = dist_dir / ".agents" / "agents"
 
@@ -129,7 +131,13 @@ def build_dist(output_dir: Path | None = None):
             shutil.copytree(src_cat, dest_cat)
             print(f"  + Copied category module: {cat_name} -> dist/rules/{cat_name}")
 
-    # 7. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/skills/, dist/.agents/agents/)로 패키징
+    # 7. 비규범적 설계 참고 자료를 dist/guides/로 1:1 복사합니다.
+    # 이 파일들은 dist/AGENTS.md에 병합하지 않으며, 필요할 때만 선택적으로 참조합니다.
+    if GUIDES_DIR.exists():
+        shutil.copytree(GUIDES_DIR, dist_guides_dir)
+        print("  + Copied optional guides -> dist/guides")
+
+    # 8. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/skills/, dist/.agents/agents/)로 패키징
     # (주의: 이 프로젝트 자체의 내부 전용 메타 디렉터리 PROJECT_ROOT/.agents 는 절대 가져오지 않음)
     if SKILLS_DIR.exists():
         dist_agents_skills_dir.mkdir(parents=True, exist_ok=True)

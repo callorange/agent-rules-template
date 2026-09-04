@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_rules.py - rules/, skills/, subagents/ 원본 규칙 모듈 및 dist/ 배포 아티팩트의 정적 무결성을 검증하는 도구.
+validate_rules.py - rules/, guides/, skills/, subagents/ 원본 및 dist/ 배포 아티팩트의 정적 무결성을 검증하는 도구.
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
@@ -13,6 +13,7 @@ from pathlib import Path
 # 프로젝트 루트 디렉터리 설정 (.agents/skills/rule-validator/scripts/ -> 프로젝트 루트)
 ROOT_DIR = Path(__file__).resolve().parents[4]
 RULES_DIR = ROOT_DIR / "rules"
+GUIDES_DIR = ROOT_DIR / "guides"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
 DIST_DIR = ROOT_DIR / "dist"
@@ -173,8 +174,10 @@ def main():
         else:
             print(f"   (동적 탐색된 코어 모듈 {len(core_files)}개: {[f.name for f in core_files]})")
 
-    # 2. rules/, skills/, subagents/ 원본 SSOT 마크다운 파일 동적 수집
+    # 2. rules/, guides/, skills/, subagents/ 원본 SSOT 마크다운 파일 동적 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
+    if GUIDES_DIR.exists():
+        md_files.extend(GUIDES_DIR.glob("**/*.md"))
     if SKILLS_DIR.exists():
         md_files.extend(SKILLS_DIR.glob("**/*.md"))
     if SUBAGENTS_DIR.exists():
