@@ -27,23 +27,28 @@ FORBIDDEN_PATTERNS = [
 def check_yaml_frontmatter(file_path: Path) -> list:
     """스킬 및 서브에이전트 파일의 YAML Frontmatter (name, description) 존재 여부를 검사합니다."""
     errors = []
-    # SKILL.md 또는 subagents/*.md 대상
-    if file_path.name == "SKILL.md" or "subagents" in file_path.parts or "agents" in file_path.parts:
+    # 모든 SKILL.md와 공개 subagents 원본·배포본만 대상입니다.
+    relative = file_path.relative_to(ROOT_DIR)
+    is_public_subagent = (
+        relative.parts[:1] == ("subagents",)
+        or relative.parts[:3] == ("dist", ".agents", "agents")
+    )
+    if file_path.name == "SKILL.md" or is_public_subagent:
         try:
             content = file_path.read_text(encoding="utf-8")
-            if not content.startswith("---"):
+            if not re.match(r"\A---\r?\n", content):
                 errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter 헤더('---')가 누락되었습니다.")
                 return errors
             
-            parts = content.split("---", 2)
-            if len(parts) < 3:
+            closing = re.search(r"(?m)^---\s*$", content[4:])
+            if not closing:
                 errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter 구획이 올바르게 닫히지 않았습니다.")
                 return errors
 
-            frontmatter = parts[1]
-            if "name:" not in frontmatter:
+            frontmatter = content[4:][0:closing.start()]
+            if not re.search(r"(?m)^name:\s*\S[^\r\n]*$", frontmatter):
                 errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter에 'name:' 필드가 누락되었습니다.")
-            if "description:" not in frontmatter:
+            if not re.search(r"(?m)^description:\s*\S[^\r\n]*$", frontmatter):
                 errors.append(f"[{file_path.relative_to(ROOT_DIR)}] YAML Frontmatter에 'description:' 필드가 누락되었습니다.")
         except Exception as e:
             errors.append(f"[{file_path.relative_to(ROOT_DIR)}] Frontmatter 검사 에러: {e}")
@@ -87,11 +92,11 @@ def check_markdown_links(file_path: Path) -> list:
     content_clean = re.sub(r"```[\s\S]*?```", "", content)
     content_clean = re.sub(r"`[^`\n]+`", "", content_clean)
 
-    # [text](relative_path) 패턴 매칭 (http/https/mailto/file 등 외의 로컬 상대 경로 대상)
-    link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+    # 선택적 제목과 <angle target>을 지원하는 Markdown 링크를 검사합니다.
+    link_pattern = re.compile(r"\[[^\]]+\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+(?:\"[^\"]*\"|'[^']*'))?\s*\)")
     for idx, line in enumerate(content_clean.splitlines(), 1):
         for match in link_pattern.finditer(line):
-            target = match.group(2).strip()
+            target = match.group(1).strip().strip("<>")
             # 외부 URL, 앵커 링크 및 file: 스키마 제외
             if target.startswith(("http://", "https://", "mailto:", "#", "file:")):
                 continue
@@ -109,22 +114,29 @@ def check_markdown_links(file_path: Path) -> list:
     return errors
 
 def check_dist_freshness() -> list:
-    """dist/ 아티팩트가 원본 소스 파일들보다 최신인지 정적으로 동기화 상태를 검사합니다."""
+    """원본과 실제 dist 복사·병합 대상의 대응 관계를 기준으로 최신성을 경고합니다."""
     warnings = []
     if not DIST_DIR.exists() or not (DIST_DIR / "AGENTS.md").exists():
         warnings.append("[경고] dist/ 디렉터리 또는 dist/AGENTS.md 아티팩트가 존재하지 않습니다. 'python scripts/build_dist.py'를 구동하십시오.")
         return warnings
 
-    dist_mtime = (DIST_DIR / "AGENTS.md").stat().st_mtime
-    
-    # 원본 파일들의 최신 수정 시각 수집
-    source_files = list(RULES_DIR.glob("**/*.md")) + list(SKILLS_DIR.glob("**/*.md")) + list(SUBAGENTS_DIR.glob("**/*.md"))
-    newer_sources = [f for f in source_files if f.stat().st_mtime > dist_mtime]
-    
-    if newer_sources:
-        rel_names = [str(f.relative_to(ROOT_DIR)) for f in newer_sources[:3]]
-        warnings.append(f"[경고] dist/ 배포 아티팩트가 오래되었습니다! (수정된 원본: {', '.join(rel_names)} 등 {len(newer_sources)}개). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
-        
+    mappings = []
+    for source in RULES_DIR.glob("**/*.md"):
+        relative = source.relative_to(RULES_DIR)
+        target = DIST_DIR / "AGENTS.md" if relative.parts[0] == "core" else DIST_DIR / "rules" / relative
+        mappings.append((source, target))
+    for source in SKILLS_DIR.glob("**/*") if SKILLS_DIR.exists() else []:
+        if source.is_file():
+            mappings.append((source, DIST_DIR / ".agents" / "skills" / source.relative_to(SKILLS_DIR)))
+    for source in SUBAGENTS_DIR.glob("**/*") if SUBAGENTS_DIR.exists() else []:
+        if source.is_file():
+            mappings.append((source, DIST_DIR / ".agents" / "agents" / source.relative_to(SUBAGENTS_DIR)))
+
+    stale = [source for source, target in mappings if not target.exists() or source.stat().st_mtime > target.stat().st_mtime]
+    if stale:
+        rel_names = [str(source.relative_to(ROOT_DIR)) for source in stale[:3]]
+        warnings.append(f"[경고] dist/ 배포 아티팩트가 오래되었거나 누락되었습니다! (원본: {', '.join(rel_names)} 등 {len(stale)}개). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
+
     return warnings
 
 def main():
@@ -139,9 +151,9 @@ def main():
         all_errors.append("코어 디렉터리 누락: 'rules/core' 디렉터리가 존재하지 않습니다.")
     else:
         core_files = sorted(list(core_dir.glob("*.md")))
-        base_files = [f for f in core_files if "base" in f.name]
-        if not base_files:
-            all_errors.append("필수 최상위 헌법 모듈 누락: 'rules/core/' 내에 base 모듈이 존재하지 않습니다.")
+        base_file = core_dir / "01-base.md"
+        if not base_file.is_file():
+            all_errors.append("필수 최상위 헌법 모듈 누락: 정확한 파일명 'rules/core/01-base.md'가 존재하지 않습니다.")
         else:
             print(f"   (동적 탐색된 코어 모듈 {len(core_files)}개: {[f.name for f in core_files]})")
 
