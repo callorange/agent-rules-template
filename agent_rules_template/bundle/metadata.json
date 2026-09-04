@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.2.0",
+  "template_version": "2.3.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -42,7 +42,7 @@
     },
     "guides/prompt-context-engineering.md": {
       "type": "text",
-      "sha256": "c59c589ccbc952635af2ecc37362f85ca56d6ef2eeb91535de9bce0623224a9f"
+      "sha256": "863f970ac401c7c0a6f2ab0d0d15cf921c0b31891ac6647538d4def3e0c18aab"
     },
     "guides/README.md": {
       "type": "text",

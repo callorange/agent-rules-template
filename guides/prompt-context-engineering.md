@@ -149,6 +149,45 @@ Must not decide:
 
 둘은 조합할 수 있다. 예를 들어 `Apply: All matches within scope`와 `Delegated authority: 기존 패턴과 최소 구현 원칙 안에서 내부 구현 선택 가능`은 같은 문제의 모든 match를 처리하면서 각 위치의 구현 수단은 기존 코드에 맞게 고를 수 있음을 뜻한다.
 
+### Completion sets for multi-output work
+
+여러 파일, 문서, 산출물 또는 독립 요구사항이 하나의 작업에 포함될 때는 완료 대상을 하나의 **completion set**으로 관리한다. 이는 작성자가 이미 알고 있는 필수 대상을 일부 빠뜨리는 일과, 작업 중 발견되는 추가 영향을 놓치는 일을 함께 줄이기 위한 패턴이며 모든 작업에 강제되는 절차는 아니다.
+
+초기 completion set에는 사용자 요구사항, 프로젝트 계약, 현재 context에서 이미 알려진 완료 대상(`Known targets`)을 명시한다. 사전에 모든 영향 대상을 알 수 없다면 파일 목록을 추측해서 고정하지 않는다. 대신 재현 가능한 `search scope`와 관련성을 판정할 `match rule`을 정의해 `Discovered targets`를 찾고, 새로 발견한 관련 대상은 completion set에 추가한다.
+
+```text
+Known targets
+  + Discovered targets from bounded search
+  → Final completion set
+  → Resolve every item
+  → Re-run discovery check when practical
+```
+
+completion set의 각 항목은 완료 전에 `modified` 또는 근거가 있는 `not modified` 상태로 닫는다. 발견한 항목을 모두 처리했다는 사실만으로 discovery가 충분했다고 가정하지 않는다. 가능하면 수정 후 같은 search scope와 match rule, 또는 동등한 검색을 다시 수행해 의도하지 않은 잔여 match와 누락 가능성을 확인한다.
+
+이 패턴은 두 층의 completeness를 구분한다.
+
+- **Discovery completeness**: 정의한 탐색으로 관련 대상을 충분히 발견했는가?
+- **Execution completeness**: 지정·발견한 각 대상을 모두 처리하거나 근거와 함께 처리하지 않기로 닫았는가?
+
+`Exact`는 Known targets가 곧 completion set의 경계인 경우에 적합하다. `All matches within scope`는 bounded search로 Discovered targets를 completion set에 추가하고 처리해야 하는 경우에 적합하다. 두 패턴 모두 completion set의 모든 항목을 닫아야 완료로 판단한다.
+
+예를 들어 설명을 변경하는 작업은 다음처럼 표현할 수 있다. 이는 고정 문법이 아니라 개념을 보이는 예시다.
+
+```text
+Known targets:
+- SKILL.md
+- README.md
+
+Search:
+- 저장소 전체에서 변경되는 동작명, 옵션명 또는 기존 설명을 참조하는 위치
+
+Completion:
+- known targets와 검색으로 발견된 관련 대상 모두 처리
+- 각 항목은 modified 또는 not modified: <reason>
+- 재검색 결과 의도하지 않은 잔여 match 없음
+```
+
 ## Context Selection
 
 더 많은 context가 항상 더 좋은 것은 아니다. 좋은 context는 relevant, authoritative, current해야 한다. 보통 다음과 같이 점진적으로 구성한다.
@@ -164,7 +203,7 @@ Global invariant
 
 ## Completion and Verification
 
-모델의 자기평가 대신 외부 증거를 사용한다. Acceptance criteria는 무엇이 참이어야 하는지, Validation은 그것을 어떤 명령이나 관찰 가능한 검사로 확인하는지 각각 설명한다.
+모델의 자기평가 대신 외부 증거를 사용한다. 여러 산출물이 있는 작업이라면 먼저 [completion set](#completion-sets-for-multi-output-work)으로 discovery와 execution의 완료 범위를 닫고, Acceptance criteria는 무엇이 참이어야 하는지, Validation은 그것을 어떤 명령이나 관찰 가능한 검사로 확인하는지 각각 설명한다.
 
 ```text
 Acceptance:
@@ -236,6 +275,9 @@ Must not decide:
 Apply:
 [Exact | All matches within scope]
 
+Completion set:
+[optional; Known targets, bounded search의 scope와 match rule, 각 항목의 close 상태]
+
 Examples:
 [optional; exhaustive인지 illustrative인지 명시]
 
@@ -263,6 +305,7 @@ Failure / escalation:
 - 예외가 기본 동작을 무력화하지 않는가?
 - 프로젝트 설정과 기존 convention의 우선순위가 분명한가?
 - 수정 scope와 semantic scope가 구분되는가?
+- 여러 산출물이 있으면 Known targets와 bounded search 결과를 completion set으로 닫는가?
 - 이미 결정된 것과 에이전트가 결정할 수 있는 것이 구분되는가?
 - acceptance와 validation이 분리되어 있는가?
 - 검증 실패 시 완료를 주장할 여지가 없는가?

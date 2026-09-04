@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.2.0**입니다.
+다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.3.0**입니다.
 
 ---
 

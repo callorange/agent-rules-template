@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-09-04
+
+### Added
+- **다중 산출물 completion set 가이드**: Known targets와 bounded search로 발견한 Discovered targets를 하나의 completion set으로 닫고, discovery completeness와 execution completeness를 구분해 검증하는 Task Contract 설계 패턴을 추가했습니다.
+
 ## [2.2.0] - 2026-09-04
 
 ### Changed
