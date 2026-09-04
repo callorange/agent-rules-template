@@ -38,6 +38,9 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Validate rules directory structure
         run: |
           test -d rules/core || (echo "Error: rules/core missing" && exit 1)
