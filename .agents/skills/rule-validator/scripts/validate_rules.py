@@ -4,9 +4,10 @@ validate_rules.py - rules/, skills/, subagents/ 원본 규칙 모듈 및 dist/ �
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
-import os
+import importlib.util
 import re
 import sys
+import tempfile
 from pathlib import Path
 
 # 프로젝트 루트 디렉터리 설정 (.agents/skills/rule-validator/scripts/ -> 프로젝트 루트)
@@ -114,28 +115,43 @@ def check_markdown_links(file_path: Path) -> list:
     return errors
 
 def check_dist_freshness() -> list:
-    """원본과 실제 dist 복사·병합 대상의 대응 관계를 기준으로 최신성을 경고합니다."""
+    """임시 경로에 결정적으로 생성한 번들과 committed dist의 내용을 비교합니다."""
     warnings = []
-    if not DIST_DIR.exists() or not (DIST_DIR / "AGENTS.md").exists():
-        warnings.append("[경고] dist/ 디렉터리 또는 dist/AGENTS.md 아티팩트가 존재하지 않습니다. 'python scripts/build_dist.py'를 구동하십시오.")
-        return warnings
+    build_script = ROOT_DIR / "scripts" / "build_dist.py"
+    spec = importlib.util.spec_from_file_location("build_dist", build_script)
+    if spec is None or spec.loader is None:
+        return [f"[경고] dist 최신성 비교를 위한 빌드 스크립트를 불러올 수 없습니다: {build_script}"]
+    build_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_module)
 
-    mappings = []
-    for source in RULES_DIR.glob("**/*.md"):
-        relative = source.relative_to(RULES_DIR)
-        target = DIST_DIR / "AGENTS.md" if relative.parts[0] == "core" else DIST_DIR / "rules" / relative
-        mappings.append((source, target))
-    for source in SKILLS_DIR.glob("**/*") if SKILLS_DIR.exists() else []:
-        if source.is_file():
-            mappings.append((source, DIST_DIR / ".agents" / "skills" / source.relative_to(SKILLS_DIR)))
-    for source in SUBAGENTS_DIR.glob("**/*") if SUBAGENTS_DIR.exists() else []:
-        if source.is_file():
-            mappings.append((source, DIST_DIR / ".agents" / "agents" / source.relative_to(SUBAGENTS_DIR)))
+    # 격리 환경에서도 쓰기 가능한 프로젝트 내부 임시 디렉터리를 사용하며, 종료 시 제거합니다.
+    with tempfile.TemporaryDirectory(dir=ROOT_DIR) as temp_dir:
+        generated_dir = Path(temp_dir) / "dist"
+        build_module.build_dist(generated_dir)
+        generated_files = {
+            path.relative_to(generated_dir)
+            for path in generated_dir.rglob("*") if path.is_file()
+        }
+        committed_files = {
+            path.relative_to(DIST_DIR)
+            for path in DIST_DIR.rglob("*") if path.is_file()
+        } if DIST_DIR.exists() else set()
+        missing = sorted(generated_files - committed_files)
+        unexpected = sorted(committed_files - generated_files)
+        stale = sorted(
+            relative for relative in generated_files & committed_files
+            if (generated_dir / relative).read_bytes() != (DIST_DIR / relative).read_bytes()
+        )
 
-    stale = [source for source, target in mappings if not target.exists() or source.stat().st_mtime > target.stat().st_mtime]
+    differences = []
+    if missing:
+        differences.append("누락: " + ", ".join(str(path) for path in missing))
+    if unexpected:
+        differences.append("예상 밖: " + ", ".join(str(path) for path in unexpected))
     if stale:
-        rel_names = [str(source.relative_to(ROOT_DIR)) for source in stale[:3]]
-        warnings.append(f"[경고] dist/ 배포 아티팩트가 오래되었거나 누락되었습니다! (원본: {', '.join(rel_names)} 등 {len(stale)}개). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
+        differences.append("내용 불일치: " + ", ".join(str(path) for path in stale))
+    if differences:
+        warnings.append("[경고] dist/ 배포 아티팩트가 현재 원본과 일치하지 않습니다 (" + "; ".join(differences) + "). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
 
     return warnings
 

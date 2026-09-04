@@ -51,14 +51,20 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
             
     return title, desc
 
-def build_dist():
+def build_dist(output_dir: Path | None = None):
+    """dist 번들을 생성하고, 필요하면 지정한 출력 디렉터리에 생성합니다."""
+    dist_dir = output_dir if output_dir is not None else DIST_DIR
+    dist_rules_dir = dist_dir / "rules"
+    dist_agents_skills_dir = dist_dir / ".agents" / "skills"
+    dist_agents_agents_dir = dist_dir / ".agents" / "agents"
+
     print("🚀 Starting dist/ bundle assembly...")
 
     # 1. dist 디렉토리 초기화 (Clean Build)
-    if DIST_DIR.exists():
-        shutil.rmtree(DIST_DIR)
-    DIST_DIR.mkdir(parents=True, exist_ok=True)
-    DIST_RULES_DIR.mkdir(parents=True, exist_ok=True)
+    if dist_dir.exists():
+        shutil.rmtree(dist_dir)
+    dist_dir.mkdir(parents=True, exist_ok=True)
+    dist_rules_dir.mkdir(parents=True, exist_ok=True)
 
     # 2. dist/AGENTS.md 헤더 생성
     agents_md_content = [
@@ -111,14 +117,14 @@ def build_dist():
         agents_md_content.append("")
 
     # 5. dist/AGENTS.md 저장
-    final_agents_md_path = DIST_DIR / "AGENTS.md"
+    final_agents_md_path = dist_dir / "AGENTS.md"
     final_agents_md_path.write_text("\n".join(agents_md_content).strip() + "\n", encoding="utf-8")
     print(f"✅ Generated: {final_agents_md_path}")
 
     # 6. rules/architecture, packaging, styles 디렉토리를 dist/rules/ 아래로 복사
     for cat_name in CATEGORY_METADATA.keys():
         src_cat = RULES_DIR / cat_name
-        dest_cat = DIST_RULES_DIR / cat_name
+        dest_cat = dist_rules_dir / cat_name
         if src_cat.exists():
             shutil.copytree(src_cat, dest_cat)
             print(f"  + Copied category module: {cat_name} -> dist/rules/{cat_name}")
@@ -126,11 +132,11 @@ def build_dist():
     # 7. 공용 배포용 원본(skills/, subagents/)을 타 프로젝트 배포용 구조(dist/.agents/skills/, dist/.agents/agents/)로 패키징
     # (주의: 이 프로젝트 자체의 내부 전용 메타 디렉터리 PROJECT_ROOT/.agents 는 절대 가져오지 않음)
     if SKILLS_DIR.exists():
-        DIST_AGENTS_SKILLS_DIR.mkdir(parents=True, exist_ok=True)
+        dist_agents_skills_dir.mkdir(parents=True, exist_ok=True)
         for item in SKILLS_DIR.iterdir():
             if item.name.startswith("."):
                 continue
-            dest_item_agents = DIST_AGENTS_SKILLS_DIR / item.name
+            dest_item_agents = dist_agents_skills_dir / item.name
             if item.is_dir():
                 shutil.copytree(item, dest_item_agents)
                 print(f"  + Packaged public skill: {item.name} -> dist/.agents/skills/{item.name}")
@@ -139,11 +145,11 @@ def build_dist():
                 print(f"  + Packaged public skill file: {item.name} -> dist/.agents/skills/{item.name}")
 
     if SUBAGENTS_DIR.exists():
-        DIST_AGENTS_AGENTS_DIR.mkdir(parents=True, exist_ok=True)
+        dist_agents_agents_dir.mkdir(parents=True, exist_ok=True)
         for item in SUBAGENTS_DIR.iterdir():
             if item.name.startswith("."):
                 continue
-            dest_item = DIST_AGENTS_AGENTS_DIR / item.name
+            dest_item = dist_agents_agents_dir / item.name
             if item.is_dir():
                 shutil.copytree(item, dest_item)
             else:
