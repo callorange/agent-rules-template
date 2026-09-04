@@ -326,3 +326,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+.rule-validator-build/
+.sync-test-work/
+.pip-temp/
+.wheel-check/
+.wheel-test/
+.uv-test-cache/
+.wheel-test-run/
+.uv-test-cache-run/

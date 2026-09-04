@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-rules-template"
+version = "2.0.0"
+description = "Install and update agent-rules-template distributions"
+requires-python = ">=3.10"
+
+[project.scripts]
+agent-rules = "agent_rules_template.scripts.sync:main"
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+include = ["agent_rules_template*"]
+
+[tool.setuptools.package-data]
+agent_rules_template = ["bundle/**", "bundle/.agents/**", "bundle/.agents/**/*"]

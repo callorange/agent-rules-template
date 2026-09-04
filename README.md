@@ -1,12 +1,12 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 모바일/웹/백엔드 프로젝트에서 공용으로 사용할 수 있는 표준화된 `AGENTS.md` 지침 모듈을 정의하고, 모듈화된 규칙(`rules/`)을 최적화된 배포 번들(`dist/AGENTS.md`)로 조립하여 제공하는 공용 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.0.0**입니다.
+다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.0.0**입니다.
 
 ---
 
 ## 🎯 프로젝트 목적
 
-AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 위험도 기반 실행 제어, 읽기/수정 권한 분리, 증거 기반 검증, 기술 스택별 실행 프로필 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`dist/`)로 통합 관리합니다.
+AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 등)를 활용한 개발 과정에서 반복적으로 활용되는 기본 소통 규칙, 위험도 기반 실행 제어, 읽기/수정 권한 분리, 증거 기반 검증, 기술 스택별 실행 프로필 및 언어별 코딩 스타일 가이드를 모듈화하여 소스(`rules/`) 및 배포 아티팩트(`agent_rules_template/bundle/`)로 통합 관리합니다.
 
 ---
 
@@ -78,14 +78,14 @@ agents-template/
 │   ├── skills/              # 메타 스킬 (rule-validator: 룰셋 무결성 정적 검증)
 │   └── agents/              # 메타 서브에이전트 (auditor)
 ├── scripts/                 # 🛠️ 자동 조립 파이썬 스크립트
-│   └── build_dist.py        # dist/ 배포 아티팩트 자동 조립 도구
-├── dist/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
+│   └── build_dist.py        # agent_rules_template/bundle/ 배포 아티팩트 자동 조립 도구
+├── agent_rules_template/bundle/                    # 📦 배포용 아티팩트 디렉터리 (Git 트래킹 및 CI 배포)
 │   ├── AGENTS.md            # 필수 핵심 규칙이 번들링된 통합 배포 파일
 │   ├── rules/               # 온디맨드 기술 스택/스타일 규칙 모듈
 │   ├── guides/              # 선택형 비규범적 설계 참고 자료
 │   └── .agents/             # 🎯 Target 프로젝트 루트용 자동 호환 배포 디렉터리
-│       ├── skills/          # dist/.agents/skills/
-│       └── agents/          # dist/.agents/agents/
+│       ├── skills/          # agent_rules_template/bundle/.agents/skills/
+│       └── agents/          # agent_rules_template/bundle/.agents/agents/
 ├── AGENTS.md                # 최상위 실행 지침 및 프로젝트 헌법 (Constitution)
 ├── README.md                # 프로젝트 안내 문서
 ├── CHANGELOG.md             # 프로젝트 개정 및 버전 이력 문서
@@ -144,23 +144,56 @@ agents-template/
 ## 🚀 사용법 (Usage)
 
 ### 1. 로컬 번들 조립 스크립트 실행 (`scripts/build_dist.py`)
-규칙(`rules/`), 가이드(`guides/`), 스킬(`skills/`), 서브에이전트(`subagents/`) 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `dist/` 배포 아티팩트가 자동 생성됩니다:
+규칙(`rules/`), 가이드(`guides/`), 스킬(`skills/`), 서브에이전트(`subagents/`) 모듈을 추가/수정한 후, 아래 명령어를 실행하면 `agent_rules_template/bundle/` 배포 아티팩트가 자동 생성됩니다:
 
 ```bash
 python3 scripts/build_dist.py
 ```
 
 ### 2. 규칙 무결성 정적 검증 스크립트 실행 (`rule-validator`)
-모듈 수정 또는 조립 후 금지 표현, UTF-8 인코딩, 상대 링크 유효성 및 `dist/` 최신 동기화 상태를 검증합니다:
+모듈 수정 또는 조립 후 금지 표현, UTF-8 인코딩, 상대 링크 유효성 및 `agent_rules_template/bundle/` 최신 동기화 상태를 검증합니다:
 
 ```bash
 python3 .agents/skills/rule-validator/scripts/validate_rules.py
 ```
 
-*(참고: AI 에이전트와 함께 작업 시, 에이전트가 rules 수정 직후 이 스크립트들을 자동 실행하여 dist/와 무결성을 유지합니다.)*
+*(참고: AI 에이전트와 함께 작업 시, 에이전트가 rules 수정 직후 이 스크립트들을 자동 실행하여 agent_rules_template/bundle/와 무결성을 유지합니다.)*
 
-### 3. GitHub Release 배포 아티팩트 활용 (타 프로젝트 적용)
-GitHub Release 페이지의 **`Latest Continuous Release`**에서 **`agents-template-dist.zip`**을 다운로드하여 대상 프로젝트 루트 디렉터리에 해제하면 즉시 최신 에이전트 실행 환경이 세팅됩니다.
+### 3. 배포 및 소비 프로젝트 동기화
+
+```text
+SSOT → build_dist.py → agent_rules_template/bundle/ → uvx / agent-rules → Consumer Project
+```
+
+`build_dist.py`는 source를 검증 가능한 `agent_rules_template/bundle/` 계약으로 조립하고, sync tool은 source layout을 해석하지 않고 bundle metadata만으로 소비 프로젝트를 갱신합니다. 신규 설치·업데이트에는 다음 중 하나를 사용합니다.
+
+```bash
+agent-rules
+uvx --from git+https://github.com/callorange/agent-rules-template.git agent-rules
+```
+
+기존 `AGENTS.md`에 marker가 없으면 기존 내용은 `# Project Rules` 아래에 보존됩니다. Template은 marker 사이의 Managed Block과 metadata에 등록된 파일만 소유하며, `Project Rules` 및 프로젝트가 만든 파일은 보존합니다. Managed 파일은 직접 수정하거나 formatter의 자동 변경 대상으로 두지 마십시오. 프로젝트별 예외는 Project Rules 또는 프로젝트 소유 rule 파일에 작성합니다.
+
+`agent_rules_template/bundle/metadata.json`은 새 canonical target, 소비 프로젝트의 `.agent-rules-template.json`은 마지막 정상 설치 baseline입니다. sync는 Actual Local과 baseline hash를 비교해 로컬 변경을 먼저 감지합니다. 텍스트 hash는 BOM, 줄바꿈, NFC/NFD, 마지막 newline 차이를 무시합니다.
+
+```bash
+# Template-managed 로컬 변경만 현재 bundle로 복원
+agent-rules --force
+
+# AGENTS.md의 Project Rules까지 새 구조로 교체 (관리 파일 변경은 여전히 보호)
+agent-rules --replace
+
+# 두 의도를 명시적으로 함께 적용
+agent-rules --replace --force
+```
+
+Migration은 기계적 작업일 뿐 기존 Project Rules와 Template 규칙의 의미 중복을 제거하지 않습니다. 필요하면 LLM에게 Project Rules를 검토해 프로젝트 고유 규칙만 남기도록 요청하십시오.
+
+Local metadata가 손상되거나 기존 managed 설치에서 누락되면 sync는 중단합니다. `--force`도 baseline 손상이나 Project-owned 파일 충돌을 무시하지 않습니다. `--replace`는 손상된 AGENTS marker를 재생성하지만 다른 managed 파일 변경까지 무시하지 않습니다.
+
+Bundle 파일명은 NFC여야 하며 NFD source/bundle 경로는 build가 거부합니다. 소비 프로젝트에서는 NFC logical key로 유일한 실제 경로를 찾아 NFD 파일명도 보존합니다. 같은 key에 여러 경로가 대응되면 모든 옵션에서 중단합니다. 쓰기·삭제 대상의 symlink 및 경로 우회도 거부합니다.
+
+적용 전 파일을 staging하고, 적용 중 예외가 발생하면 변경한 파일을 복구합니다. Local metadata는 결과 검증 후 마지막으로 교체합니다. 프로세스 강제 종료·전원 장애나 동시 외부 파일 변경까지 원자적으로 처리하는 transaction은 아니므로 sync 중에는 대상 파일을 동시에 수정하지 마십시오.
 
 ---
 

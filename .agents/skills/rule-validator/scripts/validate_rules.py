@@ -6,17 +6,19 @@ validate_rules.py - rules/, guides/, skills/, subagents/ 원본 및 dist/ 배포
 
 import importlib.util
 import re
+import shutil
 import sys
-import tempfile
 from pathlib import Path
 
 # 프로젝트 루트 디렉터리 설정 (.agents/skills/rule-validator/scripts/ -> 프로젝트 루트)
 ROOT_DIR = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT_DIR))
 RULES_DIR = ROOT_DIR / "rules"
 GUIDES_DIR = ROOT_DIR / "guides"
 SKILLS_DIR = ROOT_DIR / "skills"
 SUBAGENTS_DIR = ROOT_DIR / "subagents"
-DIST_DIR = ROOT_DIR / "dist"
+BUNDLE_DIR = ROOT_DIR / "agent_rules_template" / "bundle"
+from agent_rules_template.scripts.sync import validate_bundle  # noqa: E402
 
 # 금지된 출력 생략 표현 패턴
 FORBIDDEN_PATTERNS = [
@@ -33,7 +35,7 @@ def check_yaml_frontmatter(file_path: Path) -> list:
     relative = file_path.relative_to(ROOT_DIR)
     is_public_subagent = (
         relative.parts[:1] == ("subagents",)
-        or relative.parts[:3] == ("dist", ".agents", "agents")
+        or relative.parts[:4] == ("agent_rules_template", "bundle", ".agents", "agents")
     )
     if file_path.name == "SKILL.md" or is_public_subagent:
         try:
@@ -116,7 +118,7 @@ def check_markdown_links(file_path: Path) -> list:
     return errors
 
 def check_dist_freshness() -> list:
-    """임시 경로에 결정적으로 생성한 번들과 committed dist의 내용을 비교합니다."""
+    """임시 경로에 생성한 bundle과 committed bundle의 최신성을 비교합니다."""
     warnings = []
     build_script = ROOT_DIR / "scripts" / "build_dist.py"
     spec = importlib.util.spec_from_file_location("build_dist", build_script)
@@ -125,24 +127,30 @@ def check_dist_freshness() -> list:
     build_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(build_module)
 
-    # 격리 환경에서도 쓰기 가능한 프로젝트 내부 임시 디렉터리를 사용하며, 종료 시 제거합니다.
-    with tempfile.TemporaryDirectory(dir=ROOT_DIR) as temp_dir:
-        generated_dir = Path(temp_dir) / "dist"
+    # Windows sandbox에서도 접근 가능한 프로젝트 전용 작업 경로를 사용합니다.
+    work_dir = ROOT_DIR / ".rule-validator-build"
+    if work_dir.exists():
+        shutil.rmtree(work_dir)
+    try:
+        generated_dir = work_dir / "bundle"
         build_module.build_dist(generated_dir)
         generated_files = {
             path.relative_to(generated_dir)
             for path in generated_dir.rglob("*") if path.is_file()
         }
         committed_files = {
-            path.relative_to(DIST_DIR)
-            for path in DIST_DIR.rglob("*") if path.is_file()
-        } if DIST_DIR.exists() else set()
+            path.relative_to(BUNDLE_DIR)
+            for path in BUNDLE_DIR.rglob("*") if path.is_file()
+        } if BUNDLE_DIR.exists() else set()
         missing = sorted(generated_files - committed_files)
         unexpected = sorted(committed_files - generated_files)
         stale = sorted(
             relative for relative in generated_files & committed_files
-            if (generated_dir / relative).read_bytes() != (DIST_DIR / relative).read_bytes()
+            if (generated_dir / relative).read_bytes() != (BUNDLE_DIR / relative).read_bytes()
         )
+    finally:
+        if work_dir.exists():
+            shutil.rmtree(work_dir)
 
     differences = []
     if missing:
@@ -152,9 +160,20 @@ def check_dist_freshness() -> list:
     if stale:
         differences.append("내용 불일치: " + ", ".join(str(path) for path in stale))
     if differences:
-        warnings.append("[경고] dist/ 배포 아티팩트가 현재 원본과 일치하지 않습니다 (" + "; ".join(differences) + "). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
+        warnings.append("[경고] bundle 배포 아티팩트가 현재 원본과 일치하지 않습니다 (" + "; ".join(differences) + "). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
 
     return warnings
+
+
+def check_dist_metadata() -> list:
+    """원본 layout을 해석하지 않고 bundle 계약을 검증합니다."""
+    if not BUNDLE_DIR.exists():
+        return ["bundle 디렉터리가 존재하지 않습니다."]
+    try:
+        validate_bundle(BUNDLE_DIR)
+    except (OSError, ValueError, KeyError) as error:
+        return [f"[dist metadata] {error}"]
+    return []
 
 def main():
     all_errors = []
@@ -187,9 +206,9 @@ def main():
     if root_agents.exists():
         md_files.append(root_agents)
 
-    # 3. dist/ 배포 아티팩트 디렉터리 내 마크다운 파일 동적 수집
-    if DIST_DIR.exists():
-        dist_md_files = list(DIST_DIR.glob("**/*.md"))
+    # 3. bundle 배포 아티팩트 디렉터리 내 마크다운 파일 동적 수집
+    if BUNDLE_DIR.exists():
+        dist_md_files = list(BUNDLE_DIR.glob("**/*.md"))
         md_files.extend(dist_md_files)
         print(f"2️⃣ 총 {len(md_files)}개 원본 및 dist/ 배포 Markdown 파일 검사 대상 수집 완료 (dist/ {len(dist_md_files)}개 포함)")
     else:
@@ -208,8 +227,10 @@ def main():
         errs = check_markdown_links(md_file)
         all_errors.extend(errs)
 
-    # 5. dist/ 최신 동기화 경고 검사
-    print(f"5️⃣ dist/ 배포 아티팩트 최신 동기화 상태 검사 중...")
+    # 5. dist metadata contract and freshness
+    print(f"5️⃣ bundle metadata 계약 검사 중...")
+    all_errors.extend(check_dist_metadata())
+    print(f"6️⃣ bundle 배포 아티팩트 최신 동기화 상태 검사 중...")
     dist_warnings = check_dist_freshness()
     for warn in dist_warnings:
         print(f"   {warn}")

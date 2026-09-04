@@ -1,29 +1,39 @@
 #!/usr/bin/env python3
 """
 scripts/build_dist.py
-AI 에이전트 및 개발자를 위한 dist/ 배포 아티팩트 자동 조립 스크립트.
-rules/, guides/, skills/, subagents/ 의 원본 모듈들을 읽어 고품질 dist/AGENTS.md, dist/rules/, dist/guides/ 및 dist/.agents/ 구조를 생성합니다.
+AI 에이전트 및 개발자를 위한 bundle 배포 아티팩트 자동 조립 스크립트.
 
 ⚠️ [헌법 가드: 내부 vs 배포 아티팩트 격리]
 이 레포지토리 자체의 개발·유지보수 전용 메타 스킬/서브에이전트인 `/.agents/` 디렉터리는 절대 dist/ 에 direct 복사되지 않습니다.
 배포 아티팩트는 공용 원본인 `/skills/` 및 `/subagents/` 에서만 읽어 타 프로젝트 호환 구조(`dist/.agents/`)로 패키징됩니다.
 """
 
-import os
+import re
 import shutil
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from agent_rules_template.scripts.common import (
+    BINARY_HASH_POLICY,
+    END_MARKER,
+    SCHEMA_VERSION,
+    START_MARKER,
+    TEXT_HASH_POLICY,
+    file_record,
+    logical_path,
+    managed_block_hash,
+    write_json,
+)
+
 RULES_DIR = PROJECT_ROOT / "rules"
 GUIDES_DIR = PROJECT_ROOT / "guides"
 SKILLS_DIR = PROJECT_ROOT / "skills"
 SUBAGENTS_DIR = PROJECT_ROOT / "subagents"
 
-DIST_DIR = PROJECT_ROOT / "dist"
-DIST_RULES_DIR = DIST_DIR / "rules"
-DIST_AGENTS_DIR = DIST_DIR / ".agents"
-DIST_AGENTS_SKILLS_DIR = DIST_AGENTS_DIR / "skills"
-DIST_AGENTS_AGENTS_DIR = DIST_AGENTS_DIR / "agents"
+BUNDLE_DIR = PROJECT_ROOT / "agent_rules_template" / "bundle"
 
 CATEGORY_METADATA = {
     "architecture": ("🏛️ 도메인 및 아키텍처 규칙", "Architecture & Domain Rules"),
@@ -31,6 +41,43 @@ CATEGORY_METADATA = {
     "packaging": ("📦 패키징 및 배포 생태계 규칙", "Packaging & Ecosystem Rules"),
     "styles": ("🎨 언어별 코딩 스타일 가이드 (Google Style Guides)", "Language Style Guides")
 }
+
+
+def template_version() -> str:
+    """저장소 헌법의 버전을 bundle version으로 사용합니다."""
+    content = (PROJECT_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    match = re.search(r"\*\*Version\*\*:\s*([^|\n]+)", content)
+    return match.group(1).strip() if match else "0.0.0"
+
+
+def build_metadata(bundle_dir: Path) -> None:
+    """완성된 bundle의 canonical ownership metadata를 작성합니다."""
+    managed_files: dict[str, dict[str, str]] = {}
+    normalized_paths: set[str] = set()
+    for path in sorted(bundle_dir.rglob("*")):
+        relative_path = path.relative_to(bundle_dir)
+        if not path.is_file() or relative_path in {Path("AGENTS.md"), Path("metadata.json")}:
+            continue
+        relative = logical_path(relative_path)
+        if relative != relative_path.as_posix():
+            raise ValueError(f"NFC가 아닌 bundle 경로: {relative_path}")
+        if relative in normalized_paths:
+            raise ValueError(f"NFC-normalized distribution path collision: {relative}")
+        normalized_paths.add(relative)
+        managed_files[relative] = file_record(path)
+    agents = bundle_dir / "AGENTS.md"
+    write_json(bundle_dir / "metadata.json", {
+        "schema_version": SCHEMA_VERSION,
+        "template_version": template_version(),
+        "hash_policy": {"text": TEXT_HASH_POLICY, "binary": BINARY_HASH_POLICY},
+        "managed_block": {
+            "file": "AGENTS.md",
+            "start_marker": START_MARKER,
+            "end_marker": END_MARKER,
+            "sha256": managed_block_hash(agents),
+        },
+        "managed_files": managed_files,
+    })
 
 def extract_title_and_description(file_path: Path) -> tuple[str, str]:
     """마크다운 파일에서 최상단 H1 제목과 첫 문장을 추출합니다."""
@@ -53,8 +100,14 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
     return title, desc
 
 def build_dist(output_dir: Path | None = None):
-    """dist 번들을 생성하고, 필요하면 지정한 출력 디렉터리에 생성합니다."""
-    dist_dir = output_dir if output_dir is not None else DIST_DIR
+    """단일 canonical bundle을 생성하고 필요하면 지정 경로에 생성합니다."""
+    # metadata만 NFC로 바뀌는 불일치를 기존 bundle 제거 전에 차단합니다.
+    for source in (RULES_DIR, GUIDES_DIR, SKILLS_DIR, SUBAGENTS_DIR):
+        for path in source.rglob("*"):
+            relative = path.relative_to(source)
+            if logical_path(relative) != relative.as_posix():
+                raise ValueError(f"NFC가 아닌 source 경로: {path}")
+    dist_dir = output_dir if output_dir is not None else BUNDLE_DIR
     dist_rules_dir = dist_dir / "rules"
     dist_guides_dir = dist_dir / "guides"
     dist_agents_skills_dir = dist_dir / ".agents" / "skills"
@@ -70,6 +123,8 @@ def build_dist(output_dir: Path | None = None):
 
     # 2. dist/AGENTS.md 헤더 생성
     agents_md_content = [
+        START_MARKER,
+        "",
         "# AGENTS.md - Unified Agent Execution Rules & Governance",
         "",
         "본 문서는 `agents-template`에서 `scripts/build_dist.py` 스크립트를 통해 자동으로 조립 생성된 **최상위 AI 에이전트 통합 실행 지침 및 거버넌스(Governance) 문서**입니다.",
@@ -120,6 +175,20 @@ def build_dist(output_dir: Path | None = None):
 
     # 5. dist/AGENTS.md 저장
     final_agents_md_path = dist_dir / "AGENTS.md"
+    agents_md_content.extend([
+        "",
+        "---",
+        "",
+        "## Template Managed Content",
+        "",
+        "- 이 Managed Block은 직접 수정하지 마십시오.",
+        "- Template이 managed로 설치한 파일을 직접 수정하거나 formatter, fixer, code action으로 자동 변경하지 마십시오.",
+        "- 프로젝트별 규칙·예외는 Managed Block 밖의 `Project Rules` 또는 Project-owned rule 파일에 작성하십시오.",
+        "- Template과 다른 동작은 managed 규칙을 바꾸지 말고 더 구체적인 Project Rule로 override하십시오.",
+        "- 실제 managed 파일 ownership은 이 문서의 목록이 아니라 설치 metadata를 기준으로 합니다.",
+        "",
+        END_MARKER,
+    ])
     final_agents_md_path.write_text("\n".join(agents_md_content).strip() + "\n", encoding="utf-8")
     print(f"✅ Generated: {final_agents_md_path}")
 
@@ -164,6 +233,8 @@ def build_dist(output_dir: Path | None = None):
                 shutil.copy2(item, dest_item)
             print(f"  + Packaged public subagent: {item.name} -> dist/.agents/agents/{item.name}")
 
+    build_metadata(dist_dir)
+    print(f"✅ Generated: {dist_dir / 'metadata.json'}")
     print("🎉 dist/ bundle assembly completed successfully!")
 
 if __name__ == "__main__":

@@ -5,7 +5,12 @@
 
 ## [Unreleased]
 
+### Added
+- **Distribution Contract 및 안전한 소비 프로젝트 동기화**: `agent_rules_template/bundle/metadata.json`의 파일 단위 ownership·canonical hash를 기반으로 Managed Block, local modification preflight, `--force`, `--replace`, 제거된 managed file 처리를 제공하는 단일 sync CLI와 자동 테스트를 추가했습니다.
+
 ### Changed
+- **배포 lifecycle 단순화**: CI는 `build_dist.py` → bundle metadata 검증 → rule-validator → sync test를 실행하며, 이전 Release ZIP 생성을 제거했습니다.
+- **sync 감사 결함 수정**: Local baseline fail-closed 검증, 전체 쓰기 대상 경계 검사, NFC logical path lookup·충돌 거부, staging 및 예외 복구, 손상 marker의 명시적 교체, Python 3.10+ 호환성과 반복 가능한 wheel 검증을 보완했습니다.
 - **온디맨드 규칙 활성화 및 코드 문서화 책임 재구성**: 언어·framework·architecture·packaging 규칙의 누적 적용 계약과 소비 프로젝트용 활성화 매트릭스·설정 체크리스트를 추가하고, 문서화 필요성·Why 주석·처리 문맥 전환 기준은 Core SSOT로, 수명주기는 docs-maintenance로, 표현 형식과 framework 예외는 해당 하위 모듈로 분리했습니다.
 - **Keep a Changelog 1.1.0 표준 명시 (`rules/core/04-standards.md`, `CHANGELOG.md`)**: 에이전트의 사전 지식을 효과적으로 활용할 수 있도록 CHANGELOG 관리 시 [Keep a Changelog 1.1.0](https://keepachangelog.com/ko/1.1.0/) 및 SemVer 규격을 준수하고 `[Unreleased]`에 누적하는 표준 앵커를 명시했습니다.
 - **위험 비례 하네스 원칙 명시**: 하네스는 목적·제약·안전 경계·검증 가능한 품질을 명확히 하는 데 사용하며, 특정 실행 순서나 반복 검토는 위험 감소 또는 기계적 검증 근거가 있을 때만 적용하도록 정제했습니다.
