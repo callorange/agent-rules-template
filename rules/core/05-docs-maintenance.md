@@ -19,7 +19,7 @@
 
 ## 🔄 3. 코드 내 문서화 수명주기
 
-- public API의 책임, 입력·반환 계약, 오류 조건 또는 중요한 side effect가 바뀌면 관련 docstring과 documentation comment를 같은 변경에서 검토하고 동기화합니다.
+- 코드 요소의 책임, 입력·반환 계약, 오류 조건 또는 중요한 side effect가 바뀌면 public/private 여부와 무관하게 관련 docstring과 documentation comment를 같은 변경에서 검토하고 동기화합니다.
 - 처리 문맥, 정책, 불변조건 또는 trade-off가 바뀌면 기존 Why 주석의 전제와 설명이 여전히 정확한지 확인하고, 불일치하면 함께 수정합니다.
 - 코드 구조가 명확해져 설명이 불필요해졌거나 설명이 더 이상 유효하지 않으면 오래된 주석을 보존하지 말고 제거합니다. 작성과 제거 판단은 [코드 문서화 및 주석 기준](04-standards.md#-2-코드-문서화-및-주석-기준)을 따릅니다.
 - 언어별 style 규칙이 docstring이나 documentation comment 형식을 정의하면 해당 형식을 적용합니다. formatter·linter로 확인 가능한 형식은 기계적 검증에 연결하고, 의미적 정확성은 완료 체크리스트 또는 code review에서 확인합니다.

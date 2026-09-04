@@ -26,9 +26,9 @@
 ### 책임과 계약 문서화
 
 - 문서화의 목적은 설명의 양을 늘리는 것이 아니라 유지해야 할 계약과 의사결정을 보존하는 것입니다.
-- public API, public 클래스·함수 및 외부 사용자가 의존할 수 있는 코드 요소에는 책임과 계약을 문서화합니다. 정확한 public 범위는 소비 프로젝트의 언어, framework, packaging 방식, 기존 관례 및 설정으로 확정합니다.
+- 클래스·함수·메서드는 public/private 여부와 무관하게 책임과 의도를 기본적으로 문서화합니다. public/private 구분은 문서화 필요성을 결정하는 기준이 아니며, 정확한 범위는 소비 프로젝트의 언어, framework, packaging 방식, 기존 관례 및 설정으로 확정합니다.
 - 이름이나 타입을 그대로 반복하지 말고 코드만으로 명확하지 않은 책임, 입력 제약, 반환 계약, 중요한 side effect, 오류 조건, 불변조건 및 호환성 요구사항을 우선 설명합니다.
-- 모든 private helper에 기계적으로 문서화를 요구하지 않습니다. 다만 private 코드가 비직관적인 정책, 중요한 불변조건 또는 외부 제약을 담당하면 필요한 설명을 제공합니다.
+- 사소하고 계약이 없는 getter/setter, 이름과 타입만으로 의미가 자명한 단순 helper, 한 줄 위임·wrapper 및 구현상 반복은 문서화를 생략할 수 있습니다. 반면 private 코드라도 business logic, 변환·매핑, 외부 I/O·integration, 오류·validation 정책, side effect, fallback/default 정책, precondition, invariant 또는 비자명한 의도를 포함하면 문서화합니다.
 - 구체적인 docstring, documentation comment 또는 API comment 형식은 해당 언어의 style 규칙을 따릅니다. framework가 public 범위나 override 예외를 바꾸는 경우에는 해당 framework 규칙과 소비 프로젝트 설정을 함께 적용합니다.
 
 ### Why 중심 주석
