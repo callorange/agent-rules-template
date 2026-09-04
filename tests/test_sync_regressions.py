@@ -9,7 +9,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_rules_template.scripts.common import END_MARKER, START_MARKER, write_json
-from agent_rules_template.scripts.sync import LOCAL_METADATA, sync, validate_bundle
+from agent_rules_template.scripts.sync import (
+    LOCAL_METADATA,
+    PROJECT_RULES_GUIDANCE,
+    sync,
+    validate_bundle,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -49,6 +54,65 @@ class RegressionTests(unittest.TestCase):
             if p.is_file()
         }
 
+    def test_new_install_creates_project_rules_guidance(self):
+        sync(self.project, self.bundle)
+
+        content = (self.project / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertEqual(content.count(PROJECT_RULES_GUIDANCE), 1)
+        self.assertLess(content.index("# Project Rules"), content.index(PROJECT_RULES_GUIDANCE))
+        self.assertTrue(
+            json.loads((self.project / LOCAL_METADATA).read_text())["project_rules_guidance_added"]
+        )
+
+    def test_markerless_migration_adds_guidance_and_preserves_existing_content(self):
+        self.project.mkdir()
+        original = "# 기존 규칙\r\n프로젝트 고유 내용\r\n"
+        (self.project / "AGENTS.md").write_bytes(original.encode("utf-8"))
+
+        sync(self.project, self.bundle)
+
+        content = (self.project / "AGENTS.md").read_text(encoding="utf-8", newline="")
+        self.assertIn(PROJECT_RULES_GUIDANCE, content)
+        self.assertIn(original, content)
+        self.assertLess(content.index(PROJECT_RULES_GUIDANCE), content.index(original))
+
+    def test_existing_guidance_and_repeated_sync_do_not_duplicate_it(self):
+        sync(self.project, self.bundle)
+        agents = self.project / "AGENTS.md"
+        agents.write_bytes(agents.read_bytes().replace(b"\n", b"\r\n"))
+        local_path = self.project / LOCAL_METADATA
+        local = json.loads(local_path.read_text())
+        local.pop("project_rules_guidance_added")
+        write_json(local_path, local)
+
+        sync(self.project, self.bundle)
+        sync(self.project, self.bundle)
+
+        with agents.open(encoding="utf-8", newline="") as stream:
+            content = stream.read()
+        self.assertEqual(content.replace("\r\n", "\n").count(PROJECT_RULES_GUIDANCE), 1)
+
+    def test_project_owned_guidance_is_not_restored_after_edit_or_deletion(self):
+        sync(self.project, self.bundle)
+        agents = self.project / "AGENTS.md"
+        custom = "이 프로젝트의 안내 문구입니다."
+        agents.write_text(
+            agents.read_text(encoding="utf-8").replace(PROJECT_RULES_GUIDANCE, custom),
+            encoding="utf-8",
+        )
+
+        sync(self.project, self.bundle, force=True)
+        self.assertIn(custom, agents.read_text(encoding="utf-8"))
+        self.assertNotIn(PROJECT_RULES_GUIDANCE, agents.read_text(encoding="utf-8"))
+
+        agents.write_text(
+            agents.read_text(encoding="utf-8").replace(custom, ""),
+            encoding="utf-8",
+        )
+        sync(self.project, self.bundle, force=True)
+        self.assertNotIn(custom, agents.read_text(encoding="utf-8"))
+        self.assertNotIn(PROJECT_RULES_GUIDANCE, agents.read_text(encoding="utf-8"))
+
     def test_incomplete_local_baseline_never_overwrites_edits(self):
         sync(self.project, self.bundle)
         agents = self.project / "AGENTS.md"
@@ -62,7 +126,9 @@ class RegressionTests(unittest.TestCase):
             {**original, "managed_files": {"rules/a.md": {"type": "text"}}},
         ]
         variants += [
-            {k: v for k, v in original.items() if k != missing} for missing in original
+            {k: v for k, v in original.items() if k != missing}
+            for missing in original
+            if missing != "project_rules_guidance_added"
         ]
         for value in variants:
             for force in (False, True):

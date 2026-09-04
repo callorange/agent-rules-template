@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-09-04
+
+### Changed
+- **Project Rules 우선순위 안내 추가**: 신규 설치와 marker 없는 migration에서 프로젝트별 구체 규칙이 Template 일반 규칙보다 우선함을 안내하며, 해당 문구는 Project-owned로 유지해 이후 `--force`로 복원하지 않습니다.
+- **배포 변경 버전 정책 명시**: bundle 내용 또는 sync 동작의 의미적 변경은 SemVer에 따라 버전을 올리고 관련 배포 metadata와 문서를 같은 변경에서 동기화합니다.
+
 ## [2.1.0] - 2026-09-04
 
 ### Added

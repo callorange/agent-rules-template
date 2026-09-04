@@ -25,6 +25,13 @@ from .common import (
 )
 
 LOCAL_METADATA = ".agent-rules-template.json"
+PROJECT_RULES_HEADING = "# Project Rules"
+PROJECT_RULES_GUIDANCE = (
+    "이 섹션의 규칙은 이 프로젝트에만 적용합니다.\n"
+    "같은 적용 범위에서 위 Template Managed Content의 일반 규칙과 충돌하면 "
+    "이 섹션의 더 구체적인 규칙을 우선합니다."
+)
+PROJECT_RULES_GUIDANCE_ADDED = "project_rules_guidance_added"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -89,6 +96,11 @@ def validate_baseline(local: dict[str, Any]) -> None:
         raise ValueError("installed version이 없습니다")
     if local["hash_policy"] != {"text": TEXT_HASH_POLICY, "binary": BINARY_HASH_POLICY}:
         raise ValueError("지원하지 않는 local hash policy입니다")
+    if (
+        PROJECT_RULES_GUIDANCE_ADDED in local
+        and type(local[PROJECT_RULES_GUIDANCE_ADDED]) is not bool
+    ):
+        raise ValueError("Project Rules 안내 상태가 올바르지 않습니다")
     block = local["managed_block"]
     if not isinstance(block, dict) or not valid_hash(block.get("sha256")):
         raise ValueError("managed block baseline이 손상되었습니다")
@@ -205,17 +217,52 @@ def local_modifications(
     return changes
 
 
-def render_agents(template: Path, existing: Path | None, replace: bool) -> str:
+def project_rules_skeleton(eol: str = "\n") -> str:
+    """Project-owned 안내를 포함한 새 Project Rules 골격을 만듭니다."""
+    return (
+        PROJECT_RULES_HEADING
+        + eol
+        + eol
+        + PROJECT_RULES_GUIDANCE.replace("\n", eol)
+        + eol
+    )
+
+
+def add_project_rules_guidance(current: str) -> str:
+    """기존 Project Rules에 안내가 없을 때만 현재 줄바꿈으로 추가합니다."""
+    if PROJECT_RULES_GUIDANCE in current.replace("\r\n", "\n"):
+        return current
+    eol = "\r\n" if "\r\n" in current else "\n"
+    heading = re.search(r"(?m)^# Project Rules(?:\r?\n|$)", current)
+    guidance = PROJECT_RULES_GUIDANCE.replace("\n", eol)
+    if heading:
+        return current[: heading.end()] + eol + guidance + eol + eol + current[heading.end() :]
+    separator = "" if not current or current.endswith(("\n", "\r")) else eol
+    return current + separator + eol + project_rules_skeleton(eol)
+
+
+def render_agents(
+    template: Path, existing: Path | None, replace: bool, add_guidance: bool
+) -> str:
     """Project-owned 영역의 줄바꿈을 보존하며 managed block을 갱신합니다."""
     block = managed_block(template.read_text(encoding="utf-8-sig"))
     if existing is None or replace:
-        return block + "\n\n# Project Rules\n"
+        return block + "\n\n" + project_rules_skeleton()
     with existing.open(encoding="utf-8", newline="") as stream:
         current = stream.read()
     if START_MARKER in current or END_MARKER in current:
-        return current.replace(managed_block(current), block)
+        rendered = current.replace(managed_block(current), block)
+        return add_project_rules_guidance(rendered) if add_guidance else rendered
     notice = "<!--\n기존 AGENTS.md의 내용을 보존하여 아래에 이동했습니다.\nTemplate managed rules와 의미가 중복될 수 있으므로 필요하면 LLM으로 정리하십시오.\n-->"
-    return block + "\n\n# Project Rules\n\n" + notice + "\n\n" + current
+    return (
+        block
+        + "\n\n"
+        + project_rules_skeleton()
+        + "\n"
+        + notice
+        + "\n\n"
+        + current
+    )
 
 
 def preflight(
@@ -292,7 +339,10 @@ def sync(
             file=sys.stderr,
         )
     rendered = render_agents(
-        bundle / "AGENTS.md", agents if agents.exists() else None, replace
+        bundle / "AGENTS.md",
+        agents if agents.exists() else None,
+        replace,
+        not local.get(PROJECT_RULES_GUIDANCE_ADDED, False),
     )
     old, new = set(local.get("managed_files", {})), set(metadata["managed_files"])
     writes = {agents: rendered.encode("utf-8")}
@@ -306,6 +356,7 @@ def sync(
         "hash_policy": metadata["hash_policy"],
         "managed_block": {"sha256": metadata["managed_block"]["sha256"]},
         "managed_files": metadata["managed_files"],
+        PROJECT_RULES_GUIDANCE_ADDED: True,
     }
     writes[local_path] = (
         json.dumps(baseline, ensure_ascii=False, indent=2) + "\n"

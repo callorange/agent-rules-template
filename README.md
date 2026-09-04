@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.1.0**입니다.
+다양한 프로젝트에서 공용으로 사용할 규칙을 `agent_rules_template/bundle/` 단일 배포 번들로 조립·제공하는 에이전트 룰셋 표준 프로젝트입니다. 현재 버전은 **2.2.0**입니다.
 
 ---
 
@@ -172,7 +172,7 @@ agent-rules
 uvx --from git+https://github.com/callorange/agent-rules-template.git agent-rules
 ```
 
-기존 `AGENTS.md`에 marker가 없으면 기존 내용은 `# Project Rules` 아래에 보존됩니다. Template은 marker 사이의 Managed Block과 metadata에 등록된 파일만 소유하며, `Project Rules` 및 프로젝트가 만든 파일은 보존합니다. Managed 파일은 직접 수정하거나 formatter의 자동 변경 대상으로 두지 마십시오. 프로젝트별 예외는 Project Rules 또는 프로젝트 소유 rule 파일에 작성합니다.
+기존 `AGENTS.md`에 marker가 없으면 기존 내용은 `# Project Rules` 아래에 보존됩니다. 새 `Project Rules`에는 Template 일반 규칙보다 프로젝트별 구체 규칙을 우선한다는 안내가 한 번 추가되지만, 이 안내를 포함한 Project Rules 전체는 Project-owned입니다. 수정·삭제해도 `--force`로 복원되지 않습니다. Template은 marker 사이의 Managed Block과 metadata에 등록된 파일만 소유하며, `Project Rules` 및 프로젝트가 만든 파일은 보존합니다. Managed 파일은 직접 수정하거나 formatter의 자동 변경 대상으로 두지 마십시오. 프로젝트별 예외는 Project Rules 또는 프로젝트 소유 rule 파일에 작성합니다.
 
 `agent_rules_template/bundle/metadata.json`은 새 canonical target, 소비 프로젝트의 `.agent-rules-template.json`은 마지막 정상 설치 baseline입니다. sync는 Actual Local과 baseline hash를 비교해 로컬 변경을 먼저 감지합니다. 텍스트 hash는 BOM, 줄바꿈, NFC/NFD, 마지막 newline 차이를 무시합니다.
 

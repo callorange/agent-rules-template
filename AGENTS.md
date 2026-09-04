@@ -76,6 +76,7 @@ agents-template/
 ## 📜 5. 배포 자산 관리 & 지속적 동기화
 
 - 공용 규칙, 가이드, 스킬, 서브에이전트 변경 시 `python scripts/build_dist.py`를 실행하여 metadata를 포함한 `agent_rules_template/bundle/` 배포 아티팩트를 100% 최신화합니다. 소비 프로젝트 반영은 source를 직접 복사하지 않고 `agent-rules`가 bundle 계약과 ownership metadata를 기준으로 수행합니다.
+- 배포 bundle에 포함되는 규칙·가이드·스킬·서브에이전트 또는 소비 프로젝트의 sync 동작이 의미 있게 변경되면, 호환성 영향에 따라 Semantic Versioning으로 버전을 올리고 같은 변경에서 루트 `AGENTS.md`, `pyproject.toml`, `README.md`, `CHANGELOG.md` 및 build가 생성하는 bundle metadata를 동기화합니다. 호환되지 않는 계약 변경은 major, 기능 추가는 minor, 호환 가능한 수정은 patch를 사용합니다.
 - 정적 검증 도구(`python .agents/skills/rule-validator/scripts/validate_rules.py`)를 통해 규칙 무결성을 검증합니다.
 - **소통·문서화 및 커밋 언어**: 세 언어는 서로 독립적으로 결정하며, 사용자별 명시 지시는 프로젝트 기본값보다 우선합니다. 소통은 명시적 지시, 현재 자연어 요청, 요청 불명확 시 최근 직접 메시지, 프로젝트 기본값, 기존 관례 순으로 결정하며 기본값은 현재 요청 언어(한국어 요청이면 한국어)입니다. 문서화는 명시적 문서화 지시, 프로젝트 설정, 현재 요청 언어, 기존 관례 순으로 결정하며 새 규칙·자연어 설명·Docstring·주석의 기본값은 한국어입니다. 기존 내용은 명시적 번역·언어 변경 요청이 없으면 보존하고, 적절한 기술 고유명사·식별자·표준 섹션명은 영어를 유지할 수 있습니다. 커밋 타입은 영어로 유지하고 제목 설명·본문은 명시적 커밋 지시, 프로젝트 설정, 기존 커밋 관례, 현재 요청 언어, 에이전트 기본값 순으로 결정하며 기본값은 `<type>: <한국어 설명>` 및 한국어 본문입니다. 단, 해당 커밋에 대해 사용자가 다른 언어를 명시하면 그 지시를 따릅니다. 문서화·커밋 설정은 소통으로 전파되지 않습니다. 이름·위치·OS locale·코드·모델 기본값은 언어 판단 근거가 아니며 코드 블록·명령·파일명·API 식별자·기술 용어는 제외합니다.
 - **원자적·논리적 분할 커밋**: 하나의 작업 이슈에 속하는 코드, 테스트, 문서와 생성 아티팩트는 함께 커밋합니다. 목적·영향 범위·검증 근거가 독립적인 변경은 별도 커밋으로 분리합니다.
@@ -89,4 +90,4 @@ agents-template/
 
 ---
 
-**Version**: 2.1.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.2.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
