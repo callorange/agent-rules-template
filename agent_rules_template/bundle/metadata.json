@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.6.0",
+  "template_version": "2.7.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,12 +9,12 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "eebd7c29bbbdfaf66893348fa55f960ad338469b09e51f9929498834e9a2f022"
+    "sha256": "91d9b87ccf5dc71e4d2182b11d128acb618d2e7aca39a782850c9120ef3425a0"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
       "type": "text",
-      "sha256": "8a80cedf4f89a4d0d9f1699bbd7f4c25ba9b1c78b8a4b3e71549b6adef09a02f"
+      "sha256": "96e459228231f5129acace99b7636b3fd9240722d0f961feabd7a48c07472703"
     },
     ".agents/skills/gitignore-generator/scripts/gitignore.ps1": {
       "type": "text",

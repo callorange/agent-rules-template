@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.6.0**입니다.
+AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.7.0**입니다.
 
 ---
 
@@ -271,14 +271,17 @@ Bundle 파일명은 NFC여야 하며 NFD source/bundle 경로는 build가 거부
 
 1. `rules/`, `guides/`, `skills/`, `subagents/`에서 해당 원본을 수정합니다. 루트 `.agents/`는 이 저장소 전용이며 배포 원본에 포함되지 않습니다.
 2. [AGENTS.md의 배포 버전 정책](AGENTS.md)에 따라 버전 갱신 여부를 결정하고, 필요한 경우 버전 정보와 [CHANGELOG.md](CHANGELOG.md)를 함께 갱신합니다.
-3. 저장소 루트에서 bundle을 조립하고 규칙 무결성을 검증합니다.
+3. 저장소 루트에서 원본 계약을 검사하고 bundle을 조립한 뒤 생성 아티팩트를 검증합니다.
 
 ```bash
+python .agents/skills/rule-validator/scripts/validate_rules.py --pre-build
 python scripts/build_dist.py
-python .agents/skills/rule-validator/scripts/validate_rules.py
+python .agents/skills/rule-validator/scripts/validate_rules.py --post-build
 ```
 
-검증기는 필수 Core와 rule 카테고리, 배포 버전, 금지 표현, UTF-8 인코딩, 상대 링크와 bundle 동기화 상태 등을 확인합니다. 생성된 `agent_rules_template/bundle/`과 `metadata.json`이 원본을 반영하지 않으면 검증에 실패하므로 원본 변경과 함께 관리합니다. 생성 파일은 직접 수정하지 않습니다.
+pre-build 검사는 필수 Core와 rule 카테고리, 원본의 배포 버전, 금지 표현, UTF-8 인코딩과 상대 링크를 확인합니다. post-build 검사는 생성된 `agent_rules_template/bundle/`과 `metadata.json`의 무결성 및 원본 동기화를 확인합니다. 생성 파일은 직접 수정하지 않습니다.
+
+의미적 정합성 권고 진단은 명시적 요청이 있거나 authority·precedence·scope·Hard Rule 등 규범적 의미 변경의 주된 위험을 기계 검증만으로 확인할 수 없을 때만 원본 변경이 안정된 후 build 전에 수행합니다. 파일을 편집할 때마다 또는 기계 검증의 자동 후속 단계로 반복하지 않습니다.
 
 CLI·sync·패키징 동작을 변경했다면 관련 테스트도 실행합니다. 전체 테스트 명령은 다음과 같습니다.
 

@@ -77,8 +77,8 @@ agents-template/
 
 ### 배포 아티팩트 동기화
 
-- `rules/`, `guides/`, `skills/`, `subagents/`의 배포 대상 원본이 변경되면 `python scripts/build_dist.py`를 실행합니다.
-- build 후 `agent_rules_template/bundle/`과 `metadata.json`이 현재 원본을 반영하는지 검증합니다.
+- `rules/`, `guides/`, `skills/`, `subagents/`의 배포 대상 원본이 변경되면 `python .agents/skills/rule-validator/scripts/validate_rules.py --pre-build`로 원본 계약을 먼저 검사합니다.
+- pre-build 검사가 통과하면 `python scripts/build_dist.py`를 실행하고, `python .agents/skills/rule-validator/scripts/validate_rules.py --post-build`로 bundle과 metadata가 현재 원본을 반영하는지 검증합니다.
 - 소비 프로젝트에는 source를 직접 복사하지 않고 `agent-rules`가 bundle 및 ownership metadata를 기준으로 설치·업데이트합니다.
 
 ### 배포 버전 정책
@@ -115,7 +115,8 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 
 ### 검증
 
-- 규칙 원본 또는 배포 bundle이 변경되면 `python .agents/skills/rule-validator/scripts/validate_rules.py`를 실행하여 규칙 무결성을 검증합니다.
+- 의미적 정합성 권고 진단은 명시적 요청이 있거나 authority·precedence·scope·Hard Rule 등 규범적 의미 변경의 주된 위험을 기계 검증만으로 확인할 수 없을 때만 원본 변경이 안정된 후 build 전에 수행합니다. 기계 검증의 자동 후속 단계로 실행하거나 build 후 반복하지 않습니다.
+- 규칙 원본 또는 배포 bundle이 변경되면 pre-build → build → post-build 순서로 규칙 무결성을 검증합니다. 검사 대상 원본이 다시 변경된 경우에만 pre-build부터 반복합니다.
 - 코드·sync·패키징 동작이 변경되면 해당 변경을 직접 검증하는 테스트와 build를 함께 실행합니다.
 - 검증을 실행하지 못했거나 실패한 경우 성공으로 보고하지 않고 원인과 미검증 범위를 명시합니다.
 
@@ -145,4 +146,4 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 
 ---
 
-**Version**: 2.6.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.7.0 | **Ratified**: 2026-08-05 | **Architecture**: Modern Planning-First, Risk-Proportional Harness

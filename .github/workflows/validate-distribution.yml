@@ -55,18 +55,16 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Validate rules directory structure
-        run: |
-          test -d rules/core || (echo "Error: rules/core missing" && exit 1)
-          test -d rules/architecture || (echo "Error: rules/architecture missing" && exit 1)
-          test -d rules/packaging || (echo "Error: rules/packaging missing" && exit 1)
-          test -d rules/styles || (echo "Error: rules/styles missing" && exit 1)
+      - name: Validate distribution sources
+        run: python3 .agents/skills/rule-validator/scripts/validate_rules.py --pre-build
 
-      - name: Execute build and validate bundle
+      - name: Build distribution bundle
+        run: python3 scripts/build_dist.py
+
+      - name: Validate generated bundle
         run: |
-          python3 scripts/build_dist.py
           git diff --exit-code -- agent_rules_template/bundle
-          python3 .agents/skills/rule-validator/scripts/validate_rules.py
+          python3 .agents/skills/rule-validator/scripts/validate_rules.py --post-build
 
       - name: Run full distribution tests
         run: |

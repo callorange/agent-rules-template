@@ -4,7 +4,10 @@ validate_rules.py - rules/, guides/, skills/, subagents/ 원본 및 dist/ 배포
 (rule-validator 스킬 전용 헬퍼 스크립트)
 """
 
+import argparse
+import contextlib
 import importlib.util
+import io
 import json
 import re
 import shutil
@@ -138,7 +141,13 @@ def check_source_layout() -> list:
     return []
 
 
-def check_version_coherence(root_dir: Path = ROOT_DIR, bundle_dir: Path = BUNDLE_DIR) -> list:
+def check_version_coherence(
+    root_dir: Path = ROOT_DIR,
+    bundle_dir: Path = BUNDLE_DIR,
+    *,
+    include_source: bool = True,
+    include_bundle: bool = True,
+) -> list:
     """배포 버전 원본과 동기화 대상의 일치 여부를 검사합니다."""
     errors = []
     try:
@@ -148,27 +157,33 @@ def check_version_coherence(root_dir: Path = ROOT_DIR, bundle_dir: Path = BUNDLE
             return ["[version] AGENTS.md에서 Version을 찾을 수 없습니다."]
         expected = agents_match.group(1).strip()
 
-        pyproject_text = (root_dir / "pyproject.toml").read_text(encoding="utf-8")
-        project_match = re.search(
-            r"(?ms)^\[project\]\s*$.*?^version\s*=\s*[\"']([^\"']+)[\"']",
-            pyproject_text,
-        )
-        readme_text = (root_dir / "README.md").read_text(encoding="utf-8")
-        readme_match = re.search(r"현재 버전은 \*\*([^*]+)\*\*", readme_text)
-        metadata = json.loads((bundle_dir / "metadata.json").read_text(encoding="utf-8"))
-        changelog_text = (root_dir / "CHANGELOG.md").read_text(encoding="utf-8")
-
-        declared = {
-            "pyproject.toml": project_match.group(1) if project_match else None,
-            "README.md": readme_match.group(1).strip() if readme_match else None,
-            "bundle/metadata.json": metadata.get("template_version"),
-        }
+        declared = {}
+        if include_source:
+            pyproject_text = (root_dir / "pyproject.toml").read_text(encoding="utf-8")
+            project_match = re.search(
+                r"(?ms)^\[project\]\s*$.*?^version\s*=\s*[\"']([^\"']+)[\"']",
+                pyproject_text,
+            )
+            readme_text = (root_dir / "README.md").read_text(encoding="utf-8")
+            readme_match = re.search(r"현재 버전은 \*\*([^*]+)\*\*", readme_text)
+            changelog_text = (root_dir / "CHANGELOG.md").read_text(encoding="utf-8")
+            declared.update({
+                "pyproject.toml": project_match.group(1) if project_match else None,
+                "README.md": readme_match.group(1).strip() if readme_match else None,
+            })
+        if include_bundle:
+            metadata = json.loads(
+                (bundle_dir / "metadata.json").read_text(encoding="utf-8")
+            )
+            declared["bundle/metadata.json"] = metadata.get("template_version")
         for source, value in declared.items():
             if value != expected:
                 errors.append(
                     f"[version] {source}의 버전 {value!r}이 AGENTS.md의 {expected!r}과 일치하지 않습니다."
                 )
-        if not re.search(rf"(?m)^## \[{re.escape(expected)}\](?:\s|$)", changelog_text):
+        if include_source and not re.search(
+            rf"(?m)^## \[{re.escape(expected)}\](?:\s|$)", changelog_text
+        ):
             errors.append(f"[version] CHANGELOG.md에 [{expected}] 버전 구획이 없습니다.")
     except (OSError, ValueError, KeyError, json.JSONDecodeError) as error:
         errors.append(f"[version] 버전 정합성 검사 실패: {error}")
@@ -189,7 +204,8 @@ def check_dist_freshness() -> list:
         shutil.rmtree(work_dir)
     try:
         generated_dir = work_dir / "bundle"
-        build_module.build_dist(generated_dir)
+        with contextlib.redirect_stdout(io.StringIO()):
+            build_module.build_dist(generated_dir)
         generated_files = {
             path.relative_to(generated_dir)
             for path in generated_dir.rglob("*") if path.is_file()
@@ -231,56 +247,72 @@ def check_dist_metadata() -> list:
         return [f"[dist metadata] {error}"]
     return []
 
-def main():
-    all_errors = []
 
-    print("🔍 [rule-validator] 원본 및 dist/ 배포 아티팩트 무결성 검증을 시작합니다...\n")
-
-    # 1. 필수 Core 및 배포 카테고리 계약 검사
-    print("1️⃣ 필수 Core 및 rule 카테고리 배포 계약 검사 중...")
-    all_errors.extend(check_source_layout())
-
-    # 2. rules/, guides/, skills/, subagents/ 원본 SSOT 마크다운 파일 동적 수집
-    md_files = list(RULES_DIR.glob("**/*.md"))
-    if GUIDES_DIR.exists():
-        md_files.extend(GUIDES_DIR.glob("**/*.md"))
-    if SKILLS_DIR.exists():
-        md_files.extend(SKILLS_DIR.glob("**/*.md"))
-    if SUBAGENTS_DIR.exists():
-        md_files.extend(SUBAGENTS_DIR.glob("**/*.md"))
-    
+def collect_source_markdown() -> list[Path]:
+    """배포 원본과 루트 헌법의 Markdown 파일을 수집합니다."""
+    files = list(RULES_DIR.glob("**/*.md"))
+    for directory in (GUIDES_DIR, SKILLS_DIR, SUBAGENTS_DIR):
+        if directory.exists():
+            files.extend(directory.glob("**/*.md"))
     root_agents = ROOT_DIR / "AGENTS.md"
     if root_agents.exists():
-        md_files.append(root_agents)
+        files.append(root_agents)
+    return files
 
-    # 3. bundle 배포 아티팩트 디렉터리 내 마크다운 파일 동적 수집
-    if BUNDLE_DIR.exists():
-        dist_md_files = list(BUNDLE_DIR.glob("**/*.md"))
-        md_files.extend(dist_md_files)
-        print(f"2️⃣ 총 {len(md_files)}개 원본 및 dist/ 배포 Markdown 파일 검사 대상 수집 완료 (dist/ {len(dist_md_files)}개 포함)")
-    else:
-        print(f"2️⃣ 총 {len(md_files)}개 원본 Markdown 파일 검사 대상 수집 완료")
 
-    # 3. YAML Frontmatter, 인코딩, 금지 표현 및 상대 링크 검사
-    print(f"3️⃣ YAML Frontmatter, UTF-8 인코딩 및 금지 표현 검사 중...")
-    for md_file in md_files:
-        errs = check_yaml_frontmatter(md_file)
-        all_errors.extend(errs)
-        errs = check_encoding_and_content(md_file)
-        all_errors.extend(errs)
+def collect_bundle_markdown() -> list[Path]:
+    """생성된 bundle의 Markdown 파일을 수집합니다."""
+    return list(BUNDLE_DIR.glob("**/*.md")) if BUNDLE_DIR.exists() else []
 
-    print(f"4️⃣ Markdown 내부 로컬 상대 링크 유효성 검사 중...")
-    for md_file in md_files:
-        errs = check_markdown_links(md_file)
-        all_errors.extend(errs)
 
-    # 5. dist metadata, version coherence, and freshness
-    print(f"5️⃣ bundle metadata 계약 검사 중...")
-    all_errors.extend(check_dist_metadata())
-    print(f"6️⃣ 배포 버전 정합성 검사 중...")
-    all_errors.extend(check_version_coherence())
-    print(f"7️⃣ bundle 배포 아티팩트 최신 동기화 상태 검사 중...")
-    all_errors.extend(check_dist_freshness())
+def check_markdown_files(files: list[Path]) -> list:
+    """Markdown 파일의 frontmatter, 내용과 상대 링크를 검사합니다."""
+    errors = []
+    for file_path in files:
+        errors.extend(check_yaml_frontmatter(file_path))
+        errors.extend(check_encoding_and_content(file_path))
+        errors.extend(check_markdown_links(file_path))
+    return errors
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="배포 원본과 bundle을 검증합니다.")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--pre-build",
+        action="store_true",
+        help="bundle을 요구하지 않고 배포 원본만 검사합니다.",
+    )
+    mode.add_argument(
+        "--post-build",
+        action="store_true",
+        help="build 후 생성된 bundle과 원본 동기화를 검사합니다.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    run_source = not args.post_build
+    run_bundle = not args.pre_build
+    all_errors = []
+
+    print("🔍 [rule-validator] 배포 계약 검증을 시작합니다.")
+
+    if run_source:
+        source_files = collect_source_markdown()
+        print(f"- Source preflight: Markdown {len(source_files)}개")
+        all_errors.extend(check_source_layout())
+        all_errors.extend(check_markdown_files(source_files))
+        all_errors.extend(check_version_coherence(include_bundle=False))
+
+    if run_bundle:
+        bundle_files = collect_bundle_markdown()
+        print(f"- Artifact verification: Markdown {len(bundle_files)}개")
+        all_errors.extend(check_markdown_files(bundle_files))
+        all_errors.extend(check_dist_metadata())
+        all_errors.extend(check_version_coherence(include_source=False))
+        all_errors.extend(check_dist_freshness())
 
     print("\n" + "=" * 50)
     if all_errors:
@@ -289,7 +321,7 @@ def main():
             print(f"  - {err}")
         sys.exit(1)
     else:
-        print("✅ 모든 원본 규칙 모듈, dist/ 배포 아티팩트 및 Markdown 파일 검증을 성공적으로 통과하였습니다!")
+        print("✅ 요청한 배포 계약 검증을 통과하였습니다.")
         sys.exit(0)
 
 if __name__ == "__main__":
