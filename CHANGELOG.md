@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [2.7.1] - 2026-09-06
+
+### Fixed
+- **플랫폼 간 bundle 재현성**: metadata의 managed file 경로를 OS 경로 비교가 아닌 POSIX 논리 경로 문자열로 정렬하여 Windows와 Linux build가 동일한 byte 순서를 생성하도록 수정했습니다.
+
 ## [2.7.0] - 2026-09-06
 
 ### Changed

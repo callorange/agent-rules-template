@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.7.0",
+  "template_version": "2.7.1",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -16,6 +16,10 @@
       "type": "text",
       "sha256": "96e459228231f5129acace99b7636b3fd9240722d0f961feabd7a48c07472703"
     },
+    ".agents/skills/gitignore-generator/SKILL.md": {
+      "type": "text",
+      "sha256": "482001112ede96dbe724c550dce31a57cb21305f8d564c6c76112d83822176f6"
+    },
     ".agents/skills/gitignore-generator/scripts/gitignore.ps1": {
       "type": "text",
       "sha256": "14f46b06261d3efbafb1b70b3d77712b2004da80547732331cb27fce2a6ee4e3"
@@ -24,29 +28,25 @@
       "type": "text",
       "sha256": "c23de95a237f373956168c34d98382447fea0bdda25297eec3764b4ee539764e"
     },
-    ".agents/skills/gitignore-generator/SKILL.md": {
-      "type": "text",
-      "sha256": "482001112ede96dbe724c550dce31a57cb21305f8d564c6c76112d83822176f6"
-    },
     ".agents/skills/handoff/SKILL.md": {
       "type": "text",
       "sha256": "ec391e807018b3e8f65d76bea0fcad9fb25537f89bdfaca1280759a1b4348795"
-    },
-    ".agents/skills/python-ecosystem-kb/resources/wikidocs-14021.md": {
-      "type": "text",
-      "sha256": "2cfaed2524dcee88fae18ba7ede7d40dddac89887c8a0ff1d76b55404d426bea"
     },
     ".agents/skills/python-ecosystem-kb/SKILL.md": {
       "type": "text",
       "sha256": "7d0f66fb24d4489400affd9e9c4a589d5811a01b7f77b8f3934715dea930c214"
     },
-    "guides/prompt-context-engineering.md": {
+    ".agents/skills/python-ecosystem-kb/resources/wikidocs-14021.md": {
       "type": "text",
-      "sha256": "00aa49a550a3c89c1716e827ebfb6c437c94c298fc6987e6c34fd9d1507db1df"
+      "sha256": "2cfaed2524dcee88fae18ba7ede7d40dddac89887c8a0ff1d76b55404d426bea"
     },
     "guides/README.md": {
       "type": "text",
       "sha256": "4ada618f3a20492177ebab1ab184b0fe5ebb1da93090360df544ac9c90a6cc50"
+    },
+    "guides/prompt-context-engineering.md": {
+      "type": "text",
+      "sha256": "00aa49a550a3c89c1716e827ebfb6c437c94c298fc6987e6c34fd9d1507db1df"
     },
     "rules/architecture/ai-llm-rag.md": {
       "type": "text",

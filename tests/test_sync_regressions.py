@@ -205,6 +205,20 @@ class RegressionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_bundle(self.bundle)
 
+    def test_metadata_keys_use_platform_independent_ordinal_order(self):
+        skill_dir = self.bundle / ".agents/skills/example"
+        (skill_dir / "scripts").mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_text("skill", encoding="utf-8")
+        (skill_dir / "scripts/run.py").write_text("script", encoding="utf-8")
+
+        BUILD.build_metadata(self.bundle)
+
+        metadata = json.loads(
+            (self.bundle / "metadata.json").read_text(encoding="utf-8")
+        )
+        managed_paths = list(metadata["managed_files"])
+        self.assertEqual(managed_paths, sorted(managed_paths))
+
     def test_nfd_consumer_lookup_and_collision(self):
         (self.bundle / "rules/é.md").write_text("upstream")
         self.update_bundle("1.0")

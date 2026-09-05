@@ -96,7 +96,11 @@ def build_metadata(bundle_dir: Path) -> None:
     """완성된 bundle의 canonical ownership metadata를 작성합니다."""
     managed_files: dict[str, dict[str, str]] = {}
     normalized_paths: set[str] = set()
-    for path in sorted(bundle_dir.rglob("*")):
+    bundle_paths = sorted(
+        bundle_dir.rglob("*"),
+        key=lambda path: path.relative_to(bundle_dir).as_posix(),
+    )
+    for path in bundle_paths:
         relative_path = path.relative_to(bundle_dir)
         if not path.is_file() or relative_path in {Path("AGENTS.md"), Path("metadata.json")}:
             continue
