@@ -32,7 +32,7 @@ description: rules/, guides/, skills/, subagents/ 원본과 dist/ 배포 아티�
 * **YAML Frontmatter 검사**: 스킬(`SKILL.md`) 및 공개 서브에이전트(`subagents/*.md`)의 필수 메타데이터(`name`, `description`) 존재 여부 검사
 * **금지된 출력 생략 표현**: `... (중략) ...`, `// 기존 내용과 동일`, `[나머지 부분 생략]` 등 무단 생략 구문 삽입 여부 검사 (단, 인라인 백틱 및 코드 블록 내부 안내 예시는 제외)
 * **상대 경로 링크 유효성**: `rules/`, `guides/`, `skills/`, `subagents/` 원본, 루트 `AGENTS.md`, `dist/` 내 Markdown 문서의 상대 파일 링크 실재 여부 확인
-* **Stale Dist 동기화 상태 검사**: 임시 디렉터리에 생성한 번들과 committed `dist/` 배포 아티팩트의 파일 집합 및 바이트 내용을 결정적으로 비교하여 최신화 여부를 경고로 출력합니다. 이는 검증 실패가 아니라, 수정 후 `python scripts/build_dist.py`를 실행해야 하는 필수 후속 작업입니다.
+* **Stale Dist 동기화 상태 검사**: 임시 디렉터리에 생성한 번들과 committed bundle 배포 아티팩트의 파일 집합 및 바이트 내용을 결정적으로 비교하며, 불일치하면 검증에 실패합니다. 수정 후 `python scripts/build_dist.py`를 실행하여 원본과 bundle을 동기화해야 합니다.
 
 ### 🛠️ 실패 시 복구 프로토콜
 1. 스크립트 실행 실패 시 출력된 에러 위치(`[파일명:줄번호]`)를 확인합니다.

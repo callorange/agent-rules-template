@@ -41,13 +41,55 @@ CATEGORY_METADATA = {
     "packaging": ("📦 패키징 및 배포 생태계 규칙", "Packaging & Ecosystem Rules"),
     "styles": ("🎨 언어별 코딩 스타일 가이드 (Google Style Guides)", "Language Style Guides")
 }
+REQUIRED_CORE_FILES = {
+    "01-base.md",
+    "02-workflow.md",
+    "03-integrity.md",
+    "04-standards.md",
+    "05-docs-maintenance.md",
+}
+SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 def template_version() -> str:
     """저장소 헌법의 버전을 bundle version으로 사용합니다."""
     content = (PROJECT_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     match = re.search(r"\*\*Version\*\*:\s*([^|\n]+)", content)
-    return match.group(1).strip() if match else "0.0.0"
+    if match is None:
+        raise ValueError("AGENTS.md에서 '**Version**' 값을 찾을 수 없습니다.")
+    version = match.group(1).strip()
+    if not SEMVER_PATTERN.fullmatch(version):
+        raise ValueError(f"AGENTS.md의 Version이 유효한 SemVer가 아닙니다: {version!r}")
+    return version
+
+
+def validate_source_layout(rules_dir: Path | None = None) -> None:
+    """필수 Core 및 배포 카테고리가 build 설정과 일치하는지 검증합니다."""
+    source_rules = rules_dir if rules_dir is not None else RULES_DIR
+    core_dir = source_rules / "core"
+    if not core_dir.is_dir():
+        raise ValueError("필수 디렉터리 'rules/core'가 존재하지 않습니다.")
+
+    missing_core = sorted(
+        name for name in REQUIRED_CORE_FILES if not (core_dir / name).is_file()
+    )
+    if missing_core:
+        raise ValueError("필수 Core 모듈 누락: " + ", ".join(missing_core))
+
+    actual_categories = {
+        path.name for path in source_rules.iterdir()
+        if path.is_dir() and path.name != "core" and not path.name.startswith(".")
+    }
+    configured_categories = set(CATEGORY_METADATA)
+    missing_categories = sorted(configured_categories - actual_categories)
+    unknown_categories = sorted(actual_categories - configured_categories)
+    problems = []
+    if missing_categories:
+        problems.append("설정된 카테고리 디렉터리 누락: " + ", ".join(missing_categories))
+    if unknown_categories:
+        problems.append("build 설정에 없는 rule 카테고리: " + ", ".join(unknown_categories))
+    if problems:
+        raise ValueError("; ".join(problems))
 
 
 def build_metadata(bundle_dir: Path) -> None:
@@ -101,6 +143,8 @@ def extract_title_and_description(file_path: Path) -> tuple[str, str]:
 
 def build_dist(output_dir: Path | None = None):
     """단일 canonical bundle을 생성하고 필요하면 지정 경로에 생성합니다."""
+    validate_source_layout()
+    template_version()
     # metadata만 NFC로 바뀌는 불일치를 기존 bundle 제거 전에 차단합니다.
     for source in (RULES_DIR, GUIDES_DIR, SKILLS_DIR, SUBAGENTS_DIR):
         for path in source.rglob("*"):

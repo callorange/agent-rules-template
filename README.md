@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.5.0**입니다.
+AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.6.0**입니다.
 
 ---
 
@@ -278,7 +278,7 @@ python scripts/build_dist.py
 python .agents/skills/rule-validator/scripts/validate_rules.py
 ```
 
-검증기는 금지 표현, UTF-8 인코딩, 상대 링크와 bundle 동기화 상태 등을 확인합니다. 생성된 `agent_rules_template/bundle/`과 `metadata.json`이 원본을 반영하는지 확인하고, 원본 변경과 함께 관리합니다. 생성 파일은 직접 수정하지 않습니다.
+검증기는 필수 Core와 rule 카테고리, 배포 버전, 금지 표현, UTF-8 인코딩, 상대 링크와 bundle 동기화 상태 등을 확인합니다. 생성된 `agent_rules_template/bundle/`과 `metadata.json`이 원본을 반영하지 않으면 검증에 실패하므로 원본 변경과 함께 관리합니다. 생성 파일은 직접 수정하지 않습니다.
 
 CLI·sync·패키징 동작을 변경했다면 관련 테스트도 실행합니다. 전체 테스트 명령은 다음과 같습니다.
 

@@ -5,6 +5,7 @@ validate_rules.py - rules/, guides/, skills/, subagents/ 원본 및 dist/ 배포
 """
 
 import importlib.util
+import json
 import re
 import shutil
 import sys
@@ -117,15 +118,70 @@ def check_markdown_links(file_path: Path) -> list:
                 )
     return errors
 
-def check_dist_freshness() -> list:
-    """임시 경로에 생성한 bundle과 committed bundle의 최신성을 비교합니다."""
-    warnings = []
+def load_build_module():
+    """배포 build 모듈을 단일 경로에서 로드합니다."""
     build_script = ROOT_DIR / "scripts" / "build_dist.py"
-    spec = importlib.util.spec_from_file_location("build_dist", build_script)
+    spec = importlib.util.spec_from_file_location("rule_validator_build_dist", build_script)
     if spec is None or spec.loader is None:
-        return [f"[경고] dist 최신성 비교를 위한 빌드 스크립트를 불러올 수 없습니다: {build_script}"]
+        raise RuntimeError(f"배포 빌드 스크립트를 불러올 수 없습니다: {build_script}")
     build_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(build_module)
+    return build_module
+
+
+def check_source_layout() -> list:
+    """필수 Core 및 rule 카테고리의 build 포함 여부를 검사합니다."""
+    try:
+        load_build_module().validate_source_layout()
+    except (OSError, RuntimeError, ValueError) as error:
+        return [f"[source layout] {error}"]
+    return []
+
+
+def check_version_coherence(root_dir: Path = ROOT_DIR, bundle_dir: Path = BUNDLE_DIR) -> list:
+    """배포 버전 원본과 동기화 대상의 일치 여부를 검사합니다."""
+    errors = []
+    try:
+        agents_text = (root_dir / "AGENTS.md").read_text(encoding="utf-8")
+        agents_match = re.search(r"\*\*Version\*\*:\s*([^|\n]+)", agents_text)
+        if agents_match is None:
+            return ["[version] AGENTS.md에서 Version을 찾을 수 없습니다."]
+        expected = agents_match.group(1).strip()
+
+        pyproject_text = (root_dir / "pyproject.toml").read_text(encoding="utf-8")
+        project_match = re.search(
+            r"(?ms)^\[project\]\s*$.*?^version\s*=\s*[\"']([^\"']+)[\"']",
+            pyproject_text,
+        )
+        readme_text = (root_dir / "README.md").read_text(encoding="utf-8")
+        readme_match = re.search(r"현재 버전은 \*\*([^*]+)\*\*", readme_text)
+        metadata = json.loads((bundle_dir / "metadata.json").read_text(encoding="utf-8"))
+        changelog_text = (root_dir / "CHANGELOG.md").read_text(encoding="utf-8")
+
+        declared = {
+            "pyproject.toml": project_match.group(1) if project_match else None,
+            "README.md": readme_match.group(1).strip() if readme_match else None,
+            "bundle/metadata.json": metadata.get("template_version"),
+        }
+        for source, value in declared.items():
+            if value != expected:
+                errors.append(
+                    f"[version] {source}의 버전 {value!r}이 AGENTS.md의 {expected!r}과 일치하지 않습니다."
+                )
+        if not re.search(rf"(?m)^## \[{re.escape(expected)}\](?:\s|$)", changelog_text):
+            errors.append(f"[version] CHANGELOG.md에 [{expected}] 버전 구획이 없습니다.")
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as error:
+        errors.append(f"[version] 버전 정합성 검사 실패: {error}")
+    return errors
+
+
+def check_dist_freshness() -> list:
+    """임시 경로에 생성한 bundle과 committed bundle의 최신성을 비교합니다."""
+    errors = []
+    try:
+        build_module = load_build_module()
+    except (OSError, RuntimeError) as error:
+        return [f"[dist freshness] {error}"]
 
     # Windows sandbox에서도 접근 가능한 프로젝트 전용 작업 경로를 사용합니다.
     work_dir = ROOT_DIR / ".rule-validator-build"
@@ -160,9 +216,9 @@ def check_dist_freshness() -> list:
     if stale:
         differences.append("내용 불일치: " + ", ".join(str(path) for path in stale))
     if differences:
-        warnings.append("[경고] bundle 배포 아티팩트가 현재 원본과 일치하지 않습니다 (" + "; ".join(differences) + "). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
+        errors.append("bundle 배포 아티팩트가 현재 원본과 일치하지 않습니다 (" + "; ".join(differences) + "). 'python scripts/build_dist.py'를 실행하여 최신화하십시오.")
 
-    return warnings
+    return errors
 
 
 def check_dist_metadata() -> list:
@@ -180,18 +236,9 @@ def main():
 
     print("🔍 [rule-validator] 원본 및 dist/ 배포 아티팩트 무결성 검증을 시작합니다...\n")
 
-    # 1. 필수 코어 최상위 모듈 및 디렉터리 동적 탐색 검사
-    print("1️⃣ 필수 코어 모듈 동적 탐색 및 검사 중...")
-    core_dir = RULES_DIR / "core"
-    if not core_dir.exists():
-        all_errors.append("코어 디렉터리 누락: 'rules/core' 디렉터리가 존재하지 않습니다.")
-    else:
-        core_files = sorted(list(core_dir.glob("*.md")))
-        base_file = core_dir / "01-base.md"
-        if not base_file.is_file():
-            all_errors.append("필수 최상위 헌법 모듈 누락: 정확한 파일명 'rules/core/01-base.md'가 존재하지 않습니다.")
-        else:
-            print(f"   (동적 탐색된 코어 모듈 {len(core_files)}개: {[f.name for f in core_files]})")
+    # 1. 필수 Core 및 배포 카테고리 계약 검사
+    print("1️⃣ 필수 Core 및 rule 카테고리 배포 계약 검사 중...")
+    all_errors.extend(check_source_layout())
 
     # 2. rules/, guides/, skills/, subagents/ 원본 SSOT 마크다운 파일 동적 수집
     md_files = list(RULES_DIR.glob("**/*.md"))
@@ -227,13 +274,13 @@ def main():
         errs = check_markdown_links(md_file)
         all_errors.extend(errs)
 
-    # 5. dist metadata contract and freshness
+    # 5. dist metadata, version coherence, and freshness
     print(f"5️⃣ bundle metadata 계약 검사 중...")
     all_errors.extend(check_dist_metadata())
-    print(f"6️⃣ bundle 배포 아티팩트 최신 동기화 상태 검사 중...")
-    dist_warnings = check_dist_freshness()
-    for warn in dist_warnings:
-        print(f"   {warn}")
+    print(f"6️⃣ 배포 버전 정합성 검사 중...")
+    all_errors.extend(check_version_coherence())
+    print(f"7️⃣ bundle 배포 아티팩트 최신 동기화 상태 검사 중...")
+    all_errors.extend(check_dist_freshness())
 
     print("\n" + "=" * 50)
     if all_errors:

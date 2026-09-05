@@ -233,6 +233,35 @@ class RegressionTests(unittest.TestCase):
                 BUILD.build_dist(self.bundle)
         self.assertEqual(before, (self.bundle / "AGENTS.md").read_bytes())
 
+    def test_build_rejects_missing_core_and_unknown_rule_categories(self):
+        source = self.base / "rules"
+        core = source / "core"
+        core.mkdir(parents=True)
+        for name in BUILD.REQUIRED_CORE_FILES - {"03-integrity.md"}:
+            (core / name).write_text(name, encoding="utf-8")
+        for name in BUILD.CATEGORY_METADATA:
+            (source / name).mkdir()
+
+        with self.assertRaisesRegex(ValueError, "03-integrity.md"):
+            BUILD.validate_source_layout(source)
+
+        (core / "03-integrity.md").write_text("required", encoding="utf-8")
+        (source / "unpackaged").mkdir()
+        with self.assertRaisesRegex(ValueError, "unpackaged"):
+            BUILD.validate_source_layout(source)
+
+    def test_template_version_fails_closed(self):
+        agents = self.base / "AGENTS.md"
+        agents.write_text("# no version", encoding="utf-8")
+        with patch.object(BUILD, "PROJECT_ROOT", self.base):
+            with self.assertRaisesRegex(ValueError, "Version"):
+                BUILD.template_version()
+
+        agents.write_text("**Version**: invalid |", encoding="utf-8")
+        with patch.object(BUILD, "PROJECT_ROOT", self.base):
+            with self.assertRaisesRegex(ValueError, "SemVer"):
+                BUILD.template_version()
+
     def test_replace_repairs_markers_but_not_file_modifications(self):
         sync(self.project, self.bundle)
         agents = self.project / "AGENTS.md"

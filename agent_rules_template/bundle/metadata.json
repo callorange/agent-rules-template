@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.5.0",
+  "template_version": "2.6.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "002ff59ed877b385c2c10b8a18b2f4232b7290b54b558eef17629ded78316864"
+    "sha256": "eebd7c29bbbdfaf66893348fa55f960ad338469b09e51f9929498834e9a2f022"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
@@ -18,15 +18,15 @@
     },
     ".agents/skills/gitignore-generator/scripts/gitignore.ps1": {
       "type": "text",
-      "sha256": "6033a4e53f1bc3469eea8b676d72e8a67796c5d7a336e341e2eb94e9a648fdcb"
+      "sha256": "14f46b06261d3efbafb1b70b3d77712b2004da80547732331cb27fce2a6ee4e3"
     },
     ".agents/skills/gitignore-generator/scripts/gitignore.sh": {
       "type": "text",
-      "sha256": "bc98982f93b22740c51f74737a456b2a401deb3df52ab88970a03167b78d8613"
+      "sha256": "c23de95a237f373956168c34d98382447fea0bdda25297eec3764b4ee539764e"
     },
     ".agents/skills/gitignore-generator/SKILL.md": {
       "type": "text",
-      "sha256": "c8c34a3989d51128473cb284172b1d460a59aec949f5c336756201eb3c0948aa"
+      "sha256": "482001112ede96dbe724c550dce31a57cb21305f8d564c6c76112d83822176f6"
     },
     ".agents/skills/handoff/SKILL.md": {
       "type": "text",
@@ -62,7 +62,7 @@
     },
     "rules/architecture/library-package.md": {
       "type": "text",
-      "sha256": "df49c0a58140956845384fcd5f08330cedd20e37223999e08921afb2ad4c6598"
+      "sha256": "3a2ed21d4ea134718abc888ed3d834a3552f68b0aa436088bb77f504c7305c99"
     },
     "rules/architecture/monorepo.md": {
       "type": "text",
