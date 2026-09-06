@@ -80,7 +80,7 @@
   외부 서비스의 실제 연결, 인증 또는 provider 호환성을 검증하는 테스트는 기본 테스트와 구분되는 명시적인 opt-in 분류로 관리합니다.
   기본 테스트 실행에서는 제외하고, 해당 분류가 명시적으로 선택된 실행에서만 수행합니다.
 - **민감정보 비노출**:
-  실제 외부 연결 테스트의 로그, assertion message 및 테스트 결과에 credential, authorization header, token, 원본 응답 또는 그 밖의 민감정보를 노출하지 않습니다.
+  실제 외부 연결 테스트의 로그, assertion message 및 테스트 결과에 credential, authorization header, token, 민감정보가 포함된 원본 응답 또는 그 밖의 민감정보를 노출하지 않습니다.
 
 ---
 

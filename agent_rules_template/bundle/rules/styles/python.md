@@ -79,8 +79,8 @@ Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기
 
 프로젝트가 pytest를 사용하는 경우 다음 규칙을 적용합니다.
 
-- 실제 외부 연결을 수행하는 테스트에는 `@pytest.mark.live`를 지정하고 `live` marker를 pytest 설정에 등록합니다.
-- 기본 pytest 실행은 `live` 테스트를 제외하도록 프로젝트 설정에 선언합니다.
-- `live` 테스트는 `pytest -m live`처럼 해당 marker를 명시적으로 선택한 실행에서만 수행합니다.
+- 기존 프로젝트에 실제 외부 연결 테스트를 분류하는 marker가 있으면 이를 따르고, 없으면 `@pytest.mark.live`를 지정하고 `live` marker를 pytest 설정에 등록합니다.
+- 기본 pytest 실행은 해당 marker의 테스트를 제외하도록 프로젝트 설정에 선언합니다.
+- 실제 외부 연결 테스트는 해당 marker를 명시적으로 선택한 실행에서만 수행합니다. 새로 `live`를 사용한 경우 `pytest -m live`가 이에 해당합니다.
 - 필요한 credential이 없으면 실제 연결을 시도하지 않고, 프로젝트 정책에 따라 민감정보가 없는 사유로 skip하거나 실패시킵니다.
-- 명시적으로 구성된 `live` 전용 CI 작업은 opt-in 실행으로 취급할 수 있습니다.
+- 명시적으로 구성된 해당 marker 전용 CI 작업은 opt-in 실행으로 취급할 수 있습니다.

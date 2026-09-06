@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.8.1",
+  "template_version": "2.9.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "e128b2db92afbed166dd0d97229887934a6da0c8b14e0563f2f79b08807e06cf"
+    "sha256": "32e189da5c01d07feab2f9bc23a7aef9abf7c7e20c0f4fa45b65ec5525a16173"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
@@ -150,7 +150,7 @@
     },
     "rules/styles/python.md": {
       "type": "text",
-      "sha256": "2bcb7be37715f7e766ef6dcf7a6c7563f9ebd5e8da6af3646a4a14b62f0aa271"
+      "sha256": "3d82b3be4e5f1303a4326620f2562996644f3b66f884abb70d9402b47a672e41"
     },
     "rules/styles/typescript.md": {
       "type": "text",
