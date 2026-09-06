@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.8.0",
+  "template_version": "2.8.1",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"

@@ -3,6 +3,8 @@
 import importlib.util
 import json
 import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,6 +14,7 @@ from agent_rules_template.scripts.common import END_MARKER, START_MARKER, write_
 from agent_rules_template.scripts.sync import (
     LOCAL_METADATA,
     PROJECT_RULES_GUIDANCE,
+    _staged_writes,
     sync,
     validate_bundle,
 )
@@ -189,6 +192,70 @@ class RegressionTests(unittest.TestCase):
             ],
             "2.0",
         )
+
+    def test_windows_staging_uses_each_destination_parent(self):
+        first = self.project / "rules/a.md"
+        second = self.project / "other/b.md"
+        first.parent.mkdir(parents=True)
+        second.parent.mkdir(parents=True)
+
+        with patch("agent_rules_template.scripts.sync.IS_WINDOWS", True):
+            with _staged_writes(
+                self.project, {first: b"first", second: b"second"}, []
+            ) as staged:
+                self.assertEqual(staged[first].parent.parent, first.parent)
+                self.assertEqual(staged[second].parent.parent, second.parent)
+                self.assertEqual(staged[first].read_bytes(), b"first")
+                self.assertEqual(staged[second].read_bytes(), b"second")
+
+    def test_posix_staging_remains_single_private_project_directory(self):
+        first = self.project / "rules/a.md"
+        second = self.project / "other/b.md"
+        self.project.mkdir()
+
+        with patch("agent_rules_template.scripts.sync.IS_WINDOWS", False):
+            with _staged_writes(
+                self.project, {first: b"first", second: b"second"}, []
+            ) as staged:
+                self.assertEqual(staged[first].parent, staged[second].parent)
+                self.assertEqual(staged[first].parent.parent, self.project)
+
+    @unittest.skipUnless(os.name == "nt", "Windows ACL regression")
+    def test_windows_install_and_update_inherit_managed_file_acl(self):
+        shell = shutil.which("pwsh") or shutil.which("powershell")
+        if shell is None:
+            self.skipTest("PowerShell is required for the Windows ACL assertion")
+
+        def acl(path):
+            environment = {**os.environ, "AGENT_RULES_ACL_TARGET": str(path)}
+            command = (
+                "$value = Get-Acl -LiteralPath $env:AGENT_RULES_ACL_TARGET; "
+                "[pscustomobject]@{Protected=$value.AreAccessRulesProtected; "
+                "Inherited=@($value.Access | ForEach-Object {$_.IsInherited})} "
+                "| ConvertTo-Json -Compress"
+            )
+            result = subprocess.run(
+                [shell, "-NoProfile", "-Command", command],
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8-sig",
+                env=environment,
+            )
+            return json.loads(result.stdout)
+
+        sync(self.project, self.bundle)
+        target = self.project / "rules/a.md"
+        for phase in ("install", "update"):
+            with self.subTest(phase=phase):
+                information = acl(target)
+                self.assertFalse(information["Protected"])
+                self.assertTrue(information["Inherited"])
+                self.assertTrue(all(information["Inherited"]))
+            if phase == "install":
+                (self.bundle / "rules/a.md").write_bytes(b"updated\n")
+                self.update_bundle("2.0")
+                sync(self.project, self.bundle)
 
     def test_nfd_bundle_rejected_and_nested_names_included(self):
         for name in ("AGENTS.md", "metadata.json", "é.md"):

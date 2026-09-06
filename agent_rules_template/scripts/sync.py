@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
 import os
 import re
+import shutil
 import sys
 import tempfile
+import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from .common import (
     BINARY_HASH_POLICY,
@@ -32,6 +35,42 @@ PROJECT_RULES_GUIDANCE = (
     "이 섹션의 더 구체적인 규칙을 우선합니다."
 )
 PROJECT_RULES_GUIDANCE_ADDED = "project_rules_guidance_added"
+IS_WINDOWS = os.name == "nt"
+
+
+@contextmanager
+def _staged_writes(
+    project: Path, writes: dict[Path, bytes], deletes: list[Path]
+) -> Iterator[dict[Path, Path]]:
+    """POSIX는 private staging을, Windows는 대상 부모 ACL 상속을 유지합니다."""
+    targets = list(dict.fromkeys([*writes, *deletes]))
+    if not IS_WINDOWS:
+        with tempfile.TemporaryDirectory(
+            prefix=".agent-rules-stage-", dir=project
+        ) as temporary:
+            staging = Path(temporary)
+            staged = {path: staging / str(index) for index, path in enumerate(targets)}
+            for path, data in writes.items():
+                staged[path].write_bytes(data)
+            yield staged
+        return
+
+    directories: dict[Path, Path] = {}
+    try:
+        staged = {}
+        for index, path in enumerate(targets):
+            staging = directories.get(path.parent)
+            if staging is None:
+                staging = path.parent / f".agent-rules-stage-{uuid.uuid4().hex}"
+                staging.mkdir()
+                directories[path.parent] = staging
+            staged[path] = staging / str(index)
+        for path, data in writes.items():
+            staged[path].write_bytes(data)
+        yield staged
+    finally:
+        for staging in directories.values():
+            shutil.rmtree(staging)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -377,49 +416,49 @@ def apply_changes(
     }
     changed = []
     created = []
-    with tempfile.TemporaryDirectory(
-        prefix=".agent-rules-stage-", dir=project
-    ) as temporary:
-        staging = Path(temporary)
-        for index, data in enumerate(writes.values()):
-            (staging / str(index)).write_bytes(data)
-        try:
-            for path in deletes:
-                if path.exists():
-                    path.unlink()
+    try:
+        for path in writes:
+            missing = []
+            parent = path.parent
+            while not parent.exists():
+                missing.append(parent)
+                parent = parent.parent
+            for directory in reversed(missing):
+                directory.mkdir()
+                created.append(directory)
+
+        with _staged_writes(project, writes, deletes) as staged:
+            try:
+                for path in deletes:
+                    if path.exists():
+                        path.unlink()
+                        changed.append(path)
+                for path in writes:
+                    local_target(project, logical_path(path.relative_to(project)))
+                    # baseline은 결과 검증 이후 마지막으로 교체합니다.
+                    if path == local_target(project, LOCAL_METADATA):
+                        if managed_block_hash(
+                            local_target(project, "AGENTS.md")
+                        ) != metadata["managed_block"]["sha256"] or any(
+                            file_record(local_target(project, raw)) != record
+                            for raw, record in metadata["managed_files"].items()
+                        ):
+                            raise RuntimeError("설치 결과 검증에 실패했습니다")
+                    os.replace(staged[path], path)
                     changed.append(path)
-            for index, path in enumerate(writes):
-                local_target(project, logical_path(path.relative_to(project)))
-                missing = []
-                parent = path.parent
-                while not parent.exists():
-                    missing.append(parent)
-                    parent = parent.parent
-                for directory in reversed(missing):
-                    directory.mkdir()
-                    created.append(directory)
-                # baseline은 결과 검증 이후 마지막으로 교체합니다.
-                if path == local_target(project, LOCAL_METADATA):
-                    if managed_block_hash(
-                        local_target(project, "AGENTS.md")
-                    ) != metadata["managed_block"]["sha256"] or any(
-                        file_record(local_target(project, raw)) != record
-                        for raw, record in metadata["managed_files"].items()
-                    ):
-                        raise RuntimeError("설치 결과 검증에 실패했습니다")
-                os.replace(staging / str(index), path)
-                changed.append(path)
-        except BaseException:
-            for path in reversed(changed):
-                if originals[path] is None:
-                    path.unlink(missing_ok=True)
-                else:
-                    backup = staging / "restore"
-                    backup.write_bytes(originals[path])
-                    os.replace(backup, path)
-            for directory in reversed(created):
-                directory.rmdir()
-            raise
+            except BaseException:
+                for path in reversed(changed):
+                    if originals[path] is None:
+                        path.unlink(missing_ok=True)
+                    else:
+                        backup = staged[path].parent / "restore"
+                        backup.write_bytes(originals[path])
+                        os.replace(backup, path)
+                raise
+    except BaseException:
+        for directory in reversed(created):
+            directory.rmdir()
+        raise
 
 
 def main(argv: list[str] | None = None) -> int:

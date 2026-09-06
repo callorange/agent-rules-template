@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [2.8.1] - 2026-09-06
+
+### Fixed
+- **Windows managed 파일 ACL 상속**: `TemporaryDirectory`가 만든 제한 ACL을 staged 파일이 상속하고 `os.replace()` 후에도 유지하던 원인을 수정했습니다. Windows에서는 각 최종 대상의 부모 아래에 일반 staging 디렉터리를 만들어 소비 프로젝트의 부모 ACL 정책을 상속하며, POSIX의 private staging 동작은 유지합니다.
+
 ## [2.8.0] - 2026-09-06
 
 ### Changed
