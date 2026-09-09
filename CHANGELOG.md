@@ -21,7 +21,11 @@
   - 브랜드 Accent Color와 시맨틱 상태 색상(`success`, `warning`, `error`, `info`, `progress` 등)을 명확히 분리하고 자의적인 채도 수치 제약을 완화했습니다.
 - **외부 패키지 건전성 검토 및 승인 경계 분리 (`rules/architecture/library-package.md`)**:
   - 사용자가 직접 지시한 패키지는 Task-level Authorization에 따라 추가 승인 질문 없이 설치하도록 정비했습니다.
-  - 에이전트 선택 패키지는 위험에 비례하여 건전성을 확인하되, 실질적인 unresolved concern(라이선스 충돌, 보안 취약점, 런타임 비호환, 과도한 의존성/lock-in 등)이 확인된 경우에만 Decision Gate로 에스컬레이션하도록 개선했습니다.
+- **핵심 문서 헌법 및 프로젝트 안내 동기화 (`AGENTS.md`, `README.md`)**:
+  - 최상위 헌법(`AGENTS.md`)에 작업 단위 승인(Task-level Authorization), 기계적 수렴 우선 및 결정적 오류 즉시 수렴, 문서-코드 동기화 타이밍, 프론트엔드/CSS/패키지 헌법 계약을 온전히 반영했습니다.
+  - 프로젝트 안내서(`README.md`)의 핵심 원칙, 모듈 적용 방식(Core, Styles, Frameworks/Architecture), 소비 프로젝트 설정 체크리스트에 기계적 수렴 도구, 시맨틱 상태 색상 체계, 패키지 Decision Gate 기준 및 `taste-skill` 선택형 참고 자료 위상을 동기화했습니다.
+
+## [2.10.0] - 2026-09-09
 
 ### Changed
 - **검증 실행 시점 및 범위 합리화**: 매 편집 직후 기계적으로 검증을 반복하지 않고 논리적 변경 단위가 안정된 시점에 관련 범위를 우선 검증하며, 전체 프로젝트 품질 게이트는 feature/task 완료 시점에 수행하도록 Core 기계 검증 원칙을 개선했습니다.

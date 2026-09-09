@@ -68,7 +68,7 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공 (OS/셸 및 도구 추상화)
 2. **기획 중심·위험 비례 실행 (Planning-First, Risk-Proportional Execution)**: 복잡하거나 고위험인 작업에서는 목적·성공 기준·제약을 먼저 정렬하고, 가역적 로컬 작업에는 필요한 정보 확인과 최소 검증만 적용
 3. **위험 기반 안전 경계 (Risk-Based Safety Boundaries)**: 외부·파괴적 변경만 사전 승인 대상으로 두고, 비신뢰 데이터를 지시와 분리
-4. **정량적 검증 (Mechanical Validation)**: Linter, Type Checker, Test Runner, 빌드 스크립트로 결과를 검증하고 잔여 위험을 투명하게 보고
+4. **정량적 검증 및 기계적 수렴 (Mechanical Validation & Convergence)**: Formatter와 safe auto-fix를 통한 기계적 수렴을 Check-First 루프보다 우선하고, 논리적 단위가 안정화된 시점에 Linter, Type Checker, Test Runner, 빌드 스크립트로 검증하며 결정적 기계 오류는 가설 루프 없이 즉시 수정
 5. **자동 조립 및 추적 가능성 (Automated Assembly & Traceability)**: 조립·정적 검증으로 배포 번들을 최신화하고, 의미 있는 개정은 CHANGELOG에 기록
 
 ---
@@ -150,9 +150,9 @@ agents-template/
 
 ## 🧩 모듈 적용 방식
 
-- **Core**: 모든 대상 프로젝트에 적용하는 안전, 권한, 컨텍스트 수집, 검증의 공통 운영 헌장입니다. 작업은 관련 정보만 단계적으로 수집하고, 위험도에 맞는 최소 검증을 수행합니다.
-- **Styles**: 수정·검토 대상 파일의 언어와 일치하는 모듈을 작업 전에 읽고 Core에 누적 적용합니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 style 모듈을 기본 프로필로 사용합니다.
-- **Frameworks / Architecture**: 사용하는 framework 규칙은 언어 style에 누적하고, architecture 규칙은 실제 작업의 책임과 기술이 일치할 때만 추가합니다. 관련 모듈이 여러 개면 하나만 고르지 않습니다.
+- **Core**: 모든 대상 프로젝트에 적용하는 안전, 권한, 컨텍스트 수집, 검증의 공통 운영 헌장입니다. 작업은 관련 정보만 단계적으로 수집하고, Check-First 루프 대신 formatter/safe auto-fix 등 기계적 수렴을 우선합니다. 검증은 논리 단위가 안정화된 시점에 수행하며, 문서 동기화는 micro-loop를 피하고 논리 단위 안정화 후 동일 변경 내에서 수술적으로 처리합니다.
+- **Styles**: 수정·검토 대상 파일의 언어와 일치하는 모듈을 작업 전에 읽고 Core에 누적 적용합니다. 기존 프로젝트에서는 설정과 관례를 우선하며, 신규 프로젝트에서는 style 모듈을 기본 프로필로 사용합니다. CSS 속성 순서는 프로젝트 formatter 및 기존 관례를 우선하고 스타일 없는 코드의 무의미한 재정렬(vanity edit)을 금지하며, 브랜드 Accent와 시맨틱 상태 색상을 분리합니다.
+- **Frameworks / Architecture**: 사용하는 framework 규칙은 언어 style에 누적하고, architecture 규칙은 실제 작업의 책임과 기술이 일치할 때만 추가합니다. 웹 프론트엔드는 특정 미적 취향을 강제하지 않고 명확한 디자인 우선순위를 따릅니다. 외부 패키지 도입 시 사용자가 직접 지시한 경우 Task-level Authorization으로 즉시 진행하고, 에이전트 자율 판단 시에는 위험 비례 건전성 검토 후 미해결 우려가 있을 때만 Decision Gate로 에스컬레이션합니다. 관련 모듈이 여러 개면 하나만 고르지 않습니다.
 - **언어 정책**: 소통·문서화·커밋 언어는 각각 결정하며 사용자의 명시적 지시를 우선합니다. 기존 문서는 번역 요청이 없으면 언어를 보존하고, 새 문서·주석과 커밋은 프로젝트별 설정과 해당 규칙을 따릅니다. Conventional Commit 타입(`feat`, `fix`, `docs`, `refactor` 등)은 영어로 유지합니다.
 - **Packaging**: Docker, Nginx, Python 애플리케이션 서버처럼 해당 기술을 직접 운영할 때만 적용합니다. PaaS, 서버리스, 관리형 ingress 등은 플랫폼의 공식 운영 가이드를 우선합니다.
 - **Skills / Subagents**: 특정 전문성, 장기 인계, 독립 감사가 필요한 경우에만 선택적으로 사용합니다. 설치나 서브에이전트 호출은 기본 동작이 아닙니다.
@@ -182,7 +182,9 @@ agents-template/
 - [ ] 문서화 언어와 public API·public 코드 요소의 범위
 - [ ] framework override, lifecycle hook, callback의 문서화 예외
 - [ ] 언어별 docstring 또는 documentation comment 형식과 기존 프로젝트 우선 관례
-- [ ] formatter, linter, type checker 연결 및 CI에서 강제할 문서화 규칙
+- [ ] formatter, linter, type checker 연결, safe auto-fix 기계적 수렴 도구 및 CI 강제 규칙
+- [ ] 디자인 토큰/디자인 시스템 및 브랜드 Accent와 시맨틱 상태 색상 체계
+- [ ] 외부 패키지 도입 시 자율 채택 범위와 Decision Gate 에스컬레이션 기준
 - [ ] test, migration, generated file의 적용 또는 제외 범위
 - [ ] 자동 검사 항목과 의미 검토가 필요한 code review 항목
 - [ ] 처리 목적·domain 단계·불변조건 전환에서 문맥 주석이 필요한 기준
@@ -301,7 +303,7 @@ python -m unittest discover -s tests -v
 
 본 룰셋 템플릿과 함께 검토할 수 있는 3rd-party 외부 에이전트 스킬 후보군입니다. 자동 설치 또는 필수 의존성이 아니며, 현재 기본 도구·규칙으로 충분한지 먼저 판단하십시오. 설치 전에는 원본 README에서 최신 옵션을 확인하고 유지보수 상태, 라이선스, 권한 및 전이 의존성을 검토합니다. 상세 하위 스킬 옵션과 적용 조건은 [recommended-external-skills.md](rules/architecture/recommended-external-skills.md)에서 확인할 수 있습니다:
 
-- **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: Anti-Slop 디자인 규격, CSS Grid 및 모던 프론트엔드 디자인 스킬
+- **[taste-skill](https://github.com/Leonxlnx/taste-skill)**: Anti-Slop 디자인 규격, CSS Grid 및 모던 프론트엔드 디자인 스킬 (선택형 설계 참고 자료이며 특정 미적 스타일을 자동 강제하지 않음)
 - **[django-ai-plugins](https://github.com/vintasoftware/django-ai-plugins)**: Django ORM, DRF, Celery 비동기, 안전한 DB 마이그레이션 및 코드 리뷰어 지침 스킬
 
 ---
