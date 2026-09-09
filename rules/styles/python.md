@@ -7,7 +7,8 @@ Google Python Style Guide 및 현대 파이썬 코딩 베스트 프랙티스 기
 
 ## 🐍 1. 언어 활용 규칙 (Language Rules)
 
-- **형식 검사 및 린팅 (Linting)**: `ruff` 또는 `pylint`를 활용해 문법 및 스타일 오류를 조기에 탐지하십시오.
+- **형식 검사 및 린팅 (Linting & Formatting)**:
+  프로젝트가 채택한 formatter 및 linter(`ruff`, `black`, `flake8`, `pylint` 등)를 사용합니다. 검증 실행 시점, 안전한 자동 교정 우선 적용, 대상 범위 및 재검증 정책은 Core의 정량적 기계 검증(Mechanical Validation) 규칙을 따릅니다.
 - **순환 복잡도 통제 (McCabe Complexity Limit)**:
   프로젝트에 설정된 C901 또는 복잡도 임계값을 따릅니다.
   신규 프로젝트의 기본·권고값은 `max-complexity = 10`이며, 초과 시 가독성·테스트 가능성을 점검하거나 사유를 문서화한 예외인지 확인하십시오.
