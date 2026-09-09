@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.10.0",
+  "template_version": "2.11.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "9c6baa5b3e0955d0e7834a97112d210630ba870b2c19f1198e40ec3a6a5126f6"
+    "sha256": "6a81bf2b6a7455cce70871f200b3d48d11f02a5f5ad6ad378a244cda736a0076"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
@@ -62,7 +62,7 @@
     },
     "rules/architecture/library-package.md": {
       "type": "text",
-      "sha256": "3a2ed21d4ea134718abc888ed3d834a3552f68b0aa436088bb77f504c7305c99"
+      "sha256": "720fb60316d633926079516403e1d3997c095f45193ca102d62b93da2a221d01"
     },
     "rules/architecture/monorepo.md": {
       "type": "text",
@@ -74,7 +74,7 @@
     },
     "rules/architecture/web-frontend.md": {
       "type": "text",
-      "sha256": "1c0833b3b11ac9717fc0589ebdb741e84977285f89f1c22f005e91ee536085f9"
+      "sha256": "66be01100161be563ceb033dcf60c3b8e4c534efcaa10770492ed8e9f2e083a4"
     },
     "rules/frameworks/django.md": {
       "type": "text",
@@ -142,7 +142,7 @@
     },
     "rules/styles/html-css.md": {
       "type": "text",
-      "sha256": "f9566d0945b174a0345bd45248b07e8a3ff730b13f236a3e25ca2044e378c7e8"
+      "sha256": "e7e0229048dab59eb6f34c84bc24a67d847313e95770cacbafd131eeaa2c825b"
     },
     "rules/styles/javascript.md": {
       "type": "text",

@@ -5,7 +5,23 @@
 
 ## [Unreleased]
 
-## [2.10.0] - 2026-09-09
+## [2.11.0] - 2026-09-09
+
+### Changed
+- **기계적 검증 및 자가 치유 루프 최적화 (`rules/core/02-workflow.md`, `rules/core/04-standards.md`)**:
+  - 매 편집마다 반복되는 Check-First 루프를 지양하고, 논리적 단위 안정화 후 formatter 및 안전한 auto-fix를 통한 기계적 수렴을 우선 적용하도록 개선했습니다.
+  - 진단 출력만으로 원인과 수정이 결정적인 기계적 오류는 무거운 Structured Troubleshooting(가설 수립 루프)에서 제외하고 즉시 교정하도록 디버깅 진입 조건을 정합화했습니다.
+- **문서-코드 동기화 타이밍 합리화 (`rules/core/05-docs-maintenance.md`)**:
+  - 파일 편집마다 문서를 갱신하는 micro-loop를 방지하고, 논리적 변경 단위의 구현이 안정된 시점에 영향받는 문서를 확인하여 동일 작업 단위(완료/커밋 전) 내에서 수술적 편집으로 동기화하도록 시점을 명확화했습니다.
+- **웹 프론트엔드 범용 디자인 기본값 정제 (`rules/architecture/web-frontend.md`)**:
+  - 특정 미적 취향(Glassmorphism, Google Fonts, 임의의 micro-animation 등)의 무조건적 강제를 제거하고, 사용자 요구 → 프로젝트 디자인 시스템 → 기존 관례 → 프레임워크 지침 → 템플릿 기본값 순의 디자인 우선순위를 확립했습니다.
+  - 외부 추천 스킬 카탈로그(`taste-skill` 등)를 규범적 강제가 아닌 선택적 참고 자료로 위상을 명확히 했습니다.
+- **HTML/CSS 속성 정렬 및 시맨틱 색상 분리 (`rules/styles/html-css.md`)**:
+  - CSS 속성의 무조건적 알파벳순 정렬 강제를 제거하고 프로젝트 formatter/stylelint 설정 및 기존 관례를 우선하도록 교체했습니다.
+  - 브랜드 Accent Color와 시맨틱 상태 색상(`success`, `warning`, `error`, `info`, `progress` 등)을 명확히 분리하고 자의적인 채도 수치 제약을 완화했습니다.
+- **외부 패키지 건전성 검토 및 승인 경계 분리 (`rules/architecture/library-package.md`)**:
+  - 사용자가 직접 지시한 패키지는 Task-level Authorization에 따라 추가 승인 질문 없이 설치하도록 정비했습니다.
+  - 에이전트 선택 패키지는 위험에 비례하여 건전성을 확인하되, 실질적인 unresolved concern(라이선스 충돌, 보안 취약점, 런타임 비호환, 과도한 의존성/lock-in 등)이 확인된 경우에만 Decision Gate로 에스컬레이션하도록 개선했습니다.
 
 ### Changed
 - **검증 실행 시점 및 범위 합리화**: 매 편집 직후 기계적으로 검증을 반복하지 않고 논리적 변경 단위가 안정된 시점에 관련 범위를 우선 검증하며, 전체 프로젝트 품질 게이트는 feature/task 완료 시점에 수행하도록 Core 기계 검증 원칙을 개선했습니다.
