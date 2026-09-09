@@ -430,7 +430,7 @@ def sync(
 
     dirs_to_clean: list[Path] = []
     dirs_to_keep: list[Path] = []
-    interactively_approved_clean_files: set[str] = set()
+    approved_clean_files: set[str] = set()
 
     for d in existing_orphans:
         target_dir = local_target(project, d.as_posix())
@@ -475,15 +475,14 @@ def sync(
                     )
                 ans = input("해당 디렉터리를 삭제하시겠습니까? [y/N]: ").strip().lower()
                 should_clean = ans in {"y", "yes"}
-                if should_clean:
-                    interactively_approved_clean_files.update(
-                        raw for raw in old if Path(raw) == d or d in Path(raw).parents
-                    )
             else:
                 should_clean = False
 
         if should_clean:
             dirs_to_clean.append(d)
+            approved_clean_files.update(
+                raw for raw in old if Path(raw) == d or d in Path(raw).parents
+            )
         else:
             dirs_to_keep.append(d)
 
@@ -501,7 +500,7 @@ def sync(
         force,
         replace,
         kept_files=kept_files,
-        cleaned_files=interactively_approved_clean_files,
+        cleaned_files=approved_clean_files,
     )
     agents = local_target(project, "AGENTS.md")
     if replace and agents.exists():
@@ -519,10 +518,15 @@ def sync(
     writes.update(
         {local_target(project, raw): inside(bundle, raw).read_bytes() for raw in new}
     )
+    cleaned_orphan_files = {
+        raw
+        for raw in (old - new)
+        if any(Path(raw) == cd or cd in Path(raw).parents for cd in dirs_to_clean)
+    }
     deletes = [
         local_target(project, raw)
         for raw in (old - new)
-        if raw not in kept_files
+        if raw not in kept_files and raw not in cleaned_orphan_files
     ]
     dir_deletes = [local_target(project, d.as_posix()) for d in dirs_to_clean]
     baseline = {
@@ -553,7 +557,15 @@ def apply_changes(
     }
     changed = []
     created = []
+    staged_orphans: list[tuple[Path, Path]] = []
     try:
+        if dir_deletes:
+            for d in dir_deletes:
+                if d.is_dir():
+                    staged_d = d.parent / f".agent-rules-orphan-{d.name}-{uuid.uuid4().hex}"
+                    d.rename(staged_d)
+                    staged_orphans.append((d, staged_d))
+
         for path in writes:
             missing = []
             parent = path.parent
@@ -583,6 +595,9 @@ def apply_changes(
                             raise RuntimeError("설치 결과 검증에 실패했습니다")
                     os.replace(staged[path], path)
                     changed.append(path)
+                for original_d, staged_d in staged_orphans:
+                    if staged_d.is_dir():
+                        shutil.rmtree(staged_d)
             except BaseException:
                 for path in reversed(changed):
                     if originals[path] is None:
@@ -591,14 +606,17 @@ def apply_changes(
                         backup = staged[path].parent / "restore"
                         backup.write_bytes(originals[path])
                         os.replace(backup, path)
+                for original_d, staged_d in reversed(staged_orphans):
+                    if staged_d.exists() and not original_d.exists():
+                        staged_d.rename(original_d)
                 raise
-        if dir_deletes:
-            for d in dir_deletes:
-                if d.is_dir():
-                    shutil.rmtree(d)
     except BaseException:
+        for original_d, staged_d in reversed(staged_orphans):
+            if staged_d.exists() and not original_d.exists():
+                staged_d.rename(original_d)
         for directory in reversed(created):
-            directory.rmdir()
+            if directory.exists():
+                directory.rmdir()
         raise
 
 

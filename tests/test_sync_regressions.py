@@ -607,3 +607,174 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertFalse((self.project / ".agents/skills/handoff").exists())
 
+    def test_orphan_cleanup_rollback_on_error(self):
+        """Test A: orphan directory 삭제 실패 시 baseline 및 파일이 이전 상태로 롤백되고 다음 sync에서 재감지 가능해야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        (self.bundle / "rules/a.md").write_bytes(b"updated rule\n")
+        self.update_bundle("3.0")
+
+        before = self.snapshot()
+
+        with patch("shutil.rmtree", side_effect=OSError("디스크 에러 주입")):
+            with self.assertRaises(OSError):
+                sync(self.project, self.bundle, clean_orphans=True)
+
+        self.assertEqual(before, self.snapshot())
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "2.0")
+        self.assertIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
+
+        # 주입 해제 후 다음 sync에서 동일 orphan이 정상 감지 및 삭제됨
+        sync(self.project, self.bundle, clean_orphans=True)
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+        after_metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(after_metadata["installed_version"], "3.0")
+        self.assertEqual((self.project / "rules/a.md").read_bytes(), b"updated rule\n")
+
+    def test_orphan_clean_semantics_consistency_with_local_edits(self):
+        """Test B: orphan directory 내부 수정 시 interactive y, --clean-orphans, -y 모두 삭제 승인으로 일관되게 동작해야 합니다."""
+        for method in ("prompt_y", "flag_clean", "cli_yes"):
+            # 매 회차 독립된 프로젝트 설정
+            subproject = self.base / f"project_{method}"
+            sync(subproject, self.bundle)
+
+            skill_dir = self.bundle / ".agents/skills/handoff"
+            skill_dir.mkdir(parents=True, exist_ok=True)
+            (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+            self.update_bundle("2.0")
+            sync(subproject, self.bundle)
+
+            # orphan 내부 former-managed 파일 로컬 수정
+            (subproject / ".agents/skills/handoff/SKILL.md").write_bytes(b"locally modified\n")
+
+            shutil.rmtree(skill_dir)
+            self.update_bundle("3.0")
+
+            if method == "prompt_y":
+                with patch("sys.stdin.isatty", return_value=True), patch("builtins.input", return_value="y"):
+                    sync(subproject, self.bundle)
+            elif method == "flag_clean":
+                sync(subproject, self.bundle, clean_orphans=True)
+            elif method == "cli_yes":
+                code = main([
+                    "--project", str(subproject),
+                    "--bundle", str(self.bundle),
+                    "-y",
+                ])
+                self.assertEqual(code, 0)
+
+            self.assertFalse((subproject / ".agents/skills/handoff").exists())
+            metadata = json.loads((subproject / LOCAL_METADATA).read_text())
+            self.assertEqual(metadata["installed_version"], "3.0")
+
+        # keep 방식들: prompt_n, flag_keep, non_tty
+        for keep_method in ("prompt_n", "flag_keep", "non_tty"):
+            subproject = self.base / f"project_keep_{keep_method}"
+            sync(subproject, self.bundle)
+
+            skill_dir = self.bundle / ".agents/skills/handoff"
+            skill_dir.mkdir(parents=True, exist_ok=True)
+            (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+            self.update_bundle("2.0")
+            sync(subproject, self.bundle)
+
+            (subproject / ".agents/skills/handoff/SKILL.md").write_bytes(b"locally modified\n")
+
+            shutil.rmtree(skill_dir)
+            self.update_bundle("3.0")
+
+            if keep_method == "prompt_n":
+                with patch("sys.stdin.isatty", return_value=True), patch("builtins.input", return_value="n"):
+                    sync(subproject, self.bundle)
+            elif keep_method == "flag_keep":
+                sync(subproject, self.bundle, clean_orphans=False)
+            elif keep_method == "non_tty":
+                with patch("sys.stdin.isatty", return_value=False), patch(
+                    "builtins.input", side_effect=AssertionError("input should not be called")
+                ):
+                    sync(subproject, self.bundle)
+
+            self.assertTrue((subproject / ".agents/skills/handoff/SKILL.md").is_file())
+            metadata = json.loads((subproject / LOCAL_METADATA).read_text())
+            self.assertEqual(metadata["installed_version"], "3.0")
+            self.assertNotIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
+
+            # Project-owned로 전환되었으므로 다음 sync에서도 로컬 수정 오류 없음
+            sync(subproject, self.bundle)
+
+    def test_orphan_directory_with_user_added_files(self):
+        """Test C: orphan directory 내에 former-managed 파일과 user-added 파일이 공존할 때의 clean/keep 계약 검증."""
+        # 1. clean 승인 시 전체 디렉터리(user-added 포함) 삭제
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        # 사용자 추가 파일 생성
+        (self.project / ".agents/skills/handoff/user_note.txt").write_bytes(b"user note\n")
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        sync(self.project, self.bundle, clean_orphans=True)
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+
+        # 2. keep 선택 시 둘 다 보존 & former-managed는 baseline에서 제거
+        subproject = self.base / "project_user_files_keep"
+        sync(subproject, self.bundle)
+        skill_dir.mkdir(parents=True, exist_ok=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(subproject, self.bundle)
+
+        (subproject / ".agents/skills/handoff/user_note.txt").write_bytes(b"user note\n")
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        sync(subproject, self.bundle, clean_orphans=False)
+        self.assertTrue((subproject / ".agents/skills/handoff/SKILL.md").is_file())
+        self.assertTrue((subproject / ".agents/skills/handoff/user_note.txt").is_file())
+        metadata = json.loads((subproject / LOCAL_METADATA).read_text())
+        self.assertNotIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
+
+    def test_unrelated_modifications_protected_during_orphan_clean(self):
+        """Test D: orphan directory 삭제 승인 중에도 orphan 외부의 managed 파일 수정은 보호되어야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        # 무관한 관리 파일 rules/a.md 수정
+        (self.project / "rules/a.md").write_bytes(b"unrelated modified\n")
+
+        with self.assertRaises(ValueError) as ctx:
+            sync(self.project, self.bundle, clean_orphans=True)
+        self.assertIn("Local modifications detected", str(ctx.exception))
+        self.assertIn("rules/a.md", str(ctx.exception))
+
+        # main with -y 도 무관한 수정 앞에서는 실패해야 함
+        with patch("sys.stderr"):
+            code = main([
+                "--project", str(self.project),
+                "--bundle", str(self.bundle),
+                "-y",
+            ])
+        self.assertEqual(code, 1)
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+        self.assertEqual((self.project / "rules/a.md").read_bytes(), b"unrelated modified\n")
+
+

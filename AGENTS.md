@@ -145,10 +145,10 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 ## 🧭 6. 온디맨드 규칙 활성화 계약
 
 - 작업 대상에 따른 필수 모듈 선택, 누적 적용 및 충돌 우선순위는 [Core 온디맨드 규칙 활성화 계약](rules/core/01-base.md#-2-온디맨드-규칙-활성화-계약)을 따릅니다.
-- 프론트엔드 스타일링은 특정 미적 유행을 강제하지 않고 프로젝트 디자인 시스템 및 기존 관례를 우선하며, CSS 속성 순서는 도구 설정을 존중하고(vanity edits 방지) 브랜드 Accent와 시맨틱 상태 색상을 분리합니다.
-- 외부 패키지 도입 시 사용자 직접 지시(Task-level Auth)는 추가 승인 없이 진행하고, 에이전트 선택 시에는 위험 비례 건전성 확인 후 실질적 미해결 우려(Decision Gate)가 있을 때만 사용자 승인을 요청합니다.
+- 작업 대상에 따른 특화 규칙은 Core 온디맨드 활성화 계약에 따라 해당 Style/Framework/Architecture 모듈을 적용합니다.
+- 해당 특화 영역의 구체 정책은 각 원본 rule을 SSOT로 따릅니다.
 - 소비 프로젝트는 [README의 활성화 템플릿과 설정 체크리스트](README.md)를 바탕으로 경로·기술 스택·public 범위·문서화 언어·자동 검사 범위를 자체 `AGENTS.md`와 설정에서 확정합니다.
 
 ---
 
-**Version**: 2.12.0 | **Ratified**: 2026-09-09 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.12.1 | **Ratified**: 2026-09-09 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
