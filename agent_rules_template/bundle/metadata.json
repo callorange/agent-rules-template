@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.13.0",
+  "template_version": "2.13.1",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "ccbbe71db76fd1d0ff0a9f7afdf1c0dcf308102c4c25f6dc59ec3062f970db1e"
+    "sha256": "ef5ffe2b13b0f1027f3b4d32b21456b3c1d98e622bd7ef630e67b4ab92922465"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
