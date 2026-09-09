@@ -37,6 +37,20 @@ PROJECT_RULES_GUIDANCE = (
 PROJECT_RULES_GUIDANCE_ADDED = "project_rules_guidance_added"
 IS_WINDOWS = os.name == "nt"
 
+PROTECTED_DIRS = frozenset({
+    Path("."),
+    Path("rules"),
+    Path("rules/core"),
+    Path("rules/architecture"),
+    Path("rules/frameworks"),
+    Path("rules/packaging"),
+    Path("rules/styles"),
+    Path("guides"),
+    Path(".agents"),
+    Path(".agents/skills"),
+    Path(".agents/agents"),
+})
+
 
 @contextmanager
 def _staged_writes(
@@ -70,7 +84,8 @@ def _staged_writes(
         yield staged
     finally:
         for staging in directories.values():
-            shutil.rmtree(staging)
+            if staging.exists():
+                shutil.rmtree(staging)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -304,6 +319,32 @@ def render_agents(
     )
 
 
+def find_orphan_directories(
+    old_files: set[str], new_files: set[str]
+) -> list[Path]:
+    """이전 버전에는 있었지만 새 템플릿의 managed_files에는 더 이상 파일이 없는 디렉터리를 찾습니다."""
+    removed_files = old_files - new_files
+    new_paths = [Path(f) for f in new_files]
+    candidates: set[Path] = set()
+
+    for raw in removed_files:
+        parent = Path(raw).parent
+        topmost_orphan = None
+        while parent != Path(".") and parent not in PROTECTED_DIRS:
+            if not any(np == parent or parent in np.parents for np in new_paths):
+                topmost_orphan = parent
+            parent = parent.parent
+        if topmost_orphan is not None:
+            candidates.add(topmost_orphan)
+
+    filtered = [
+        p
+        for p in candidates
+        if not any(other != p and other in p.parents for other in candidates)
+    ]
+    return sorted(filtered, key=lambda p: p.as_posix())
+
+
 def preflight(
     project: Path,
     bundle: Path,
@@ -311,6 +352,8 @@ def preflight(
     local: dict[str, Any],
     force: bool,
     replace: bool = False,
+    kept_files: set[str] | None = None,
+    cleaned_files: set[str] | None = None,
 ) -> None:
     """쓰기 전에 타입·소유권·경로 충돌과 managed 수정 여부를 검사합니다."""
     if local and (
@@ -328,6 +371,10 @@ def preflight(
         if target.exists() and not target.is_file():
             raise ValueError(f"대상 경로가 file이 아닙니다: {target}")
     changes = local_modifications(project, local, replace) if local else []
+    if kept_files:
+        changes = [c for c in changes if c not in kept_files]
+    if cleaned_files:
+        changes = [c for c in changes if c not in cleaned_files]
     if changes and not force:
         raise ValueError(
             "Local modifications detected; no files changed:\n- " + "\n- ".join(changes)
@@ -356,7 +403,11 @@ def preflight(
 
 
 def sync(
-    project: Path, bundle: Path, force: bool = False, replace: bool = False
+    project: Path,
+    bundle: Path,
+    force: bool = False,
+    replace: bool = False,
+    clean_orphans: bool | None = None,
 ) -> None:
     """검증된 bundle을 적용하고 성공한 결과만 새 baseline으로 기록합니다."""
     metadata = validate_bundle(bundle)
@@ -370,7 +421,88 @@ def sync(
         current = local_target(project, "AGENTS.md").read_text(encoding="utf-8-sig")
         if START_MARKER in current or END_MARKER in current:
             raise ValueError("기존 managed 설치의 local metadata가 없습니다")
-    preflight(project, bundle, metadata, local, force, replace)
+
+    old, new = set(local.get("managed_files", {})), set(metadata["managed_files"])
+    orphan_dirs = find_orphan_directories(old, new)
+    existing_orphans = [
+        d for d in orphan_dirs if local_target(project, d.as_posix()).is_dir()
+    ]
+
+    dirs_to_clean: list[Path] = []
+    dirs_to_keep: list[Path] = []
+    interactively_approved_clean_files: set[str] = set()
+
+    for d in existing_orphans:
+        target_dir = local_target(project, d.as_posix())
+        should_clean = clean_orphans
+        if should_clean is None:
+            if sys.stdin.isatty():
+                disk_files = [p for p in target_dir.rglob("*") if p.is_file()]
+                user_files = [
+                    p
+                    for p in disk_files
+                    if logical_path(p.relative_to(project)) not in old
+                ]
+                mod_files = [
+                    raw
+                    for raw in old
+                    if (Path(raw) == d or d in Path(raw).parents)
+                    and local_target(project, raw).is_file()
+                    and file_record(local_target(project, raw)).get("sha256")
+                    != local.get("managed_files", {}).get(raw, {}).get("sha256")
+                ]
+                print(
+                    f"\n[?] 이전 템플릿의 디렉터리 '{d.as_posix()}'가 이번 릴리스에서 제외되었습니다.",
+                    file=sys.stderr,
+                )
+                print(
+                    "    • 삭제 (y): 해당 폴더와 내부 파일을 디스크에서 정리합니다.",
+                    file=sys.stderr,
+                )
+                print(
+                    "    • 유지 (n): 파일을 삭제하지 않고 '프로젝트 소유(Project-owned)' 자산으로 보존합니다.",
+                    file=sys.stderr,
+                )
+                if user_files:
+                    print(
+                        f"    ⚠️ 주의: 폴더 내부에 사용자가 추가한 파일 {len(user_files)}개가 포함되어 있습니다.",
+                        file=sys.stderr,
+                    )
+                if mod_files:
+                    print(
+                        f"    ⚠️ 주의: 로컬에서 수정된 파일 {len(mod_files)}개가 포함되어 있습니다.",
+                        file=sys.stderr,
+                    )
+                ans = input("해당 디렉터리를 삭제하시겠습니까? [y/N]: ").strip().lower()
+                should_clean = ans in {"y", "yes"}
+                if should_clean:
+                    interactively_approved_clean_files.update(
+                        raw for raw in old if Path(raw) == d or d in Path(raw).parents
+                    )
+            else:
+                should_clean = False
+
+        if should_clean:
+            dirs_to_clean.append(d)
+        else:
+            dirs_to_keep.append(d)
+
+    kept_files = {
+        raw
+        for raw in old
+        if any(Path(raw) == kd or kd in Path(raw).parents for kd in dirs_to_keep)
+    }
+
+    preflight(
+        project,
+        bundle,
+        metadata,
+        local,
+        force,
+        replace,
+        kept_files=kept_files,
+        cleaned_files=interactively_approved_clean_files,
+    )
     agents = local_target(project, "AGENTS.md")
     if replace and agents.exists():
         print(
@@ -383,12 +515,16 @@ def sync(
         replace,
         not local.get(PROJECT_RULES_GUIDANCE_ADDED, False),
     )
-    old, new = set(local.get("managed_files", {})), set(metadata["managed_files"])
     writes = {agents: rendered.encode("utf-8")}
     writes.update(
         {local_target(project, raw): inside(bundle, raw).read_bytes() for raw in new}
     )
-    deletes = [local_target(project, raw) for raw in old - new]
+    deletes = [
+        local_target(project, raw)
+        for raw in (old - new)
+        if raw not in kept_files
+    ]
+    dir_deletes = [local_target(project, d.as_posix()) for d in dirs_to_clean]
     baseline = {
         "schema_version": SCHEMA_VERSION,
         "installed_version": metadata["template_version"],
@@ -400,7 +536,7 @@ def sync(
     writes[local_path] = (
         json.dumps(baseline, ensure_ascii=False, indent=2) + "\n"
     ).encode("utf-8")
-    apply_changes(project, writes, deletes, metadata)
+    apply_changes(project, writes, deletes, metadata, dir_deletes=dir_deletes)
 
 
 def apply_changes(
@@ -408,6 +544,7 @@ def apply_changes(
     writes: dict[Path, bytes],
     deletes: list[Path],
     metadata: dict[str, Any],
+    dir_deletes: list[Path] | None = None,
 ) -> None:
     """미리 staging한 파일을 교체하고 예외 발생 시 변경한 대상을 복구합니다."""
     originals = {
@@ -455,6 +592,10 @@ def apply_changes(
                         backup.write_bytes(originals[path])
                         os.replace(backup, path)
                 raise
+        if dir_deletes:
+            for d in dir_deletes:
+                if d.is_dir():
+                    shutil.rmtree(d)
     except BaseException:
         for directory in reversed(created):
             directory.rmdir()
@@ -469,11 +610,42 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--replace", action="store_true")
+    orphan_group = parser.add_mutually_exclusive_group()
+    orphan_group.add_argument(
+        "--clean-orphans",
+        dest="clean_orphans",
+        action="store_true",
+        default=None,
+        help="제외된 템플릿 디렉터리를 확인 없이 삭제합니다.",
+    )
+    orphan_group.add_argument(
+        "--keep-orphans",
+        dest="clean_orphans",
+        action="store_false",
+        default=None,
+        help="제외된 템플릿 디렉터리를 확인 없이 프로젝트 소유로 보존합니다.",
+    )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="모든 확인 프롬프트에 자동으로 '예'를 선택합니다 (고아 디렉터리 자동 삭제 포함).",
+    )
     args = parser.parse_args(argv)
+    clean_orphans = args.clean_orphans
+    if clean_orphans is None and args.yes:
+        clean_orphans = True
     try:
-        sync(args.project, args.bundle, args.force, args.replace)
+        sync(
+            args.project,
+            args.bundle,
+            force=args.force,
+            replace=args.replace,
+            clean_orphans=clean_orphans,
+        )
     except (OSError, ValueError, RuntimeError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
     print(f"Synchronized agent rules into {args.project.resolve()}")
     return 0
+

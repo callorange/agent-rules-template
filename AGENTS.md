@@ -67,7 +67,7 @@ agents-template/
 │   ├── packaging/           # 배포/패키징 지침 (docker, deployment, package-npm, package-python 등)
 │   └── styles/              # 코딩 스타일 가이드 (python, typescript, javascript, go, cpp, csharp, dart 등)
 ├── guides/                  # 📚 선택형 비규범적 설계 참고 자료 (prompt/context/task contract/harness)
-├── skills/                  # 🚀 배포용 공용 스킬 (gitignore-generator, handoff, python-ecosystem-kb)
+├── skills/                  # 🚀 배포용 공용 스킬 (gitignore-generator, python-ecosystem-kb)
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 (auditor.md)
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 자산 (rule-validator, auditor.md)
 ├── scripts/                 # 🛠️ 자동 빌드 스크립트 (build_dist.py)
@@ -151,4 +151,4 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 
 ---
 
-**Version**: 2.11.0 | **Ratified**: 2026-09-09 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.12.0 | **Ratified**: 2026-09-09 | **Architecture**: Modern Planning-First, Risk-Proportional Harness

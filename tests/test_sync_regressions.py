@@ -15,6 +15,7 @@ from agent_rules_template.scripts.sync import (
     LOCAL_METADATA,
     PROJECT_RULES_GUIDANCE,
     _staged_writes,
+    main,
     sync,
     validate_bundle,
 )
@@ -484,3 +485,125 @@ class RegressionTests(unittest.TestCase):
             write_json(self.bundle / "metadata.json", {**original, field: value})
             with self.assertRaises(ValueError):
                 sync(self.project, self.bundle)
+
+    def test_orphan_directory_prompt_yes_deletes_directory_and_files(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        with patch("sys.stdin.isatty", return_value=True), patch("builtins.input", return_value="y"):
+            sync(self.project, self.bundle)
+
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+        self.assertNotIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
+
+    def test_orphan_directory_prompt_no_keeps_directory_and_files_as_project_owned(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        with patch("sys.stdin.isatty", return_value=True), patch("builtins.input", return_value="n"):
+            sync(self.project, self.bundle)
+
+        # File and directory must remain intact
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+        # Must no longer be in managed_files
+        self.assertNotIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
+
+        # Modifying the kept project-owned file must NOT raise Local modifications detected on next sync
+        (self.project / ".agents/skills/handoff/SKILL.md").write_bytes(b"user custom content\n")
+        sync(self.project, self.bundle)
+
+    def test_orphan_directory_clean_orphans_flag_deletes_without_prompt(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        with patch("builtins.input", side_effect=AssertionError("input should not be called")):
+            sync(self.project, self.bundle, clean_orphans=True)
+
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+
+    def test_orphan_directory_keep_orphans_flag_keeps_without_prompt(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        with patch("builtins.input", side_effect=AssertionError("input should not be called")):
+            sync(self.project, self.bundle, clean_orphans=False)
+
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+
+    def test_orphan_directory_non_tty_defaults_to_keep(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        with patch("sys.stdin.isatty", return_value=False), patch(
+            "builtins.input", side_effect=AssertionError("input should not be called")
+        ):
+            sync(self.project, self.bundle)
+
+        self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
+
+    def test_orphan_directory_cli_main_flags(self):
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        # Mutually exclusive options error
+        with patch("sys.stderr"):
+            with self.assertRaises(SystemExit):
+                main(["--clean-orphans", "--keep-orphans"])
+
+        # main with -y should clean orphans
+        code = main([
+            "--project", str(self.project),
+            "--bundle", str(self.bundle),
+            "-y",
+        ])
+        self.assertEqual(code, 0)
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+
