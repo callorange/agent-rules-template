@@ -595,9 +595,6 @@ def apply_changes(
                             raise RuntimeError("설치 결과 검증에 실패했습니다")
                     os.replace(staged[path], path)
                     changed.append(path)
-                for original_d, staged_d in staged_orphans:
-                    if staged_d.is_dir():
-                        shutil.rmtree(staged_d)
             except BaseException:
                 for path in reversed(changed):
                     if originals[path] is None:
@@ -610,6 +607,20 @@ def apply_changes(
                     if staged_d.exists() and not original_d.exists():
                         staged_d.rename(original_d)
                 raise
+
+        # 트랜잭션이 성공적으로 커밋된 이후, staged orphan 디렉터리를 물리 삭제합니다.
+        # 이 단계의 실패는 이미 완료된 동기화 트랜잭션을 롤백하지 않고 잔여 임시 경로를 경고로 안내합니다.
+        for original_d, staged_d in staged_orphans:
+            if staged_d.is_dir():
+                try:
+                    shutil.rmtree(staged_d)
+                except OSError as error:
+                    print(
+                        f"\nWARNING:\n템플릿 동기화는 정상 완료되었지만 삭제 승인된 고아 디렉터리의 물리 정리를 완료하지 못했습니다.\n"
+                        f"남은 임시 경로: {staged_d}\n"
+                        f"원인: {error}",
+                        file=sys.stderr,
+                    )
     except BaseException:
         for original_d, staged_d in reversed(staged_orphans):
             if staged_d.exists() and not original_d.exists():

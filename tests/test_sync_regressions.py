@@ -1,6 +1,7 @@
 """감사에서 확인한 데이터 보호 및 경로 계약을 실제 파일로 검증합니다."""
 
 import importlib.util
+import io
 import json
 import os
 import shutil
@@ -607,8 +608,8 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertFalse((self.project / ".agents/skills/handoff").exists())
 
-    def test_orphan_cleanup_rollback_on_error(self):
-        """Test A: orphan directory 삭제 실패 시 baseline 및 파일이 이전 상태로 롤백되고 다음 sync에서 재감지 가능해야 합니다."""
+    def test_orphan_transaction_failure_before_commit_rolls_back(self):
+        """Test A: 트랜잭션 커밋 전 실패 시 orphan 디렉터리가 100% 온전하게 원위치로 롤백되고 이전 baseline이 유지되어야 합니다."""
         sync(self.project, self.bundle)
         skill_dir = self.bundle / ".agents/skills/handoff"
         skill_dir.mkdir(parents=True)
@@ -622,8 +623,12 @@ class RegressionTests(unittest.TestCase):
 
         before = self.snapshot()
 
-        with patch("shutil.rmtree", side_effect=OSError("디스크 에러 주입")):
-            with self.assertRaises(OSError):
+        # 설치 결과 검증 실패를 주입하여 commit 직전 롤백 유발
+        with patch(
+            "agent_rules_template.scripts.sync.managed_block_hash",
+            side_effect=RuntimeError("결과 검증 실패 주입"),
+        ):
+            with self.assertRaises(RuntimeError):
                 sync(self.project, self.bundle, clean_orphans=True)
 
         self.assertEqual(before, self.snapshot())
@@ -632,7 +637,11 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(metadata["installed_version"], "2.0")
         self.assertIn(".agents/skills/handoff/SKILL.md", metadata["managed_files"])
 
-        # 주입 해제 후 다음 sync에서 동일 orphan이 정상 감지 및 삭제됨
+        # staging 임시 디렉터리가 남아있지 않아야 함
+        staged_residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(staged_residues, [])
+
+        # 실패 주입 해제 후 다음 sync에서 정상 감지 및 삭제됨
         sync(self.project, self.bundle, clean_orphans=True)
         self.assertFalse((self.project / ".agents/skills/handoff").exists())
         after_metadata = json.loads((self.project / LOCAL_METADATA).read_text())
@@ -776,5 +785,169 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertTrue((self.project / ".agents/skills/handoff/SKILL.md").is_file())
         self.assertEqual((self.project / "rules/a.md").read_bytes(), b"unrelated modified\n")
+
+    def test_orphan_rmtree_immediate_failure_keeps_committed_sync(self):
+        """Test B: post-commit rmtree 즉시 실패 시 sync 성공 상태를 유지하고 잔여 임시 디렉터리를 warning으로 안내해야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        (self.bundle / "rules/a.md").write_bytes(b"updated rule\n")
+        self.update_bundle("3.0")
+
+        real_rmtree = shutil.rmtree
+
+        def fail_on_orphan(target_path, *args, **kwargs):
+            if ".agent-rules-orphan-" in Path(target_path).name:
+                raise OSError("디스크 에러 주입")
+            return real_rmtree(target_path, *args, **kwargs)
+
+        stderr_buf = io.StringIO()
+        with patch("shutil.rmtree", side_effect=fail_on_orphan), patch("sys.stderr", stderr_buf):
+            sync(self.project, self.bundle, clean_orphans=True)
+
+        # 1. 원래 경로는 제거되었고 sync 결과는 정상 커밋됨
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+        self.assertEqual((self.project / "rules/a.md").read_bytes(), b"updated rule\n")
+
+        # 2. 임시 staging 경로가 residue로 남아있고 warning 출력됨
+        staged_residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(len(staged_residues), 1)
+        self.assertIn("WARNING:", stderr_buf.getvalue())
+        self.assertIn(str(staged_residues[0]), stderr_buf.getvalue())
+
+    def test_orphan_partial_rmtree_failure_preserves_committed_sync(self):
+        """Test C: rmtree 도중 일부 파일만 삭제되고 실패하더라도 sync를 롤백하지 않고 원래 경로를 재생성하지 않아야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        # orphan 디렉터리에 여러 파일 생성
+        (self.project / ".agents/skills/handoff/first.txt").write_bytes(b"first\n")
+        (self.project / ".agents/skills/handoff/second.txt").write_bytes(b"second\n")
+        (self.project / ".agents/skills/handoff/third.txt").write_bytes(b"third\n")
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        real_rmtree = shutil.rmtree
+
+        # partial deletion 시뮬레이션: first.txt 삭제 후 OSError 발생
+        def partial_rmtree(target_path, *args, **kwargs):
+            p = Path(target_path)
+            if ".agent-rules-orphan-" in p.name:
+                f = p / "first.txt"
+                if f.exists():
+                    f.unlink()
+                raise OSError("잠긴 파일(second.txt)로 인한 삭제 실패")
+            return real_rmtree(target_path, *args, **kwargs)
+
+        stderr_buf = io.StringIO()
+        with patch("shutil.rmtree", side_effect=partial_rmtree), patch("sys.stderr", stderr_buf):
+            sync(self.project, self.bundle, clean_orphans=True)
+
+        # 원래 경로는 재생성되지 않음 (broken state 원위치 롤백 없음)
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+
+        # staged 임시 디렉터리에 first.txt는 없고 second.txt, third.txt 잔여
+        staged_residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(len(staged_residues), 1)
+        residue = staged_residues[0]
+        self.assertFalse((residue / "first.txt").exists())
+        self.assertTrue((residue / "second.txt").is_file())
+        self.assertTrue((residue / "third.txt").is_file())
+        self.assertIn("WARNING:", stderr_buf.getvalue())
+        self.assertIn(str(residue), stderr_buf.getvalue())
+
+    def test_multiple_orphans_partial_cleanup(self):
+        """Test D: 복수의 orphan 중 하나는 삭제 성공하고 다른 하나는 실패하더라도, 전체 sync를 롤백하지 않아야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir_a = self.bundle / ".agents/skills/orphan_a"
+        skill_dir_b = self.bundle / ".agents/skills/orphan_b"
+        skill_dir_a.mkdir(parents=True)
+        skill_dir_b.mkdir(parents=True)
+        (skill_dir_a / "SKILL.md").write_bytes(b"a\n")
+        (skill_dir_b / "SKILL.md").write_bytes(b"b\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir_a)
+        shutil.rmtree(skill_dir_b)
+        self.update_bundle("3.0")
+
+        real_rmtree = shutil.rmtree
+
+        def rmtree_fail_on_b(target_path, *args, **kwargs):
+            p = Path(target_path)
+            if "orphan_b" in p.name:
+                raise OSError("orphan_b 삭제 권한 없음")
+            return real_rmtree(target_path, *args, **kwargs)
+
+        stderr_buf = io.StringIO()
+        with patch("shutil.rmtree", side_effect=rmtree_fail_on_b), patch("sys.stderr", stderr_buf):
+            sync(self.project, self.bundle, clean_orphans=True)
+
+        # 둘 다 원래 경로는 제거됨
+        self.assertFalse((self.project / ".agents/skills/orphan_a").exists())
+        self.assertFalse((self.project / ".agents/skills/orphan_b").exists())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+
+        # orphan_a residue는 없고 orphan_b residue만 남음
+        residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(len(residues), 1)
+        self.assertIn("orphan_b", residues[0].name)
+        self.assertIn(str(residues[0]), stderr_buf.getvalue())
+
+    def test_cleanup_residue_does_not_affect_subsequent_sync(self):
+        """Test E: post-commit cleanup 잔여물이 존재하는 상태에서도 다음 일반 sync가 오염되지 않고 정상 동작해야 합니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        self.update_bundle("3.0")
+
+        real_rmtree = shutil.rmtree
+
+        def fail_on_orphan(target_path, *args, **kwargs):
+            if ".agent-rules-orphan-" in Path(target_path).name:
+                raise OSError("임시 잔여물 생성용")
+            return real_rmtree(target_path, *args, **kwargs)
+
+        # post-commit 실패 유발하여 residue 남김
+        with patch("shutil.rmtree", side_effect=fail_on_orphan):
+            with patch("sys.stderr"):
+                sync(self.project, self.bundle, clean_orphans=True)
+
+        residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(len(residues), 1)
+
+        # 다음 4.0 업데이트 실행 (새 번들)
+        (self.bundle / "rules/new_rule.md").write_bytes(b"new rule 4.0\n")
+        self.update_bundle("4.0")
+
+        # 일반 sync가 잔여물 때문에 conflict 또는 orphan 오인 없이 정상 성공해야 함
+        sync(self.project, self.bundle)
+
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "4.0")
+        self.assertTrue((self.project / "rules/new_rule.md").is_file())
+        self.assertNotIn(str(residues[0]), metadata["managed_files"])
+
 
 
