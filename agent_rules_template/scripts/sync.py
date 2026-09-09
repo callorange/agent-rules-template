@@ -550,7 +550,7 @@ def apply_changes(
     metadata: dict[str, Any],
     dir_deletes: list[Path] | None = None,
 ) -> None:
-    """미리 staging한 파일을 교체하고 예외 발생 시 변경한 대상을 복구합니다."""
+    """변경을 원자적으로 적용한 뒤 고아 디렉터리를 best-effort로 정리합니다."""
     originals = {
         path: path.read_bytes() if path.exists() else None
         for path in [*writes, *deletes]
@@ -608,19 +608,6 @@ def apply_changes(
                         staged_d.rename(original_d)
                 raise
 
-        # 트랜잭션이 성공적으로 커밋된 이후, staged orphan 디렉터리를 물리 삭제합니다.
-        # 이 단계의 실패는 이미 완료된 동기화 트랜잭션을 롤백하지 않고 잔여 임시 경로를 경고로 안내합니다.
-        for original_d, staged_d in staged_orphans:
-            if staged_d.is_dir():
-                try:
-                    shutil.rmtree(staged_d)
-                except OSError as error:
-                    print(
-                        f"\nWARNING:\n템플릿 동기화는 정상 완료되었지만 삭제 승인된 고아 디렉터리의 물리 정리를 완료하지 못했습니다.\n"
-                        f"남은 임시 경로: {staged_d}\n"
-                        f"원인: {error}",
-                        file=sys.stderr,
-                    )
     except BaseException:
         for original_d, staged_d in reversed(staged_orphans):
             if staged_d.exists() and not original_d.exists():
@@ -629,6 +616,20 @@ def apply_changes(
             if directory.exists():
                 directory.rmdir()
         raise
+
+    # 트랜잭션이 성공적으로 커밋된 이후, staged orphan 디렉터리를 물리 삭제합니다.
+    # 이 단계의 실패는 이미 완료된 동기화 트랜잭션을 롤백하지 않고 잔여 임시 경로를 경고로 안내합니다.
+    for original_d, staged_d in staged_orphans:
+        if staged_d.is_dir():
+            try:
+                shutil.rmtree(staged_d)
+            except OSError as error:
+                print(
+                    f"\nWARNING:\n템플릿 동기화는 정상 완료되었지만 삭제 승인된 고아 디렉터리의 물리 정리를 완료하지 못했습니다.\n"
+                    f"남은 임시 경로: {staged_d}\n"
+                    f"원인: {error}",
+                    file=sys.stderr,
+                )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -677,4 +678,3 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     print(f"Synchronized agent rules into {args.project.resolve()}")
     return 0
-

@@ -5,6 +5,16 @@
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-09-09
+
+### Changed
+- **위험 비례 전체 품질 게이트 (`rules/core/02-workflow.md`)**:
+  - task 완료 자체를 전체 lint·type check·test의 실행 조건으로 삼지 않고, 프로젝트 설정·사용자 지시·변경 영향 범위 또는 잔여 위험이 요구할 때만 전체 품질 게이트를 수행하도록 범위를 명확히 했습니다.
+
+### Fixed
+- **고아 디렉터리 post-commit cleanup의 rollback 예외 범위 분리 (`agent-rules`)**:
+  - `shutil.rmtree()`와 cleanup warning 출력을 transactional `try/except BaseException` 밖으로 이동하여, cleanup 중 `KeyboardInterrupt`, `SystemExit` 등 비정상 예외가 발생해도 이미 commit된 baseline과 관리 파일에 orphan 원본 경로를 잘못 복구하지 않도록 수정했습니다.
+
 ## [2.12.2] - 2026-09-09
 
 ### Fixed

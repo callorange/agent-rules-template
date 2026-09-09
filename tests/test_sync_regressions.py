@@ -822,6 +822,37 @@ class RegressionTests(unittest.TestCase):
         self.assertIn("WARNING:", stderr_buf.getvalue())
         self.assertIn(str(staged_residues[0]), stderr_buf.getvalue())
 
+    def test_orphan_rmtree_interrupt_does_not_rollback_committed_sync(self):
+        """Post-commit cleanup 중단은 완료된 baseline과 관리 파일을 롤백하지 않습니다."""
+        sync(self.project, self.bundle)
+        skill_dir = self.bundle / ".agents/skills/handoff"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_bytes(b"skill content\n")
+        self.update_bundle("2.0")
+        sync(self.project, self.bundle)
+
+        shutil.rmtree(skill_dir)
+        (self.bundle / "rules/a.md").write_bytes(b"updated rule\n")
+        self.update_bundle("3.0")
+
+        real_rmtree = shutil.rmtree
+
+        def interrupt_on_orphan(target_path, *args, **kwargs):
+            if ".agent-rules-orphan-" in Path(target_path).name:
+                raise KeyboardInterrupt("cleanup interrupted")
+            return real_rmtree(target_path, *args, **kwargs)
+
+        with patch("shutil.rmtree", side_effect=interrupt_on_orphan):
+            with self.assertRaises(KeyboardInterrupt):
+                sync(self.project, self.bundle, clean_orphans=True)
+
+        self.assertFalse((self.project / ".agents/skills/handoff").exists())
+        metadata = json.loads((self.project / LOCAL_METADATA).read_text())
+        self.assertEqual(metadata["installed_version"], "3.0")
+        self.assertEqual((self.project / "rules/a.md").read_bytes(), b"updated rule\n")
+        staged_residues = list((self.project / ".agents/skills").glob(".agent-rules-orphan-*"))
+        self.assertEqual(len(staged_residues), 1)
+
     def test_orphan_partial_rmtree_failure_preserves_committed_sync(self):
         """Test C: rmtree 도중 일부 파일만 삭제되고 실패하더라도 sync를 롤백하지 않고 원래 경로를 재생성하지 않아야 합니다."""
         sync(self.project, self.bundle)
@@ -948,6 +979,4 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(metadata["installed_version"], "4.0")
         self.assertTrue((self.project / "rules/new_rule.md").is_file())
         self.assertNotIn(str(residues[0]), metadata["managed_files"])
-
-
 
