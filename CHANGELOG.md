@@ -5,6 +5,16 @@
 
 ## [Unreleased]
 
+## [2.15.0] - 2026-09-20
+
+### Changed
+- **백엔드 트랜잭션 관리 규칙 정합화 (`rules/architecture/backend-api.md`)**:
+  - 단순 복수 CUD 작업 여부가 아닌, 복수의 데이터 변경이 하나의 일관성 경계를 이루어 함께 성공·실패해야 하는 atomic 작업에 트랜잭션과 rollback을 적용하도록 Core의 위험 비례 방어 원칙과 정합화했습니다.
+- **Django Pagination 적용 규약 완화 및 프로젝트 관례 존중 (`rules/frameworks/django.md`)**:
+  - 목록 조회 API의 무조건적 페이징 강제를 지양하고, 비한정적·대규모 데이터 세트나 기존 계약·관례가 요구할 때 적용하도록 조정했습니다. bounded/소규모 목록은 자동 requirement로 만들지 않으며, 관례로 결정 가능한 방식에 대한 불필요한 질문을 지양하도록 했습니다.
+- **Auditor 서브에이전트와 Review Closure 정합화 (`subagents/auditor.md`, `.agents/agents/auditor.md`)**:
+  - 최초 검토 시에는 기존 구조로 충분한 문제점을 도출하되, 수정 후 재검토는 검증(verification)으로 수렴하도록 분리했습니다. 재검토 시 기존 지적 해결 여부와 신규 차단 문제만 확인하고, 추가적인 선택적 개선안 발굴을 차단하여 신속히 종료하도록 했습니다.
+
 ## [2.14.0] - 2026-09-20
 
 ### Changed

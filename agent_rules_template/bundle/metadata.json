@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.14.0",
+  "template_version": "2.15.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -14,7 +14,7 @@
   "managed_files": {
     ".agents/agents/auditor.md": {
       "type": "text",
-      "sha256": "96e459228231f5129acace99b7636b3fd9240722d0f961feabd7a48c07472703"
+      "sha256": "0dc8ee5e227adb80567b19a78ddc695f9eb749106e9fbb7ee78eb0e792b32510"
     },
     ".agents/skills/gitignore-generator/SKILL.md": {
       "type": "text",
@@ -50,7 +50,7 @@
     },
     "rules/architecture/backend-api.md": {
       "type": "text",
-      "sha256": "01a28c93c00ed7d8d0d0db14ff616b2d7aa68585be4c20793df250031643bec7"
+      "sha256": "46164be106517be68fb5a78a472980b13a0b6457361b309ec26f7fd618cfc2cf"
     },
     "rules/architecture/database-orm.md": {
       "type": "text",
@@ -74,7 +74,7 @@
     },
     "rules/frameworks/django.md": {
       "type": "text",
-      "sha256": "bdafe0816e5f4541ed37fc5bc93b545af3d8038956b38a64a3d9d38e03f91005"
+      "sha256": "caed133bd3c4ac46f537c259431048b2c689bf1fe49e4de16979fe5c4a4a98ea"
     },
     "rules/frameworks/fastapi.md": {
       "type": "text",
