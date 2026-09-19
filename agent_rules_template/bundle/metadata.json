@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.16.1",
+  "template_version": "2.16.2",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -14,7 +14,7 @@
   "managed_files": {
     ".agents/agents/auditor.md": {
       "type": "text",
-      "sha256": "0dc8ee5e227adb80567b19a78ddc695f9eb749106e9fbb7ee78eb0e792b32510"
+      "sha256": "707a632bd206a6e917e68a21fc299b697327d6dd1137c8519fe476786f4cc959"
     },
     ".agents/skills/gitignore-generator/SKILL.md": {
       "type": "text",

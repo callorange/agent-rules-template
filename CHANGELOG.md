@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+## [2.16.2] - 2026-09-20
+
+### Fixed
+- **Auditor 재검토 범위와 Core Review Closure 정합화 (`subagents/auditor.md`, `.agents/agents/auditor.md`)**:
+  - 재검토에서 수정으로 인한 회귀만이 아니라 현재 범위에서 새로 확인된 차단 문제도 다루도록 Core 계약과 일치시키고, 선택적 개선·미래 hardening을 추가하지 않는 종료 경계는 유지했습니다.
+
 ## [2.16.1] - 2026-09-20
 
 ### Fixed
