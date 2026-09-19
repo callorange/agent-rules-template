@@ -56,16 +56,16 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Validate distribution sources
-        run: python3 .agents/skills/rule-validator/scripts/validate_rules.py --pre-build
+        run: uv run python .agents/skills/rule-validator/scripts/validate_rules.py --pre-build
 
       - name: Build distribution bundle
-        run: python3 scripts/build_dist.py
+        run: uv run python scripts/build_dist.py
 
       - name: Validate generated bundle
         run: |
           git diff --exit-code -- agent_rules_template/bundle
-          python3 .agents/skills/rule-validator/scripts/validate_rules.py --post-build
+          uv run python .agents/skills/rule-validator/scripts/validate_rules.py --post-build
 
       - name: Run full distribution tests
         run: |
-          python3 -m unittest discover -s tests -v
+          uv run python -m unittest discover -s tests -v
