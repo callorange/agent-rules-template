@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.13.1",
+  "template_version": "2.14.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "ef5ffe2b13b0f1027f3b4d32b21456b3c1d98e622bd7ef630e67b4ab92922465"
+    "sha256": "c9d482131f2a8545e04f5aeba611ebd2dcbe92efbeb228dd9aa79ef7198f422b"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
@@ -46,7 +46,7 @@
     },
     "rules/architecture/ai-llm-rag.md": {
       "type": "text",
-      "sha256": "a8c4ec836245437886accb7f35507c4293a5ecb24fa6327d5a964910d4d56e55"
+      "sha256": "ec1efe87087b89661bfe2e8276d03c8a10e16cdcf5dae6747ab5d4d6507af12c"
     },
     "rules/architecture/backend-api.md": {
       "type": "text",

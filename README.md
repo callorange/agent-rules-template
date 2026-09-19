@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.13.1**입니다.
+AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.14.0**입니다.
 
 ---
 
@@ -67,9 +67,10 @@ AI 에이전트(Google Antigravity, OpenAI Codex, Cursor, Claude Code, Windsurf 
 ### 핵심 원칙
 1. **범용성 및 표준화 (Universal Compatibility & Standardization)**: 특정 에이전트나 플랫폼에 종속되지 않는 표준 모듈 제공 (OS/셸 및 도구 추상화)
 2. **기획 중심·위험 비례 실행 (Planning-First, Risk-Proportional Execution)**: 복잡하거나 고위험인 작업에서는 목적·성공 기준·제약을 먼저 정렬하고, 가역적 로컬 작업에는 필요한 정보 확인과 최소 검증만 적용
-3. **위험 기반 안전 경계 (Risk-Based Safety Boundaries)**: 외부·파괴적 변경만 사전 승인 대상으로 두고, 비신뢰 데이터를 지시와 분리
-4. **정량적 검증 및 기계적 수렴 (Mechanical Validation & Convergence)**: Formatter와 safe auto-fix를 통한 기계적 수렴을 Check-First 루프보다 우선하고, 논리적 단위가 안정화된 시점에 Linter, Type Checker, Test Runner, 빌드 스크립트로 검증하며 결정적 기계 오류는 가설 루프 없이 즉시 수정
-5. **자동 조립 및 추적 가능성 (Automated Assembly & Traceability)**: 조립·정적 검증으로 배포 번들을 최신화하고, 의미 있는 개정은 CHANGELOG에 기록
+3. **현재 요구에 비례한 방어 (Proportional Defense)**: 발견한 위험을 자동으로 현재 요구사항으로 승격하지 않고, 핵심 사용자 동작과 실제 불변조건을 우선하며 Mechanical Proxy가 제품 의도를 대체하지 않도록 제한
+4. **위험 기반 안전 경계 (Risk-Based Safety Boundaries)**: 외부·파괴적 변경만 사전 승인 대상으로 두고, 비신뢰 데이터를 지시와 분리
+5. **정량적 검증 및 기계적 수렴 (Mechanical Validation & Convergence)**: Formatter와 safe auto-fix를 통한 기계적 수렴을 Check-First 루프보다 우선하고, 논리적 단위가 안정화된 시점에 Linter, Type Checker, Test Runner, 빌드 스크립트로 검증하며 결정적 기계 오류는 가설 루프 없이 즉시 수정
+6. **자동 조립 및 추적 가능성 (Automated Assembly & Traceability)**: 조립·정적 검증으로 배포 번들을 최신화하고, 의미 있는 개정은 CHANGELOG에 기록
 
 ---
 
