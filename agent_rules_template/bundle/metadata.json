@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.15.0",
+  "template_version": "2.16.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -50,7 +50,7 @@
     },
     "rules/architecture/backend-api.md": {
       "type": "text",
-      "sha256": "46164be106517be68fb5a78a472980b13a0b6457361b309ec26f7fd618cfc2cf"
+      "sha256": "0a66ec3c734229b808b47e0ff01b972d9bf9bd26dc27dc28d532ae6e8e3ac799"
     },
     "rules/architecture/database-orm.md": {
       "type": "text",
@@ -70,15 +70,15 @@
     },
     "rules/architecture/web-frontend.md": {
       "type": "text",
-      "sha256": "66be01100161be563ceb033dcf60c3b8e4c534efcaa10770492ed8e9f2e083a4"
+      "sha256": "d0d065be9d2af7f48a02d68e92e6c31acdd4dd88cb009a652ffd39476c617d13"
     },
     "rules/frameworks/django.md": {
       "type": "text",
-      "sha256": "caed133bd3c4ac46f537c259431048b2c689bf1fe49e4de16979fe5c4a4a98ea"
+      "sha256": "21df6704cc483d9c64e2458c2add5de37882776d03b2ffcd51b3edebf235c73c"
     },
     "rules/frameworks/fastapi.md": {
       "type": "text",
-      "sha256": "0e36db19248b7fa148363da06dad4eb6d9c6640f6f66284262fc86e289be54bc"
+      "sha256": "e26d7e4f5c0b10c9bf0363f18459362c122a188b56a3c3b692aa449323bbb0a7"
     },
     "rules/frameworks/litestar.md": {
       "type": "text",

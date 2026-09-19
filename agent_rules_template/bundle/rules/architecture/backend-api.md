@@ -8,7 +8,7 @@
 
 - **API 응답 및 오류 계약**: 기존 프로젝트·클라이언트의 응답 형식과 content type을 보존합니다.
   새 계약은 일관된 성공·오류 형식을 문서화하되 고정 JSON envelope를 강제하지 않습니다.
-- **인증 및 권한 검증**: 모든 Protected 엔드포인트에는 JWT/Session 검증 미들웨어가 필수적으로 통과되도록 설계하십시오.
+- **인증 및 권한 검증**: 모든 Protected 엔드포인트는 프로젝트가 채택한 신뢰 가능한 인증(Authentication) 경계를 반드시 통과해야 하며, 필요한 경우 인가(Authorization) 및 자원 소유권(Ownership) 검증을 실제 접근 제어 계약에 따라 명확히 수행하십시오. 구체적인 구현 방식(JWT, Session, OAuth/OIDC, API Key, mTLS, 프레임워크 의존성/미들웨어, 권한 클래스, 게이트웨이 인증 등)은 프레임워크와 프로젝트 관례에 따릅니다.
 - **입력 검증 (Input Validation)**: 요청 body, query, params는 컨트롤러 진입 전 Schema Validator(Zod, Joi, Pydantic 등)를 통해 기계적으로 검증하십시오.
 - **SQL Injection 및 XSS 방어**:
   - DB 쿼리는 parameterized query 또는 ORM으로 구성하고 문자열 결합으로 사용자 입력을 쿼리에 넣지 마십시오.

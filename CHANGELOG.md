@@ -5,6 +5,18 @@
 
 ## [Unreleased]
 
+## [2.16.0] - 2026-09-20
+
+### Changed
+- **Django Service/Selector 계층 강제성 제거 및 조건부 분리 정합화 (`rules/frameworks/django.md`)**:
+  - Service/Selector 계층을 무조건 강제하지 않고 재사용되는 도메인 연산, 명확한 트랜잭션 경계, 복잡한 CUD 오케스트레이션, 다수 모델/외부 시스템 조합 등 실제 필요성이 있거나 기존 프로젝트가 사용하는 경우에만 조건부로 도입하도록 정합화했습니다. 단순 CRUD는 프레임워크 네이티브 구조(ORM, QuerySet, View/Serializer)와 기존 프로젝트 관례 활용을 허용하고, 모델 자체에 자연스럽게 속하는 도메인 동작(Domain Behavior) 캡슐화를 허용했습니다.
+- **백엔드 인증 규칙의 구현 방식 종속 제거 (`rules/architecture/backend-api.md`)**:
+  - Protected 엔드포인트의 인증·인가·소유권 보호 계약은 엄격히 유지하되, JWT/Session 미들웨어 단일 구현 종속을 해소하고 OAuth/OIDC, API Key, mTLS, 프레임워크 의존성/권한 클래스, 게이트웨이 인증 등 신뢰 가능한 인증 메커니즘을 프레임워크와 프로젝트 관례에 따라 수용하도록 일반화했습니다.
+- **FastAPI Request/Response 스키마 무조건 분리 완화 (`rules/frameworks/fastapi.md`)**:
+  - Pydantic 스키마 분리를 실제 데이터 계약 및 시맨틱 차이에 연결하여, 입출력 차이·수정 시맨틱·민감 내부 필드 은닉 필요 시 명확히 분리하되 계약이 실질적으로 동일하고 안전한 경우 스키마 재사용을 허용했습니다. 엔드포인트 경계에서의 `response_model` 계약 검증과 입력 유효성 검사는 유지했습니다.
+- **웹 프론트엔드 아키텍처의 React 편향 제거 및 로직 분리 기준 정합화 (`rules/architecture/web-frontend.md`)**:
+  - React 커스텀 훅 중심의 단일 아키텍처 강제를 해소하고, 복잡성·재사용성·독립 테스트 가치 및 프레임워크 권장 방식에 따라 책임을 분리하도록 일반화했습니다. React(Hook/모듈), Vue(Composable), Svelte(Store/모듈 함수) 등 프레임워크 네이티브 컴포지션 패턴을 수용하고, 단순 컴포넌트 로컬 상태/인터랙션은 불필요한 추상화 없이 컴포넌트 내부에 둘 수 있도록 했습니다.
+
 ## [2.15.0] - 2026-09-20
 
 ### Changed

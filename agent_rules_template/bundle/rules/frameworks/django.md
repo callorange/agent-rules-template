@@ -8,10 +8,11 @@ Django 및 Django REST Framework (DRF) / Django Ninja 기반 프로젝트에 적
 
 - **도메인 단위 앱 분리 (Modular Apps)**: 
   도메인 경계, 소유권 또는 독립 배포·권한 정책이 명확할 때 앱을 분리합니다. 기존 프로젝트의 앱 구조가 이를 이미 표현한다면 불필요한 재구성을 하지 마십시오.
-- **Service & Selector 패턴 (Fat Model 방지)**:
-  - CUD 책임, 재사용되는 조회 정책, transaction 경계 또는 domain policy가 View/Model에 섞여 책임이 불명확해질 때 Service·Selector/Query 등 프로젝트 아키텍처에 맞는 레이어 분리를 고려합니다.
-  - **Model**: 데이터 구조, 데이터 검증 및 기본 속성 메서드만 유지하십시오.
-  - **View / API**: 요청 수신, 입력 검증 호출, 서비스 레이어 호출 및 응답 반환 역할만 수행하십시오.
+- **Service & Selector 패턴 (조건부 계층 분리)**:
+  - Service·Selector/Query 등 추가 레이어는 여러 View/API에서 재사용되는 도메인 연산, 명확한 트랜잭션 경계, 복잡한 CUD 오케스트레이션, 여러 모델이나 외부 시스템 조합, 또는 책임 혼재로 가독성·유지보수성이 저하될 때나 프로젝트가 이미 해당 아키텍처를 일관되게 채택한 경우에 도입합니다.
+  - 단순한 CRUD나 작은 로직에서는 Django의 프레임워크 네이티브 구조(ORM, QuerySet, View/Serializer)와 기존 프로젝트 관례만으로 충분하다면 새로운 Service/Selector 계층을 강제하지 마십시오.
+  - **Model**: 데이터 구조와 유효성 검증뿐만 아니라, 해당 모델 자체에 자연스럽게 속하는 도메인 동작(Domain Behavior)을 둘 수 있습니다.
+  - **View / API**: 요청 수신, 입력 검증, 응답 반환을 담당하며 단순한 경우 모델/쿼리셋 API를 직접 조합할 수 있습니다. 비즈니스 복잡성이나 트랜잭션 경계가 필요한 경우에만 서비스 레이어로 위임하십시오.
 
 ---
 
