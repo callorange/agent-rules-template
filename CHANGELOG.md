@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+## [2.16.1] - 2026-09-20
+
+### Fixed
+- **Django View/API 서비스 위임 조건 정합화 (`rules/frameworks/django.md`)**:
+  - `View / API` 설명에서 서비스 위임 조건을 복잡성/트랜잭션으로 한정하여 상위 Service/Selector 도입 조건(재사용 도메인 연산, 프로젝트 아키텍처 관례 등)과 충돌하던 문구를 바로잡고, 상위에서 정의한 조건에 따라 별도 계층이 필요한 경우 Service/Selector로 위임하도록 일치시켰습니다.
+
 ## [2.16.0] - 2026-09-20
 
 ### Changed

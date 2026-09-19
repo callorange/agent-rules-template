@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.16.0",
+  "template_version": "2.16.1",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -74,7 +74,7 @@
     },
     "rules/frameworks/django.md": {
       "type": "text",
-      "sha256": "21df6704cc483d9c64e2458c2add5de37882776d03b2ffcd51b3edebf235c73c"
+      "sha256": "bf04889b330bd07cfeb3743d6d4d422e7a1edde2f300970ad1a949f2e10c5384"
     },
     "rules/frameworks/fastapi.md": {
       "type": "text",

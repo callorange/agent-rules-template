@@ -151,4 +151,4 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 
 ---
 
-**Version**: 2.16.0 | **Ratified**: 2026-09-20 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.16.1 | **Ratified**: 2026-09-20 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
