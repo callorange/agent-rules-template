@@ -125,26 +125,6 @@ def build_metadata(bundle_dir: Path) -> None:
         "managed_files": managed_files,
     })
 
-def extract_title_and_description(file_path: Path) -> tuple[str, str]:
-    """마크다운 파일에서 최상단 H1 제목과 첫 문장을 추출합니다."""
-    content = file_path.read_text(encoding="utf-8")
-    lines = [line.strip() for line in content.splitlines() if line.strip()]
-    
-    title = file_path.name
-    desc = ""
-    
-    for line in lines:
-        if line.startswith("# "):
-            title = line[2:].strip()
-            break
-            
-    for line in lines:
-        if not line.startswith("#") and not line.startswith("---") and not line.startswith("-"):
-            desc = line
-            break
-            
-    return title, desc
-
 def build_dist(output_dir: Path | None = None):
     """단일 canonical bundle을 생성하고 필요하면 지정 경로에 생성합니다."""
     validate_source_layout()
@@ -202,7 +182,7 @@ def build_dist(output_dir: Path | None = None):
     # 4. On-Demand 기술 스택 링킹 섹션 동적 생성
     agents_md_content.append("## 📚 기술 스택별 특화 및 온디맨드 규칙 모듈 (Read-on-Demand)")
     agents_md_content.append("")
-    agents_md_content.append("위 Core 활성화 계약에 따라 현재 작업과 일치하는 언어, framework, architecture 및 packaging 모듈을 아래 목록에서 선택해 누적 적용하십시오.")
+    agents_md_content.append("위 Core 활성화 계약에 따라 현재 작업의 언어와 기술에 맞는 모듈만 해당 카테고리에서 찾아 누적 적용하십시오. 파일명으로 대상을 판단할 수 없으면 카테고리 안의 관련 후보만 확인합니다.")
     agents_md_content.append("")
 
     for cat_name, (cat_title_kr, _) in CATEGORY_METADATA.items():
@@ -210,16 +190,9 @@ def build_dist(output_dir: Path | None = None):
         if not cat_dir.exists():
             continue
 
-        agents_md_content.append(f"### {cat_title_kr}")
-        
-        # 파일 목록 순서 정렬
-        files = sorted(cat_dir.glob("*.md"))
-        for f in files:
-            rel_path = f"rules/{cat_name}/{f.name}"
-            title, _ = extract_title_and_description(f)
-            agents_md_content.append(f"- [{f.name}]({rel_path}): {title}")
-        
-        agents_md_content.append("")
+        agents_md_content.append(f"- [{cat_title_kr}](rules/{cat_name}/)")
+
+    agents_md_content.append("")
 
     # 5. dist/AGENTS.md 저장
     final_agents_md_path = dist_dir / "AGENTS.md"

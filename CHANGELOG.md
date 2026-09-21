@@ -5,6 +5,13 @@
 
 ## [Unreleased]
 
+## [2.16.3] - 2026-09-21
+
+### Changed
+- **배포 Core 컨텍스트 압축 (`rules/core/`, `scripts/build_dist.py`)**:
+  - 검증·문제 해결과 최소 semantic scope 계약을 각각 한 곳으로 통합하고 나머지 Core 문서는 참조하도록 축약했습니다.
+  - Read-on-Demand 안내를 개별 파일 목록에서 카테고리별 탐색 링크로 줄여 관련 모듈 선택 계약은 유지하면서 항상 로드되는 배포 `AGENTS.md`를 축소했습니다.
+
 ## [2.16.2] - 2026-09-20
 
 ### Fixed
