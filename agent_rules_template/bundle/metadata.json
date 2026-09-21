@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "c9d482131f2a8545e04f5aeba611ebd2dcbe92efbeb228dd9aa79ef7198f422b"
+    "sha256": "4d2d13509ffc07e2d4602983b18b5ac7ca47fd88003ddedd293333c4704a8eae"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
