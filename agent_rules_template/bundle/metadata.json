@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.16.3",
+  "template_version": "2.17.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -9,7 +9,7 @@
     "file": "AGENTS.md",
     "start_marker": "<!-- agent-rules-template:managed:start -->",
     "end_marker": "<!-- agent-rules-template:managed:end -->",
-    "sha256": "2ce9a85c7b830f432d982fcc639e5d9368437b214d5a5d40020032600e2ef832"
+    "sha256": "03111112e89b7244287db143b4a0b00ecf4ecaa0d74efb5e3f9820cffa80d1e7"
   },
   "managed_files": {
     ".agents/agents/auditor.md": {
@@ -70,11 +70,11 @@
     },
     "rules/architecture/web-frontend.md": {
       "type": "text",
-      "sha256": "d0d065be9d2af7f48a02d68e92e6c31acdd4dd88cb009a652ffd39476c617d13"
+      "sha256": "99e12e35066b55dd039411407090f42ce553f2205ce30a919fd0db3ee278dbd3"
     },
     "rules/frameworks/django.md": {
       "type": "text",
-      "sha256": "bf04889b330bd07cfeb3743d6d4d422e7a1edde2f300970ad1a949f2e10c5384"
+      "sha256": "07b55ecde2c4c3f7d0d31261eace58b40b0b1a23fa08326c4127dc0db82e4e61"
     },
     "rules/frameworks/fastapi.md": {
       "type": "text",
@@ -118,7 +118,7 @@
     },
     "rules/packaging/package-python.md": {
       "type": "text",
-      "sha256": "f5df44104ca354f15cc32cec8953b01529a3b6beaa60112e58a6dbb35798b772"
+      "sha256": "16053150ede6691d3fe5d3fb192f2f55f508ba1e2c8d44906dffcf95b19abdaa"
     },
     "rules/styles/cpp.md": {
       "type": "text",

@@ -1,6 +1,6 @@
 # Python Packaging Rules (Python & PyPI 생태계 패키징 규칙)
 
-Python 생태계(PyPI, uv, pyproject.toml)의 라이브러리 및 패키지 개발/배포에 적용되는 표준 규칙입니다.
+Python 프로젝트의 의존성·실행 환경 관리와 라이브러리·패키지 개발/배포에 적용되는 표준 규칙입니다. 패키지 빌드·배포 및 public API 관련 규칙은 해당 산출물이나 공개 계약을 제공하는 경우에만 적용합니다.
 
 ---
 
@@ -9,12 +9,12 @@ Python 생태계(PyPI, uv, pyproject.toml)의 라이브러리 및 패키지 개�
 - **패키지 매니저 우선 선택**:
   저장소의 설정과 기존 컨벤션에 맞는 패키지 매니저를 먼저 선택하고, 그 매니저가 정한 lockfile과 locked/frozen 설치 명령으로 재현 가능한 환경을 구성하십시오.
   기존 프로젝트의 `poetry`, `pip/venv`, `conda`, `uv` 등 도구와 계약이 우선합니다.
-- **PEP 621 pyproject.toml 명세**: Legacy `setup.py` 대신 PEP 621 규격을 준수하는 `pyproject.toml`을 단일 메타데이터 매니페스트로 사용하십시오.
+- **pyproject.toml 명세**: 패키지 메타데이터는 Legacy `setup.py` 대신 PEP 621 규격의 `pyproject.toml`에 선언하십시오. 비패키지 애플리케이션의 의존성·환경 설정은 선택한 도구의 `pyproject.toml` 계약을 따릅니다.
 - **Lockfile 기반 배포 재현성 보장**: 애플리케이션 및 서비스는 선택된 매니저의 lockfile을 CI/배포에서 locked 또는 frozen 방식으로 사용하여 의존성 변동을 방지하십시오.
 - **의존성 그룹 분류 표준 (Dependency Grouping)**:
   - **프로덕션 런타임 의존성 (`[project.dependencies]`)**: 서비스 구동 및 SDK 실행 시 필수적인 런타임 패키지만 선언합니다.
   - **개발/테스트 전용 의존성**: pytest, ruff, mypy 등은 채택한 빌드·패키징 도구가 제공하는 그룹/extra 구성을 따르되 프로덕션 런타임과 분리하십시오.
-- **빌드 백엔드 명시**: `[build-system]` 섹션에 빌드 툴(hatchling, flit_core, setuptools 등)을 명확히 정의하십시오.
+- **빌드 백엔드 명시**: 프로젝트 자체를 Python 패키지로 빌드·설치하는 경우에만 `[build-system]`에 build backend(hatchling, flit_core, setuptools 등)를 명시하십시오. 의존성과 실행 환경만 관리하는 비패키지 애플리케이션에는 강제하지 않습니다.
 
 ---
 

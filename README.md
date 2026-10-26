@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.16.3**입니다.
+AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.17.0**입니다.
 
 ---
 
@@ -33,7 +33,7 @@ uvx --from git+https://github.com/callorange/agent-rules-template.git agent-rule
 | `.agents/skills/`, `.agents/agents/` | 공용 스킬과 서브에이전트 |
 | `.agent-rules-template.json` | 다음 업데이트에서 로컬 변경을 판별하는 설치 기준 정보 |
 
-기존 `AGENTS.md`에 관리 marker가 없으면 기존 내용은 `Project Rules` 아래에 보존됩니다. 프로젝트의 기술 스택, 규칙 활성화 조건, 검증 명령은 이 영역에 작성합니다. [활성화 템플릿과 체크리스트](#activation-template)를 참고하세요.
+기존 `AGENTS.md`에 관리 marker가 없으면 기존 내용은 `Project Rules` 아래에 보존됩니다. 이 영역에는 프로젝트의 기술 스택, 규칙 활성화 조건, 검증 명령 등 프로젝트 고유 규칙을 직접 작성하거나, 이를 정의한 공유 문서의 위치와 적용 조건을 연결할 수 있습니다. 문서 역할·원본·배치 및 편집 시 정보 보존 기준은 [Core 문서 유지보수 지침](rules/core/05-docs-maintenance.md#-2-프로젝트-거버넌스-문서)을 따릅니다. [활성화 템플릿과 체크리스트](#activation-template)를 참고하세요.
 
 ### 3. 이후 업데이트
 
