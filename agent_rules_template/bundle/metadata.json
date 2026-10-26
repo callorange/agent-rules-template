@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_version": "2.17.0",
+  "template_version": "2.18.0",
   "hash_policy": {
     "text": "text-v1",
     "binary": "binary-v1"
@@ -27,6 +27,10 @@
     ".agents/skills/gitignore-generator/scripts/gitignore.sh": {
       "type": "text",
       "sha256": "c23de95a237f373956168c34d98382447fea0bdda25297eec3764b4ee539764e"
+    },
+    ".agents/skills/plan-refiner/SKILL.md": {
+      "type": "text",
+      "sha256": "202ed8bcdc3752f242b0230068b2306064cde965f0c0cdbe64e57c56a9147848"
     },
     ".agents/skills/python-ecosystem-kb/SKILL.md": {
       "type": "text",

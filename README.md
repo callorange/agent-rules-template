@@ -1,6 +1,6 @@
 # Shared AGENTS.md Standard & Generator
 
-AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.17.0**입니다.
+AI 에이전트가 따를 공통 규칙을 프로젝트에 설치하고 업데이트하는 템플릿입니다. 핵심 규칙은 `AGENTS.md`로 제공하며, 언어·프레임워크별 규칙과 스킬은 필요한 작업에 맞춰 적용합니다. 현재 버전은 **2.18.0**입니다.
 
 ---
 
@@ -123,6 +123,7 @@ agents-template/
 │   └── prompt-context-engineering.md # 프롬프트·컨텍스트·Task Contract 설계 가이드
 ├── skills/                  # 🚀 배포용 공용 에이전트 스킬 원본 모듈 (SSOT)
 │   ├── gitignore-generator/ # 언어/프레임워크별 .gitignore 최적화 자동 생성 스킬
+│   ├── plan-refiner/        # 전문가 접근·원자료·방법·외부 검증으로 기존 계획 심화
 │   └── python-ecosystem-kb/ # 검증된 Python·Django 후보군 우선 탐색 스킬
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 원본 모듈 (SSOT)
 │   └── auditor.md           # 코드 및 설계 변경사항 비판적 검수 및 감사 서브에이전트
@@ -159,6 +160,8 @@ agents-template/
 - **Guides**: 규칙·프롬프트·Task Contract·agent harness를 설계하거나 검토할 때만 선택적으로 읽는 비규범적 참고 자료입니다. 일반 코드 작업에 자동 적용하지 않으며, 소비 프로젝트의 자체 설계 가이드 또는 정책이 있으면 그것을 우선합니다.
 
 ---
+
+기존 계획의 근거와 접근법을 심화하려면 [plan-refiner](skills/plan-refiner/SKILL.md)를 사용합니다. 예: “plan-refiner로 위 계획을 보완하라. 목표와 범위는 유지하고 전문가의 접근·원자료·방법과 도구·외부 검증을 반영하라.” 이 저장소에서도 같은 원본을 직접 참조하며, 모든 계획에 적용하는 필수 절차는 아닙니다.
 
 <a id="activation-template"></a>
 

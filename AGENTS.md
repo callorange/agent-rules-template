@@ -67,7 +67,7 @@ agents-template/
 │   ├── packaging/           # 배포/패키징 지침 (docker, deployment, package-npm, package-python 등)
 │   └── styles/              # 코딩 스타일 가이드 (python, typescript, javascript, go, cpp, csharp, dart 등)
 ├── guides/                  # 📚 선택형 비규범적 설계 참고 자료 (prompt/context/task contract/harness)
-├── skills/                  # 🚀 배포용 공용 스킬 (gitignore-generator, python-ecosystem-kb)
+├── skills/                  # 🚀 배포용 공용 스킬 (gitignore-generator, plan-refiner, python-ecosystem-kb)
 ├── subagents/               # 🚀 배포용 공용 서브에이전트 (auditor.md)
 ├── .agents/                 # 🔒 이 프로젝트 전용 메타 자산 (rule-validator, auditor.md)
 ├── scripts/                 # 🛠️ 자동 빌드 스크립트 (build_dist.py)
@@ -149,6 +149,8 @@ build 후 `bundle/metadata.json`의 `template_version`이 루트 `AGENTS.md`의 
 - 해당 특화 영역의 구체 정책은 각 원본 rule을 SSOT로 따릅니다.
 - 소비 프로젝트는 [README의 활성화 템플릿과 설정 체크리스트](README.md)를 바탕으로 경로·기술 스택·public 범위·문서화 언어·자동 검사 범위를 자체 `AGENTS.md`와 설정에서 확정합니다.
 
+- 이 저장소 자체의 기존 계획을 심화·보완하는 요청에는 [plan-refiner 원본](skills/plan-refiner/SKILL.md)을 직접 읽어 사용합니다. 내부 사본을 만들거나 모든 작업의 필수 검토 단계로 적용하지 않습니다.
+
 ---
 
-**Version**: 2.17.0 | **Ratified**: 2026-09-21 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
+**Version**: 2.18.0 | **Ratified**: 2026-09-21 | **Architecture**: Modern Planning-First, Risk-Proportional Harness
